@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paiement en ligne — Institut Sacré Cœur d’Adjamé</title>
+<meta name="description" content="Réglez la scolarité de votre enfant par carte bancaire ou mobile money.">
+<meta property="og:title" content="Paiement en ligne — Institut Sacré Cœur d’Adjamé">
+<meta property="og:description" content="Réglez la scolarité de votre enfant par carte bancaire ou mobile money.">
+<meta property="og:type" content="website">
+<link rel="icon" href="assets/images/blason-isca.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/01-fondations.css?v=20260830k">
+<link rel="stylesheet" href="assets/css/02-transport.css?v=20260830k">
+<link rel="stylesheet" href="assets/css/03-cartes.css?v=20260830k">
+<link rel="stylesheet" href="assets/css/04-charpente.css?v=20260830k">
+<link rel="stylesheet" href="assets/css/05-bandeaux.css?v=20260830k">
+<link rel="stylesheet" href="assets/css/06-interactions.css?v=20260830k">
+<link rel="stylesheet" href="assets/css/07-matieres.css?v=20260830k">
+<link rel="stylesheet" href="assets/css/08-espaces.css?v=20260830k">
+</head>
+<body>
+
+
+  <div class="topbar">
+    <span>Abidjan, Côte d'Ivoire — Enseignement catholique de la 6ème à la Terminale</span>
+    <span>27 20 37 10-20 &nbsp;|&nbsp; 07 08 99 54 04 &nbsp;|&nbsp; collegeisca@gmail.com</span>
+  </div>
+
+  <nav>
+    <a class="brand" href="index.html">
+      <img class="crest" src="assets/images/blason-isca.png" alt="Emblème ISCA">
+      <div class="brand-text">
+        <div class="name">Institut Sacré Cœur d'Adjamé</div>
+        <div class="tag">ISCA — Fondé en 1961</div>
+      </div>
+    </a>
+    <div class="navlinks">
+      <a data-nav="accueil" href="index.html">Accueil</a>
+      <a data-nav="etablissement" href="etablissement.html">L'Établissement</a>
+      <a data-nav="scolarite" href="scolarite.html">Scolarité</a>
+      <a data-nav="vie-scolaire" href="vie-scolaire.html">Vie Scolaire</a>
+      <a data-nav="admissions" href="admissions.html">Admissions</a>
+      <a data-nav="paiement" href="paiement.html" class="active">Paiement</a>
+      <a data-nav="actualites" href="actualites.html">Actualités</a>
+      <a data-nav="contact" href="contact.html">Contact</a>
+    </div>
+    <a class="btn-connexion" data-nav="enseignant" href="espace-enseignant.html">Espace Enseignant</a>
+  </nav>
+
+  
+<section class="page-section active" id="sec-paiement" data-key="paiement">
+
+
+  <!-- ================= PAGE HERO ================= -->
+  <header class="page-hero hero-paiement" style="padding-bottom:0;">
+    <div class="breadcrumb"><a href="index.html">Accueil</a><span class="sep">/</span><span class="current">Paiement</span></div>
+    <h1>Payer la scolarité en ligne</h1>
+    <p class="lead">Réglez en ligne la scolarité de votre enfant et l'ensemble des prestations de l'établissement — inscription, versements, services complémentaires — par carte bancaire ou mobile money.</p>
+  </header>
+  <div class="subnav">
+    <a href="#payer" class="active">Effectuer un paiement</a>
+    <a href="#echeancier">État des paiements</a>
+    <a href="#historique">Historique</a>
+    <a href="#recus">Reçus</a>
+  </div>
+
+  <!-- ================= ACCÈS PARENT ================= -->
+  <section class="parent-gate" id="parent-gate">
+    <div class="pg-card">
+      <div class="seal"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l7 4v5c0 4-3 7-7 9-4-2-7-5-7-9V7z"/></svg></div>
+      <div class="eyebrow"><span class="dash"></span> Accès réservé aux parents</div>
+      <h2>Accéder au dossier de mon enfant</h2>
+      <p class="pg-intro">Renseignez les trois informations figurant sur la fiche de renseignements de votre enfant. Elles doivent correspondre exactement à celles enregistrées par l'établissement.</p>
+
+      <div class="login-error" id="pg-erreur">Aucun élève ne correspond à ces informations.</div>
+
+      <div class="pg-champs">
+        <div class="login-field">
+          <label for="pg-nom">Nom et prénoms de l'enfant</label>
+          <input type="text" id="pg-nom" placeholder="tels qu'inscrits sur la fiche" autocomplete="off">
+        </div>
+        <div class="login-field">
+          <label for="pg-naissance">Date de naissance</label>
+          <input type="date" id="pg-naissance" autocomplete="off">
+        </div>
+        <div class="login-field">
+          <label for="pg-classe">Classe</label>
+          <input type="text" id="pg-classe" placeholder="ex. 2nde" autocomplete="off">
+        </div>
+        <div class="login-field">
+          <label for="pg-matricule">Numéro de matricule</label>
+          <input type="text" id="pg-matricule" placeholder="ex. 21844808C" inputmode="text" autocomplete="off">
+        </div>
+      </div>
+
+      <button class="submit-login" onclick="parentLogin()">Accéder au dossier</button>
+      <div class="login-foot">Matricule introuvable ? <a href="contact.html">Contactez le secrétariat</a></div>
+      <div class="demo-hint">Les trois champs sont vérifiés ensemble : le nom seul ou le matricule seul ne suffisent pas à ouvrir un dossier.</div>
+    </div>
+  </section>
+
+  <!-- ================= DOSSIER DE L'ÉLÈVE ================= -->
+  <div id="parent-espace" style="display:none;">
+    <div class="auth-strip">
+      <div class="as-left">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        Dossier de <b id="pg-as-nom">—</b>
+      </div>
+      <button class="as-logout" onclick="parentLogout()">Quitter le dossier</button>
+    </div>
+
+    <div class="security-note">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 4v5c0 4-3 7-7 9-4-2-7-5-7-9V7z"/></svg>
+      Ce dossier est strictement personnel : vous n'avez accès qu'à la situation de votre enfant.
+    </div>
+
+  <!-- ================= EN-TÊTE DE L'ÉLÈVE ================= -->
+  <div class="eleve-entete">
+    <div class="ee-avatar" id="ee-avatar">—</div>
+    <div>
+      <h2 id="ee-nom">—</h2>
+      <div class="ee-meta" id="ee-meta">—</div>
+    </div>
+    <span class="ee-statut" id="ee-statut">—</span>
+  </div>
+  <div class="postes" id="postes"></div>
+
+  <!-- ================= MONTANT DÛ ================= -->
+  <section class="child-section" id="payer">
+    <div class="section-head" style="border-bottom:none;">
+      <div>
+        <div class="eyebrow"><span class="dash"></span> Sous-rubrique 1</div>
+        <h2>Effectuer un paiement</h2>
+      </div>
+    </div>
+   
+    <h3 style="font-size:14px;color:var(--navy);margin-top:34px;">Que souhaitez-vous régler ?</h3>
+    <div class="pay-objets">
+      <div class="pay-objet selected">
+        <div class="po-tag">Scolarité</div>
+        <h4>Versement de scolarité</h4>
+        <p>Réglez la scolarité annuelle en une fois ou selon l'échéancier de versements convenu avec l'établissement.</p>
+        <div class="po-montant">30 000 FCFA<small>4e versement — échéance novembre 2026</small></div>
+      </div>
+      <div class="pay-objet">
+        <div class="po-tag">Inscription</div>
+        <h4>Frais d'inscription et de dossier</h4>
+        <p>Étude de dossier, test d'entrée et frais d'inscription ou de réinscription pour l'année scolaire.</p>
+        <div class="po-montant">À déterminer<small>selon le niveau et le statut de l'élève</small></div>
+      </div>
+      <div class="pay-objet">
+        <div class="po-tag">Services</div>
+        <h4>Services complémentaires</h4>
+        <p>Transport, cantine, tenues scolaires, location de livres, cours de vacances, de renforcement ou de préparation.</p>
+        <div class="po-montant">Au choix<small>voir le détail dans Admissions</small></div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ================= MÉTHODES DE PAIEMENT ================= -->
+  <!-- ================= TUNNEL DE VERSEMENT ================= -->
+  <section class="versement" id="versement">
+    <div class="v-fil" aria-label="Étapes du versement">
+      <button type="button" class="v-etape actif" data-e="1"><span class="v-num">1</span><span class="v-lbl">Montant</span></button>
+      <i class="v-lien"></i>
+      <button type="button" class="v-etape" data-e="2"><span class="v-num">2</span><span class="v-lbl">Moyen</span></button>
+      <i class="v-lien"></i>
+      <button type="button" class="v-etape" data-e="3"><span class="v-num">3</span><span class="v-lbl">Confirmation</span></button>
+    </div>
+
+    <!-- ÉTAPE 1 — ce que l'on règle -->
+    <div class="v-vue" data-vue="1">
+      <div class="v-tete">
+        <h3>Que souhaitez-vous régler ?</h3>
+        <p>Cochez les postes à verser. Vous pouvez régler la totalité ou une part.</p>
+      </div>
+      <div class="v-postes" id="v-postes"></div>
+
+      <div class="v-montant">
+        <label for="v-somme">Montant du versement</label>
+        <div class="v-somme-ligne">
+          <input type="text" id="v-somme" inputmode="numeric" value="0">
+          <span class="v-devise">FCFA</span>
+        </div>
+        <div class="v-raccourcis" id="v-raccourcis"></div>
+        <p class="v-aide" id="v-aide">Sélectionnez au moins un poste.</p>
+      </div>
+      <button class="btn-pdf v-suivant" onclick="vEtape(2)" id="v-vers2" disabled>Choisir le moyen de paiement →</button>
+    </div>
+
+    <!-- ÉTAPE 2 — le moyen -->
+    <div class="v-vue" data-vue="2" hidden>
+      <div class="v-tete">
+        <h3>Comment souhaitez-vous payer ?</h3>
+        <p>Les frais varient selon le moyen retenu ; ils sont affichés avant validation.</p>
+      </div>
+      <div class="v-famille"><span class="v-fam-lbl">Mobile Money</span></div>
+      <div class="v-moyens" id="v-mobile"></div>
+      <div class="v-famille"><span class="v-fam-lbl">Carte bancaire</span></div>
+      <div class="v-moyens" id="v-carte"></div>
+      <div class="v-famille"><span class="v-fam-lbl">Virement</span></div>
+      <div class="v-moyens" id="v-virement"></div>
+      <div class="v-nav">
+        <button class="btn-ghost" onclick="vEtape(1)">← Retour</button>
+        <button class="btn-pdf" onclick="vEtape(3)" id="v-vers3" disabled>Continuer →</button>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 3 — saisie et confirmation -->
+    <div class="v-vue" data-vue="3" hidden>
+      <div class="v-tete">
+        <h3 id="v-titre3">Confirmer le versement</h3>
+        <p id="v-sous3">Vérifiez le récapitulatif avant de valider.</p>
+      </div>
+      <div class="v-colonnes">
+        <div class="v-saisie" id="v-saisie"></div>
+        <aside class="v-recu" id="v-recu"></aside>
+      </div>
+      <div class="v-nav">
+        <button class="btn-ghost" onclick="vEtape(2)">← Retour</button>
+        <button class="btn-pdf" onclick="vValider()" id="v-valider">Valider le versement</button>
+      </div>
+    </div>
+
+    <!-- REÇU -->
+    <div class="v-vue v-fini" data-vue="4" hidden>
+      <div class="v-cachet">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <h3>Versement enregistré</h3>
+      <p class="v-ref">Référence <b id="v-ref">—</b></p>
+      <div class="v-recu-final" id="v-recu-final"></div>
+      <div class="v-nav v-nav-centre">
+        <button class="btn-ghost" onclick="downloadPdf()">↓ Télécharger le reçu</button>
+        <button class="btn-pdf" onclick="vRecommencer()">Nouveau versement</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="echeance-section" id="echeancier">
+    <div class="section-head" style="border-bottom:1px solid var(--line);">
+      <div>
+        <div class="eyebrow"><span class="dash"></span> Sous-rubrique 2</div>
+        <h2>État des paiements — <span id="ech-nom">—</span></h2>
+      </div>
+    </div>
+    <table class="ech-table">
+      <tr><th>Versement</th><th>Échéance</th><th>Montant</th><th>Statut</th></tr>
+      <tr><td>1er versement</td><td>Juillet – Août 2026</td><td class="montant">150 000 FCFA</td><td><span class="status-pill paid">Payé</span></td></tr>
+      <tr><td>2e versement</td><td>Septembre 2026</td><td class="montant">30 000 FCFA</td><td><span class="status-pill paid">Payé</span></td></tr>
+      <tr><td>3e versement</td><td>Octobre 2026</td><td class="montant">30 000 FCFA</td><td><span class="status-pill paid">Payé</span></td></tr>
+      <tr><td>4e versement</td><td>Novembre 2026</td><td class="montant">30 000 FCFA</td><td><span class="status-pill due">À payer</span></td></tr>
+      <tr><td>5e versement</td><td>Janvier 2027</td><td class="montant">30 000 FCFA</td><td><span class="status-pill pending">À venir</span></td></tr>
+      <tr><td>6e versement</td><td>Février 2027</td><td class="montant">30 000 FCFA</td><td><span class="status-pill pending">À venir</span></td></tr>
+    </table>
+  </section>
+
+  <!-- ================= HISTORIQUE ================= -->
+  <section class="hist-section" id="historique">
+    <div class="section-head">
+      <div>
+        <div class="eyebrow"><span class="dash"></span> Sous-rubrique 3</div>
+        <h2>Historique des transactions</h2>
+      </div>
+    </div>
+    <div class="hist-row">
+      <div class="hist-left">
+        <div class="hist-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>
+        <div class="hist-info"><h4>3e versement — <span class="hist-nom">—</span></h4><p>Payé par carte bancaire · 3 octobre 2026</p></div>
+      </div>
+      <div class="hist-right"><span class="hist-amount">30 000 FCFA</span><span class="hist-dl">Reçu ↓</span></div>
+    </div>
+    <div class="hist-row">
+      <div class="hist-left">
+        <div class="hist-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2v20M2 12h20"/></svg></div>
+        <div class="hist-info"><h4>2e versement — <span class="hist-nom">—</span></h4><p>Payé par Orange Money · 2 septembre 2026</p></div>
+      </div>
+      <div class="hist-right"><span class="hist-amount">30 000 FCFA</span><span class="hist-dl">Reçu ↓</span></div>
+    </div>
+    <div class="hist-row">
+      <div class="hist-left">
+        <div class="hist-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>
+        <div class="hist-info"><h4>1er versement (inscription) — <span class="hist-nom">—</span></h4><p>Payé par carte bancaire · 18 juillet 2026</p></div>
+      </div>
+      <div class="hist-right"><span class="hist-amount">150 000 FCFA</span><span class="hist-dl">Reçu ↓</span></div>
+    </div>
+  </section>
+
+  <!-- ================= REÇUS ================= -->
+  <section class="dossier-section" id="recus" style="background:var(--cream-deep);">
+    <div class="section-head" style="border-bottom:1px solid var(--line);">
+      <div>
+        <div class="eyebrow"><span class="dash"></span> Sous-rubrique 4</div>
+        <h2>Reçus téléchargeables</h2>
+      </div>
+    </div>
+    <div class="dossier-grid">
+      <div class="doc-card">
+        <div class="top">
+          <div class="doc-icon2"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg></div>
+          <span class="ext">PDF</span>
+        </div>
+        <h4>Reçu — 3e versement</h4>
+        <p><span class="recu-nom">—</span> · 30 000 FCFA · 3 octobre 2026</p>
+        <span class="dl-link">Télécharger ↓</span>
+      </div>
+      <div class="doc-card">
+        <div class="top">
+          <div class="doc-icon2"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg></div>
+          <span class="ext">PDF</span>
+        </div>
+        <h4>Reçu — 2e versement</h4>
+        <p><span class="recu-nom">—</span> · 30 000 FCFA · 2 septembre 2026</p>
+        <span class="dl-link">Télécharger ↓</span>
+      </div>
+      <div class="doc-card">
+        <div class="top">
+          <div class="doc-icon2"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg></div>
+          <span class="ext">PDF</span>
+        </div>
+        <h4>Reçu — 1er versement</h4>
+        <p><span class="recu-nom">—</span> · 150 000 FCFA · 18 juillet 2026</p>
+        <span class="dl-link">Télécharger ↓</span>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--ink-soft);margin-top:24px;font-style:italic;">Les reçus ne sont disponibles ici que pour les paiements effectués en ligne. Pour un paiement fait directement à l'établissement, le reçu est remis sur place.</p>
+  </section>
+
+  
+  </section>
+  
+<footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="crest-plate"><img src="assets/images/blason-isca.png" alt="Emblème ISCA"></div>
+        <div>
+          <div class="name">Institut Sacré Cœur d'Adjamé</div>
+          <p>Établissement catholique d'enseignement général, de la 6ème à la Terminale — Abidjan, Côte d'Ivoire.</p>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Établissement</h4>
+        <a href="etablissement.html">Notre projet éducatif</a>
+        <a href="etablissement.html">Histoire et valeurs</a>
+        <a href="etablissement.html">Équipe pédagogique</a>
+      </div>
+      <div class="footer-col">
+        <h4>Familles</h4>
+        <a href="admissions.html">Admissions</a>
+        <a href="paiement.html">Paiement en ligne</a>
+        <a href="scolarite.html#emploi-du-temps">Emploi du temps</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a href="contact.html">Nous écrire</a>
+        <a href="contact.html#carte">Plan d'accès</a>
+        <a href="actualites.html">Actualités</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Institut Sacré Cœur d'Adjamé (ISCA). Tous droits réservés.</span>
+      <span>Maquette interactive — cliquez sur les rubriques du menu</span>
+    </div>
+  </footer>
+
+<script src="assets/js/commun.js?v=20260830k"></script>
+<script src="assets/js/paiement.js?v=20260830k"></script>
+</body>
+</html>

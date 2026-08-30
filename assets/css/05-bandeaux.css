@@ -1,0 +1,557 @@
+/* ==========================================================
+   Diapositives d'accueil et bandeaux illustres des rubriques
+   Fichier 5 sur 8 - charge dans cet ordre par les pages.
+   Ne pas reordonner : la cascade en depend.
+   ========================================================== */
+  /* ---------- Les deux affiches du carrousel ----------
+   Une affiche n'est pas une photographie : elle porte des tarifs, des
+   dates, un numéro d'infoline. La rogner, c'est perdre l'information.
+   Le réglage précédent la faisait couvrir tout le cadre, en comptant sur
+   les marges latérales des anciens fichiers pour absorber le recadrage.
+   Les affiches livrées le 30 août ont un autre format (1799x503 au lieu
+   de 3063x1476 et 3160x800) : à ce cadrage, l'écran de 1280px en perdait
+   28% de la largeur, soit le blason d'un côté et la photo de l'autre.
+   Elles s'affichent donc entières, quelle que soit la largeur. Les zones
+   laissées libres au-dessus et au-dessous prennent le marine du site.
+   L'affiche « Places disponibles » a déjà des bords marine (#1D2848) :
+   le raccord y est invisible. Celle du recrutement a un fond clair et se
+   détache alors comme un panneau posé sur le marine, ce qui la cadre
+   nettement. */
+.hero-slide.flyer-recrutement,
+.hero-slide.flyer-inscriptions{
+background:var(--navy);
+    padding:0 0 58px;   /* la bande des contrôles reste réservée */
+}
+.hero-slide.flyer-recrutement img,
+.hero-slide.flyer-inscriptions img{
+width:100%;height:100%;object-fit:contain;object-position:center center;cursor:zoom-in;
+}
+.hero-slide.flyer-recrutement .ms-hint,
+.hero-slide.flyer-inscriptions .ms-hint{
+display:flex;background:none;height:58px;
+}
+
+/* ---------- Bandeau illustré de la rubrique L'Établissement ----------
+   La photo du portail occupe la droite et se fond vers la gauche, ce qui
+   dégage une zone lisible pour le texte. Pour changer la photo, remplacez
+   simplement l'adresse de l'image ci-dessous. */
+.page-hero.hero-etablissement{
+background-image:url("../images/bandeau-etablissement.jpg");
+    background-size:cover;
+    background-position:center right;
+    background-repeat:no-repeat;
+    background-color:var(--navy);
+    min-height:284px;
+    display:flex;flex-direction:column;justify-content:center;
+}
+/* voile qui garantit la lisibilité du texte quelle que soit la largeur */
+.page-hero.hero-etablissement::after{
+content:"";position:absolute;inset:0;z-index:0;
+    background:linear-gradient(90deg, rgba(18,34,55,.94) 0%, rgba(18,34,55,.86) 34%, rgba(18,34,55,.30) 56%, rgba(18,34,55,0) 72%);
+    pointer-events:none;
+}
+.page-hero.hero-etablissement > *{position:relative;z-index:1;}
+.page-hero.hero-etablissement h1{max-width:58%;}
+.page-hero.hero-etablissement .lead{max-width:52%;}
+/* Sur telephone, la division change de sens.
+   Sur grand ecran le texte tient la gauche et la photo la droite : le
+   voile va donc de gauche a droite. Sous 900px, le texte s'etale sur
+   toute la largeur et repasse par-dessus la photo — il fallait alors un
+   voile presque opaque partout pour rester lisible, et la photo
+   disparaissait (clarte mesuree : 37 sur 255, autant dire un aplat).
+   La division se remet ici a la verticale : le texte occupe le haut sur
+   fond marine, la photo se decouvre en bas.
+   La hauteur de 420px n'est pas choisie au hasard : le titre et le
+   chapeau descendent jusqu'a 254px, et il faut laisser sous eux de quoi
+   voir la photo. A 340px il ne restait que 78px, et le voile devait
+   s'ouvrir si tot que le chapeau tombait a 3,9 de contraste — sous le
+   seuil lisible. A 420px, la bande libre fait 158px.
+   Mesure sur un ecran de 375px : titre 13,0 de contraste (contre 10,9),
+   chapeau 10,1 (contre 8,5), photo 54 de clarte (contre 37). Les deux
+   criteres progressent ensemble.
+   Le plafond .page-hero{max-height:52vh} borne ce bandeau sur les
+   petits ecrans ; 420px reste sous cette limite pour un telephone
+   courant. */
+/* Proportions de l image : le bandeau ne rogne plus rien.
+   A hauteur fixe, le cadrage cover coupait 27% de la photo (13,5% en
+   haut, 13,5% en bas). Le bandeau prend donc le ratio du fichier.
+   Valeur a reprendre si l image change de format : ici 1799/503. */
+@media(min-width:901px){
+.page-hero.hero-etablissement{aspect-ratio:3.577;min-height:0;}
+}
+@media(max-width:900px){
+.page-hero.hero-etablissement{
+background-position:86% center;min-height:420px;
+    justify-content:flex-start;
+  }
+.page-hero.hero-etablissement::after{
+background:linear-gradient(180deg,
+      rgba(18,34,55,.96) 0%,
+      rgba(18,34,55,.92) 62%,
+      rgba(18,34,55,.15) 80%,
+      rgba(18,34,55,.05) 100%);
+  }
+.page-hero.hero-etablissement h1,
+.page-hero.hero-etablissement .lead{max-width:100%;}
+}
+
+/* ---------- Bandeau illustré de la rubrique Scolarité ----------
+   Même principe que L'Établissement : la photo occupe la droite et se fond
+   vers la gauche. Pour changer la photo, remplacez l'adresse ci-dessous. */
+.page-hero.hero-scolarite{
+background-image:url("../images/bandeau-scolarite.jpg");
+    background-size:cover;
+    background-position:center right;
+    background-repeat:no-repeat;
+    background-color:var(--navy);
+    min-height:284px;
+    display:flex;flex-direction:column;justify-content:center;
+}
+.page-hero.hero-scolarite::after{
+content:"";position:absolute;inset:0;z-index:0;
+    background:linear-gradient(90deg, rgba(18,34,55,.94) 0%, rgba(18,34,55,.86) 34%, rgba(18,34,55,.30) 56%, rgba(18,34,55,0) 72%);
+    pointer-events:none;
+}
+.page-hero.hero-scolarite > *{position:relative;z-index:1;}
+.page-hero.hero-scolarite h1{max-width:58%;}
+.page-hero.hero-scolarite .lead{max-width:52%;}
+/* Proportions de l image : le bandeau ne rogne plus rien.
+   A hauteur fixe, le cadrage cover coupait 27% de la photo (13,5% en
+   haut, 13,5% en bas). Le bandeau prend donc le ratio du fichier.
+   Valeur a reprendre si l image change de format : ici 1799/503. */
+@media(min-width:901px){
+.page-hero.hero-scolarite{aspect-ratio:3.577;min-height:0;}
+}
+@media(max-width:900px){
+/* Division verticale sur telephone : texte en haut sur fond marine,
+     photo degagee en bas. Cadrage a 92% — le guichet et l agent occupent la fin de l image. */
+.page-hero.hero-scolarite{
+background-position:92% center;min-height:420px;
+    justify-content:flex-start;
+  }
+.page-hero.hero-scolarite::after{
+background:linear-gradient(180deg,
+      rgba(18,34,55,.96) 0%,
+      rgba(18,34,55,.92) 62%,
+      rgba(18,34,55,.15) 80%,
+      rgba(18,34,55,.05) 100%);
+  }
+.page-hero.hero-scolarite h1,
+.page-hero.hero-scolarite .lead{max-width:100%;}
+}
+
+/* ---------- Bandeau illustré : paiement ----------
+   La photo occupe la droite et se fond vers la gauche. Le voile reprend la
+   teinte de fond du visuel, pour un raccord invisible. Le texte du bandeau
+   reste du HTML modifiable. Pour changer la photo : remplacez l'adresse. */
+/* Le fond et le voile etaient teintes brun (rgb 109,63,56 et 72,38,32) :
+   ces valeurs venaient de l'ancienne photographie. Le fichier livre le
+   30 aout a un fondu beige dore (#C89553) et non plus brun. Le voile
+   reprend donc le marine commun aux autres bandeaux — le beige reste
+   visible a droite, la ou le voile s'efface.
+   Un voile reste indispensable ici : le titre est creme (#FAF6EF), et
+   creme sur beige dore ne donne que 1,0 de contraste, soit un texte
+   illisible. */
+.page-hero.hero-paiement{
+background-image:url("../images/bandeau-paiement.jpg");
+    background-size:cover;background-position:center right;background-repeat:no-repeat;
+    background-color:var(--navy);
+    min-height:284px;display:flex;flex-direction:column;justify-content:center;
+}
+.page-hero.hero-paiement::after{
+content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:linear-gradient(90deg, rgba(18,34,55,.94) 0%, rgba(18,34,55,.86) 34%, rgba(18,34,55,.30) 56%, rgba(18,34,55,0) 72%);
+}
+.page-hero.hero-paiement > *{position:relative;z-index:1;}
+.page-hero.hero-paiement h1{max-width:52%;}
+.page-hero.hero-paiement .lead{max-width:48%;}
+/* Ce visuel porte un texte incruste a droite (« Payez la scolarite de vos
+   enfants depuis chez vous »). La hauteur du bandeau suit donc les
+   proportions exactes du fichier, faute de quoi le cadrage cover le
+   rognerait par le haut et par le bas — jusqu'a 45% sur un ecran large.
+   Valeur a mettre a jour si l'image change de format : ici 1799/503. */
+@media(min-width:901px){
+.page-hero.hero-paiement{aspect-ratio:3.577;min-height:0;}
+}
+@media(max-width:900px){
+/* Division verticale sur telephone : texte en haut sur fond marine,
+     photo degagee en bas. Cadrage a 70% — la mere et l enfant devant l ecran, au centre droit. */
+.page-hero.hero-paiement{
+background-position:70% center;min-height:420px;
+    justify-content:flex-start;
+  }
+.page-hero.hero-paiement::after{
+background:linear-gradient(180deg,
+      rgba(18,34,55,.96) 0%,
+      rgba(18,34,55,.92) 62%,
+      rgba(18,34,55,.15) 80%,
+      rgba(18,34,55,.05) 100%);
+  }
+.page-hero.hero-paiement h1, .page-hero.hero-paiement .lead{max-width:100%;}
+}
+
+/* ---------- Bandeau illustré : contact ----------
+   La photo occupe la droite et se fond vers la gauche. Le voile reprend la
+   teinte de fond du visuel, pour un raccord invisible. Le texte du bandeau
+   reste du HTML modifiable. Pour changer la photo : remplacez l'adresse. */
+.page-hero.hero-contact{
+background-image:url("../images/bandeau-contact.jpg");
+    background-size:cover;background-position:center right;background-repeat:no-repeat;
+    background-color:rgb(81,29,13);
+    min-height:284px;display:flex;flex-direction:column;justify-content:center;
+}
+.page-hero.hero-contact::after{
+content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:linear-gradient(90deg, rgba(81,29,13,.94) 0%, rgba(81,29,13,.86) 34%, rgba(81,29,13,.30) 56%, rgba(81,29,13,0) 72%);
+}
+.page-hero.hero-contact > *{position:relative;z-index:1;}
+.page-hero.hero-contact h1{max-width:58%;}
+.page-hero.hero-contact .lead{max-width:52%;}
+/* Proportions de l image : le bandeau ne rogne plus rien.
+   A hauteur fixe, le cadrage cover coupait 27% de la photo (13,5% en
+   haut, 13,5% en bas). Le bandeau prend donc le ratio du fichier.
+   Valeur a reprendre si l image change de format : ici 1799/503. */
+@media(min-width:901px){
+.page-hero.hero-contact{aspect-ratio:3.577;min-height:0;}
+}
+@media(max-width:900px){
+/* Division verticale sur telephone : texte en haut sur fond marine,
+     photo degagee en bas. Cadrage a 86% — le poste d accueil et la standardiste. */
+.page-hero.hero-contact{
+background-position:86% center;min-height:420px;
+    justify-content:flex-start;
+  }
+.page-hero.hero-contact::after{
+background:linear-gradient(180deg,
+      rgba(18,34,55,.96) 0%,
+      rgba(18,34,55,.92) 62%,
+      rgba(18,34,55,.15) 80%,
+      rgba(18,34,55,.05) 100%);
+  }
+.page-hero.hero-contact h1, .page-hero.hero-contact .lead{max-width:100%;}
+}
+
+/* ---------- Bandeau illustré : vie-scolaire ----------
+   La photo occupe la droite et se fond vers la gauche. Le voile reprend la
+   teinte de fond du visuel, pour un raccord invisible. Le texte du bandeau
+   reste du HTML modifiable. Pour changer la photo : remplacez l'adresse. */
+.page-hero.hero-vie-scolaire{
+background-image:url("../images/bandeau-vie-scolaire.jpg");
+    background-size:cover;background-position:center right;background-repeat:no-repeat;
+    background-color:rgb(18,34,55);
+    min-height:284px;display:flex;flex-direction:column;justify-content:center;
+}
+.page-hero.hero-vie-scolaire::after{
+content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:linear-gradient(90deg, rgba(18,34,55,.94) 0%, rgba(18,34,55,.86) 34%, rgba(18,34,55,.30) 56%, rgba(18,34,55,0) 72%);
+}
+.page-hero.hero-vie-scolaire > *{position:relative;z-index:1;}
+.page-hero.hero-vie-scolaire h1{max-width:58%;}
+.page-hero.hero-vie-scolaire .lead{max-width:52%;}
+/* Proportions de l image : le bandeau ne rogne plus rien.
+   A hauteur fixe, le cadrage cover coupait 27% de la photo (13,5% en
+   haut, 13,5% en bas). Le bandeau prend donc le ratio du fichier.
+   Valeur a reprendre si l image change de format : ici 1799/503. */
+@media(min-width:901px){
+.page-hero.hero-vie-scolaire{aspect-ratio:3.577;min-height:0;}
+}
+@media(max-width:900px){
+/* Division verticale sur telephone : texte en haut sur fond marine,
+     photo degagee en bas. Cadrage a 78% — le musicien et l eleve au violon. */
+.page-hero.hero-vie-scolaire{
+background-position:78% center;min-height:420px;
+    justify-content:flex-start;
+  }
+.page-hero.hero-vie-scolaire::after{
+background:linear-gradient(180deg,
+      rgba(18,34,55,.96) 0%,
+      rgba(18,34,55,.92) 62%,
+      rgba(18,34,55,.15) 80%,
+      rgba(18,34,55,.05) 100%);
+  }
+.page-hero.hero-vie-scolaire h1, .page-hero.hero-vie-scolaire .lead{max-width:100%;}
+}
+
+/* ---------- Bandeau illustré : admissions ----------
+   La photo occupe la droite et se fond vers la gauche. Le texte du bandeau
+   reste du HTML modifiable. Pour changer la photo : remplacez l'adresse. */
+.page-hero.hero-admissions{
+background-image:url("../images/bandeau-admissions.jpg");
+    background-size:cover;background-position:center right;background-repeat:no-repeat;
+    background-color:rgb(18,34,55);
+    min-height:284px;display:flex;flex-direction:column;justify-content:center;
+}
+.page-hero.hero-admissions::after{
+content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:linear-gradient(90deg, rgba(18,34,55,.94) 0%, rgba(18,34,55,.86) 34%, rgba(18,34,55,.30) 56%, rgba(18,34,55,0) 72%);
+}
+.page-hero.hero-admissions > *{position:relative;z-index:1;}
+.page-hero.hero-admissions h1{max-width:58%;}
+.page-hero.hero-admissions .lead{max-width:52%;}
+/* Proportions de l image : le bandeau ne rogne plus rien.
+   A hauteur fixe, le cadrage cover coupait 27% de la photo (13,5% en
+   haut, 13,5% en bas). Le bandeau prend donc le ratio du fichier.
+   Valeur a reprendre si l image change de format : ici 1799/503. */
+@media(min-width:901px){
+.page-hero.hero-admissions{aspect-ratio:3.577;min-height:0;}
+}
+@media(max-width:900px){
+/* Division verticale sur telephone : texte en haut sur fond marine,
+     photo degagee en bas. Cadrage a 80% — le dossier d inscription et le stylo. */
+.page-hero.hero-admissions{
+background-position:80% center;min-height:420px;
+    justify-content:flex-start;
+  }
+.page-hero.hero-admissions::after{
+background:linear-gradient(180deg,
+      rgba(18,34,55,.96) 0%,
+      rgba(18,34,55,.92) 62%,
+      rgba(18,34,55,.15) 80%,
+      rgba(18,34,55,.05) 100%);
+  }
+.page-hero.hero-admissions h1, .page-hero.hero-admissions .lead{max-width:100%;}
+}
+
+/* ---------- Choix de la prestation à régler ---------- */
+.pay-objets{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:30px;}
+.pay-objet{
+border:1.5px solid var(--line);background:#fff;padding:20px 20px 18px;
+  cursor:pointer;position:relative;transition:border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+.pay-objet:hover{transform:translateY(-3px);box-shadow:0 14px 30px -22px rgba(21,34,56,.5);}
+.pay-objet.selected{border-color:var(--navy);background:var(--cream-deep);}
+.pay-objet.selected::after{
+content:"✓";position:absolute;top:10px;right:10px;width:18px;height:18px;border-radius:50%;
+  background:var(--navy);color:var(--cream);font-size:11px;display:flex;align-items:center;justify-content:center;
+}
+.pay-objet .po-tag{
+font-size:10px;letter-spacing:.11em;text-transform:uppercase;font-weight:700;
+  color:var(--wine);margin-bottom:8px;
+}
+.pay-objet h4{font-size:15px;color:var(--navy);margin-bottom:6px;}
+.pay-objet p{font-size:12.5px;color:var(--ink-soft);line-height:1.6;}
+.pay-objet .po-montant{
+margin-top:12px;padding-top:10px;border-top:1px solid var(--line);
+  font-family:'Fraunces',serif;font-size:16px;color:var(--navy);
+}
+.pay-objet .po-montant small{
+display:block;font-family:'Work Sans',sans-serif;font-size:11px;color:var(--ink-soft);margin-top:2px;
+}
+@media(max-width:1000px){ .pay-objets{grid-template-columns:1fr;} }
+
+/* ---------- Fenêtre de changement de mot de passe ---------- */
+/* mention de la classe sous la matière, dans la grille du professeur */
+.edt-table td.edt-slot .classe{
+display:block;font-size:10px;font-weight:600;opacity:.72;margin-top:2px;letter-spacing:.02em;
+}
+
+/* ---------- Admissions : le voile reprend l'orange du fichier ----------
+   Le fondu n'est plus produit par le CSS mais peint dans l'image livree
+   le 30 aout (#F49101 sur toute la gauche). Un voile marine par-dessus
+   l'ecrasait : la couleur choisie pour cette rubrique disparaissait.
+   Le voile reprend donc cet orange exact — le raccord avec le fichier
+   est invisible, et la teinte reste celle voulue.
+   En contrepartie, le texte ne peut plus etre creme : creme sur orange
+   ne donne que 1,6 de contraste. Il passe en marine tres fonce, ce qui
+   monte le titre a 7,7 et le chapeau a 6,4 — au-dessus des seuils
+   lisibles (3,0 pour un titre de 34px, 4,5 pour un chapeau de 14,5px).
+   Zones de texte relevees dans le navigateur : le titre s'arrete a 29,7%
+   de la largeur, le chapeau a 51,1%. */
+.page-hero.hero-admissions{background-color:#F49101;}
+.page-hero.hero-admissions::after{
+background:linear-gradient(90deg,
+    rgba(244,145,1,.96) 0%,
+    rgba(244,145,1,.92) 40%,
+    rgba(244,145,1,.40) 62%,
+    rgba(244,145,1,0) 80%);
+}
+.page-hero.hero-admissions h1,
+.page-hero.hero-admissions h1 .mot-i,
+.page-hero.hero-admissions .lead{
+color:#0B1422;
+}
+.page-hero.hero-admissions .breadcrumb a,
+.page-hero.hero-admissions .breadcrumb .sep{
+color:rgba(11,20,34,.72);
+}
+.page-hero.hero-admissions .breadcrumb .current{
+color:#0B1422;font-weight:600;
+}
+/* Sur telephone la division passe a la verticale : l'orange tient le
+   haut, la photo se decouvre en bas. Meme logique, meme teinte. */
+@media(max-width:900px){
+.page-hero.hero-admissions::after{
+background:linear-gradient(180deg,
+      rgba(244,145,1,.97) 0%,
+      rgba(244,145,1,.94) 62%,
+      rgba(244,145,1,.18) 80%,
+      rgba(244,145,1,.05) 100%);
+  }
+}
+
+/* ---------- Contact : le voile reprend la teinte du fichier ----------
+   Le brun profond du fondu se prete au texte creme : 11,3 de contraste pour le titre, 9,5 pour le chapeau.
+   Teinte relevee sur le bord gauche de l'image : #501D0C.
+   Emprises de texte mesurees dans le navigateur, cas le plus
+   defavorable du site : titre jusqu'a 55,4% de la largeur,
+   chapeau jusqu'a 51,4%. */
+.page-hero.hero-contact{background-color:#501D0C;}
+.page-hero.hero-contact::after{
+background:linear-gradient(90deg,
+    rgba(80,29,12,.96) 0%,
+    rgba(80,29,12,.92) 40%,
+    rgba(80,29,12,.40) 62%,
+    rgba(80,29,12,0) 80%);
+}
+/* Sur telephone la division passe a la verticale : la teinte tient
+   le haut, la photo se decouvre en bas. */
+@media(max-width:900px){
+.page-hero.hero-contact::after{
+background:linear-gradient(180deg,
+      rgba(80,29,12,.97) 0%,
+      rgba(80,29,12,.94) 62%,
+      rgba(80,29,12,.18) 80%,
+      rgba(80,29,12,.05) 100%);
+  }
+}
+
+/* ---------- Paiement : le voile reprend la teinte du fichier ----------
+   Le beige dore est trop clair pour du texte creme (2,1 de contraste). Le texte y passe en marine tres fonce : 6,9 sur les deux.
+   Teinte relevee sur le bord gauche de l'image : #C89553.
+   Emprises de texte mesurees dans le navigateur, cas le plus
+   defavorable du site : titre jusqu'a 55,4% de la largeur,
+   chapeau jusqu'a 51,4%. */
+.page-hero.hero-paiement{background-color:#C89553;}
+.page-hero.hero-paiement::after{
+background:linear-gradient(90deg,
+    rgba(200,149,83,.96) 0%,
+    rgba(200,149,83,.92) 40%,
+    rgba(200,149,83,.40) 62%,
+    rgba(200,149,83,0) 80%);
+}
+.page-hero.hero-paiement h1,
+.page-hero.hero-paiement h1 .mot-i,
+.page-hero.hero-paiement .lead{
+color:#0B1422;
+}
+.page-hero.hero-paiement .breadcrumb a,
+.page-hero.hero-paiement .breadcrumb .sep{
+color:rgba(11,20,34,.72);
+}
+.page-hero.hero-paiement .breadcrumb .current{
+color:#0B1422;font-weight:600;
+}
+/* Sur telephone la division passe a la verticale : la teinte tient
+   le haut, la photo se decouvre en bas. */
+@media(max-width:900px){
+.page-hero.hero-paiement::after{
+background:linear-gradient(180deg,
+      rgba(200,149,83,.97) 0%,
+      rgba(200,149,83,.94) 62%,
+      rgba(200,149,83,.18) 80%,
+      rgba(200,149,83,.05) 100%);
+  }
+}
+
+/* ---------- Vie-scolaire : le voile reprend la teinte du fichier ----------
+   Le bleu-violet reste assez sombre pour le texte creme : 10,1 et 8,8.
+   Teinte relevee sur le bord gauche de l'image : #23294D.
+   Emprises de texte mesurees dans le navigateur, cas le plus
+   defavorable du site : titre jusqu'a 55,4% de la largeur,
+   chapeau jusqu'a 51,4%. */
+.page-hero.hero-vie-scolaire{background-color:#23294D;}
+.page-hero.hero-vie-scolaire::after{
+background:linear-gradient(90deg,
+    rgba(35,41,77,.96) 0%,
+    rgba(35,41,77,.92) 40%,
+    rgba(35,41,77,.40) 62%,
+    rgba(35,41,77,0) 80%);
+}
+/* Sur telephone la division passe a la verticale : la teinte tient
+   le haut, la photo se decouvre en bas. */
+@media(max-width:900px){
+.page-hero.hero-vie-scolaire::after{
+background:linear-gradient(180deg,
+      rgba(35,41,77,.97) 0%,
+      rgba(35,41,77,.94) 62%,
+      rgba(35,41,77,.18) 80%,
+      rgba(35,41,77,.05) 100%);
+  }
+}
+
+/* La sous-navigation de Vie Scolaire est ecrite a l'interieur du bandeau,
+   contrairement aux autres rubriques ou elle vient apres. Tant que le
+   bandeau avait une hauteur fixe, son contenu la remplissait et la barre
+   tombait naturellement en bas. Depuis que le bandeau suit les
+   proportions de son image, il est plus haut que son contenu : centre,
+   celui-ci laissait la barre flotter au milieu de la photographie.
+   La marge automatique la repousse contre le bord inferieur. */
+.page-hero .subnav{margin-top:auto;}
+/* Et le bandeau abandonne son fond de page : sans cela, une lisiere de
+   photographie de 60px restait visible sous la barre. */
+.page-hero.hero-vie-scolaire{padding-bottom:0;}
+
+/* ---------- Bandeau illustre de la rubrique Actualites ----------
+   Cette rubrique n'avait pas de visuel : son bandeau etait un aplat
+   marine. Le fichier livre le 30 aout suit la meme construction que
+   les autres — fondu a gauche, sujet a droite — au meme format
+   1799x503.
+   Le fondu est ici un brun clair (#B6865E) : trop clair pour du texte
+   creme, qui n'y atteint que 2,9 de contraste. Le texte y passe donc
+   en marine tres fonce, comme sur Admissions et Paiement : 5,8 pour le
+   titre comme pour le chapeau.
+   Le cadrage a 85% sur telephone amene les djembes et les enfants,
+   qui occupent la fin de l'image. */
+.page-hero.hero-actualites{
+background-image:url("../images/bandeau-actualites.jpg");
+    background-size:cover;
+    background-position:center right;
+    background-repeat:no-repeat;
+    background-color:#B6865E;
+    min-height:284px;
+    display:flex;flex-direction:column;justify-content:center;
+}
+.page-hero.hero-actualites::after{
+content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:linear-gradient(90deg,
+      rgba(182,134,94,.96) 0%,
+      rgba(182,134,94,.92) 40%,
+      rgba(182,134,94,.40) 62%,
+      rgba(182,134,94,0) 80%);
+}
+.page-hero.hero-actualites > *{position:relative;z-index:1;}
+.page-hero.hero-actualites h1{max-width:58%;}
+.page-hero.hero-actualites .lead{max-width:52%;}
+.page-hero.hero-actualites h1,
+.page-hero.hero-actualites h1 .mot-i,
+.page-hero.hero-actualites .lead{
+color:#0B1422;
+}
+.page-hero.hero-actualites .breadcrumb a,
+.page-hero.hero-actualites .breadcrumb .sep{
+color:rgba(11,20,34,.72);
+}
+.page-hero.hero-actualites .breadcrumb .current{
+color:#0B1422;font-weight:600;
+}
+/* Proportions de l image : le bandeau ne rogne plus rien. */
+@media(min-width:901px){
+.page-hero.hero-actualites{aspect-ratio:3.577;min-height:0;}
+}
+/* Sur telephone la division passe a la verticale : la teinte tient le
+   haut, la photo se decouvre en bas. */
+@media(max-width:900px){
+.page-hero.hero-actualites{
+background-position:85% center;min-height:420px;
+    justify-content:flex-start;
+  }
+.page-hero.hero-actualites::after{
+background:linear-gradient(180deg,
+      rgba(182,134,94,.97) 0%,
+      rgba(182,134,94,.94) 62%,
+      rgba(182,134,94,.18) 80%,
+      rgba(182,134,94,.05) 100%);
+  }
+.page-hero.hero-actualites h1,
+.page-hero.hero-actualites .lead{max-width:100%;}
+}

@@ -1,0 +1,665 @@
+/* ==========================================================
+   Micro-interactions : cartes, boutons, tableaux, impression
+   Fichier 6 sur 8 - charge dans cet ordre par les pages.
+   Ne pas reordonner : la cascade en depend.
+   ========================================================== */
+  /* ==================================================================
+     MICRO-INTERACTIONS — COUCHE TRAVAILLÉE
+     ------------------------------------------------------------------
+     Cette couche remplace les réactions génériques (un même
+     translateY(-4px) pour sept familles de cartes). Principe : chaque
+     composant réagit selon ce qu'il *fait*, pas selon ce qu'il est.
+       — une carte de navigation s'ouvre (balayage latéral)
+       — une carte d'information s'enrichit (le filet or se charge)
+       — une carte de presse respire (l'image bouge, le cadre non)
+       — un téléchargement descend
+     L'or ne se déplace jamais : il s'allume. Le bleu porte le mouvement.
+     ================================================================== */
+
+  /* ------------------------------------------------------------------
+     1. MARQUES D'IDENTITÉ — le filet, le surtitre, le sceau
+     Ces trois signes reviennent 30 fois dans la page et ne bougeaient
+     pas. Ce sont eux qui donnent le ton : on commence par là.
+     ------------------------------------------------------------------ */
+
+  /* Le filet or/bordeaux se trace comme un trait de plume, de gauche
+     à droite, quand sa section entre dans le champ. */
+  /* Principe de sûreté : le filet est visible par défaut. Il n'est
+     rétracté que si le bloc qui le contient est effectivement pris en
+     charge par le script de révélation (.reveal posé, .seen pas encore).
+     Sans cette précaution, les deux filets qui vivent hors d'un
+     .section-head — « Mot du Directeur » et « Deux temps forts de
+     partage » — resteraient invisibles, de même que tous les autres si
+     IntersectionObserver venait à manquer. */
+  .eyebrow .dash,
+  .hero-eyebrow .dash{
+    transform-origin:left center;
+    transition:transform var(--t-trace) var(--e-filet);
+  }
+  .reveal:not(.seen) .eyebrow .dash,
+  .reveal:not(.seen) .hero-eyebrow .dash{
+    transform:scaleX(0);
+  }
+  .page-section.active .hero-eyebrow .dash{
+    animation:filetTrace var(--t-trace) var(--e-filet) both;
+    animation-delay:.05s;
+  }
+  @keyframes filetTrace{from{transform:scaleX(0);}to{transform:scaleX(1);}}
+  /* Filet allongé au survol de son propre bloc de titre : le signe
+     répond au lecteur qui s'approche, sans que rien d'autre ne bouge. */
+  .section-head:hover .eyebrow .dash{
+    transform:scaleX(1.9);
+    transition:transform var(--t-survol) var(--e-pose);
+  }
+
+  /* Le surtitre se cale : l'interlettrage se resserre vers sa valeur
+     finale, comme une ligne de plomb qu'on serre dans le composteur. */
+  .section-head .eyebrow{
+    transition:letter-spacing var(--t-trace) var(--e-pose);
+  }
+  .section-head.reveal:not(.seen) .eyebrow{letter-spacing:.26em;}
+
+  /* Le filet de pied du bloc-titre se tire d'un bord à l'autre.
+     Même précaution : la bordure native n'est effacée au profit du
+     tracé que si le bloc est réellement animé. */
+  .section-head{position:relative;}
+  .section-head.reveal{border-bottom-color:transparent;}
+  .section-head.reveal::after{
+    content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;
+    background:var(--line);
+    transform:scaleX(1);transform-origin:left center;
+    transition:transform var(--t-trace) var(--e-filet) 90ms;
+  }
+  .section-head.reveal:not(.seen)::after{transform:scaleX(0);}
+
+  /* Le sceau : l'anneau intérieur respire au survol de la marque.
+     Amplitude volontairement minime — c'est un blason, pas un bouton. */
+  .brand .seal::before,
+  .brand .crest{
+    transition:transform var(--t-survol) var(--e-pose),
+               opacity var(--t-survol) var(--e-pose);
+  }
+  .brand:hover .seal::before{transform:scale(1.12);opacity:.75;}
+  .brand:hover .crest{transform:scale(1.04);}
+  .brand:active .crest{transform:scale(.98);transition-duration:var(--t-touche);}
+
+  /* ------------------------------------------------------------------
+     2. CARTES — une réaction par fonction
+     ------------------------------------------------------------------ */
+
+  /* --- Lucarnes (informations aux parents) : la carte s'enrichit ---
+     Elles portent déjà un filet or de 3px en tête. Au survol, ce filet
+     se charge en profondeur (dégradé qui se remplit depuis la gauche)
+     et les faits chiffrés se détachent. La carte ne décolle presque
+     pas : c'est un document, il reste posé. */
+  .lucarne{
+    position:relative;
+    transition:box-shadow var(--t-survol) var(--e-pose),
+               transform var(--t-survol) var(--e-pose);
+  }
+  .lucarne::before{
+    content:"";position:absolute;top:-3px;left:0;right:0;height:3px;
+    background:linear-gradient(90deg,var(--wine),var(--gold) 62%,var(--gold-soft));
+    transform:scaleX(0);transform-origin:left center;
+    transition:transform var(--t-trace) var(--e-filet);
+  }
+  .lucarne:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 26px -20px rgba(21,34,56,.5);
+  }
+  .lucarne:hover::before{transform:scaleX(1);}
+  .lucarne .lc-tag{
+    display:inline-block;
+    transition:letter-spacing var(--t-survol) var(--e-pose),
+               color var(--t-survol) var(--e-pose);
+  }
+  .lucarne:hover .lc-tag{letter-spacing:.16em;color:var(--gold);}
+  .lucarne .lc-fact span:last-child{
+    transition:transform var(--t-survol) var(--e-pose);
+  }
+  .lucarne:hover .lc-fact span:last-child{transform:translateX(-2px);}
+
+  /* --- Rubriques rapides : la carte s'ouvre ---
+     Elles vivent dans une grille jointive (gouttières de 1px sur fond
+     ligne) : les faire décoller casserait la couture. On balaie donc le
+     fond depuis la gauche, comme une porte qu'on pousse. */
+  .quick-card{
+    position:relative;overflow:hidden;
+    transition:none;
+  }
+  .quick-card::before{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(90deg,var(--cream-deep),rgba(241,233,218,.35));
+    transform:scaleX(0);transform-origin:left center;
+    transition:transform var(--t-survol) var(--e-pose);
+  }
+  .quick-card::after{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:2px;
+    background:var(--gold);
+    transform:scaleY(0);transform-origin:top center;
+    transition:transform var(--t-pose) var(--e-filet);
+  }
+  .quick-card:hover{background:var(--cream);}
+  .quick-card:hover::before{transform:scaleX(1);}
+  .quick-card:hover::after{transform:scaleY(1);}
+  .quick-card > *{position:relative;z-index:1;}
+  .quick-card .num{
+    transition:transform var(--t-survol) var(--e-pose),
+               color var(--t-survol) var(--e-pose);
+  }
+  .quick-card:hover .num{transform:translateY(-3px);color:var(--wine);}
+  .quick-card .go{
+    display:inline-block;
+    transition:transform var(--t-survol) var(--e-pose);
+  }
+  .quick-card:hover .go{transform:translateX(5px);}
+  .quick-card:active::before{transform:scaleX(1);opacity:.7;transition-duration:var(--t-touche);}
+
+  /* --- Actualités : l'image respire, le cadre ne bouge pas ---
+     Traitement de presse : le visuel s'agrandit très légèrement dans
+     son cadre, la date passe au bordeaux, un filet or se tire sous
+     l'image. Aucune ombre portée — on n'est pas sur une vignette web. */
+  .news-card{
+    transition:border-color var(--t-survol) var(--e-pose);
+  }
+  .news-card .thumb{
+    overflow:hidden;position:relative;
+  }
+  .news-card .thumb::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;height:2px;
+    background:var(--gold);
+    transform:scaleX(0);transform-origin:left center;
+    transition:transform var(--t-trace) var(--e-filet);
+  }
+  /* Ne viser que de vraies images. La règle précédente (« > * ») étirait
+     le badge de catégorie .ncat à toute la vignette sur les six cartes
+     de la rubrique Actualités : il est en position absolue, donc rien
+     ne cassait dans la mise en page — le badge devenait simplement un
+     aplat de 166 × 170 px. */
+  .news-card .thumb > img{
+    display:block;width:100%;height:100%;object-fit:cover;
+    transition:transform 900ms var(--e-pose);
+  }
+  /* Vignettes sans image (dégradés d'attente de l'accueil) : c'est le
+     dégradé lui-même qui se déplace, très légèrement. Le jour où de
+     vraies photos arriveront, la règle ci-dessus prendra le relais. */
+  .news-card .thumb{
+    background-size:140% 140%;background-position:32% 32%;
+    transition:background-position 900ms var(--e-pose);
+  }
+  .news-card:hover .thumb{background-position:46% 46%;}
+  .news-card:hover{border-color:var(--gold-soft);}
+  .news-card:hover .thumb > img{transform:scale(1.045);}
+  .news-card:hover .thumb::after{transform:scaleX(1);}
+  .news-card .news-date{
+    transition:color var(--t-survol) var(--e-pose),
+               letter-spacing var(--t-survol) var(--e-pose);
+  }
+  .news-card:hover .news-date{color:var(--wine);letter-spacing:.12em;}
+  .news-card h3{transition:color var(--t-survol) var(--e-pose);}
+  .news-card:hover h3{color:var(--wine);}
+
+  /* --- Documents et téléchargements : le mouvement descend ---
+     Un téléchargement va vers le bas. L'icône plonge de 2px, un filet
+     or se remplit en pied de carte. La carte, elle, ne monte jamais. */
+  .doc-card{
+    position:relative;overflow:hidden;
+    transition:background var(--t-survol) var(--e-pose),
+               border-color var(--t-survol) var(--e-pose);
+  }
+  .doc-card::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;height:2px;
+    background:var(--gold);
+    transform:scaleX(0);transform-origin:left center;
+    transition:transform var(--t-pose) var(--e-filet);
+  }
+  .doc-card:hover::after{transform:scaleX(1);}
+  .doc-card .doc-icon, .doc-card .doc-icon2, .doc-card .icon{
+    transition:transform var(--t-survol) var(--e-pose);
+  }
+  .doc-card:hover .doc-icon,
+  .doc-card:hover .doc-icon2,
+  .doc-card:hover .icon{transform:translateY(3px);}
+  .doc-card:active{transition-duration:var(--t-touche);}
+  .doc-card:active .doc-icon,
+  .doc-card:active .doc-icon2,
+  .doc-card:active .icon{transform:translateY(5px);}
+
+  /* --- Cartes d'information (conditions, tests, examens) ---
+     Contenu à lire, pas à cliquer : la seule réaction est un
+     éclaircissement du liseré et une marque d'angle qui se dessine.
+     Aucun déplacement. */
+  .cond-card, .test-card, .info-card, .exam-card{
+    position:relative;
+    transition:border-color var(--t-survol) var(--e-pose),
+               background var(--t-survol) var(--e-pose);
+  }
+  .cond-card::after, .test-card::after, .info-card::after, .exam-card::after{
+    content:"";position:absolute;top:0;right:0;width:10px;height:10px;
+    border-top:1px solid var(--gold);border-right:1px solid var(--gold);
+    opacity:0;transform:translate(-4px,4px);
+    transition:opacity var(--t-survol) var(--e-pose),
+               transform var(--t-survol) var(--e-pose);
+  }
+  .cond-card:hover, .test-card:hover, .info-card:hover, .exam-card:hover{
+    border-color:var(--gold-soft);
+  }
+  .cond-card:hover::after, .test-card:hover::after,
+  .info-card:hover::after, .exam-card:hover::after{
+    opacity:1;transform:translate(0,0);
+  }
+
+  /* --- Jeux et activités : le seul endroit où l'on s'autorise du jeu ---
+     Vie scolaire, activités périscolaires : registre plus léger, on
+     accepte une mise à l'échelle franche et une ombre plus présente. */
+  .jeu-card, .activite-card{
+    transition:transform var(--t-survol) var(--e-pose),
+               box-shadow var(--t-survol) var(--e-pose);
+  }
+  .jeu-card:hover, .activite-card:hover{
+    transform:translateY(-3px) scale(1.012);
+    box-shadow:0 18px 32px -24px rgba(21,34,56,.45);
+  }
+  .jeu-card:active, .activite-card:active{
+    transform:translateY(-1px) scale(.997);
+    transition-duration:var(--t-touche);
+  }
+  .jeu-card .jeu-chips span, .jeu-card .jc-top{
+    transition:transform var(--t-survol) var(--e-pose);
+  }
+  .jeu-card:hover .jc-top{transform:translateX(3px);}
+
+  /* ------------------------------------------------------------------
+     3. BOUTONS, LIENS, ONGLETS
+     ------------------------------------------------------------------ */
+
+  /* --- Bouton principal (or) : l'or capte la lumière ---
+     Un reflet balaie la surface une seule fois, de gauche à droite.
+     Le bouton ne se soulève plus : il s'éclaire. Au clic, il s'enfonce
+     réellement (échelle + ombre qui se referme). */
+  .cta-primary, .dl-btn, .submit-login, .submit-pay, .btn-pdf{
+    position:relative;overflow:hidden;
+    transition:background var(--t-survol) var(--e-pose),
+               box-shadow var(--t-survol) var(--e-pose),
+               transform var(--t-touche) var(--e-presse);
+  }
+  .cta-primary::after, .dl-btn::after, .submit-login::after,
+  .submit-pay::after, .btn-pdf::after{
+    content:"";position:absolute;top:0;bottom:0;left:-60%;width:45%;
+    background:linear-gradient(100deg,
+      transparent, rgba(255,255,255,.42) 48%, transparent);
+    transform:skewX(-18deg);
+    opacity:0;pointer-events:none;
+  }
+  .cta-primary:hover::after, .dl-btn:hover::after, .submit-login:hover::after,
+  .submit-pay:hover::after, .btn-pdf:hover::after{
+    animation:reflet 720ms var(--e-pose);
+  }
+  @keyframes reflet{
+    from{left:-60%;opacity:1;}
+    to{left:120%;opacity:1;}
+  }
+  .cta-primary:hover, .dl-btn:hover, .btn-pdf:hover,
+  .submit-login:hover, .submit-pay:hover{
+    box-shadow:0 8px 20px -12px rgba(201,162,75,.75);
+  }
+  .cta-primary:active, .dl-btn:active, .btn-pdf:active,
+  .submit-login:active, .submit-pay:active{
+    transform:scale(.985);
+    box-shadow:0 1px 3px -2px rgba(21,34,56,.6);
+  }
+
+  /* --- Bouton secondaire (filet sur fond marine) : l'encre monte ---
+     Le fond se remplit depuis le bas, comme un buvard qui absorbe.
+     Registre opposé au bouton or : ici rien ne brille, tout se remplit. */
+  .cta-secondary{
+    position:relative;overflow:hidden;z-index:0;
+    transition:color var(--t-survol) var(--e-pose),
+               border-color var(--t-survol) var(--e-pose),
+               transform var(--t-touche) var(--e-presse);
+  }
+  .cta-secondary::before{
+    content:"";position:absolute;inset:0;z-index:-1;
+    background:var(--cream);
+    transform:scaleY(0);transform-origin:bottom center;
+    transition:transform var(--t-survol) var(--e-pose);
+  }
+  .cta-secondary:hover{color:var(--navy);border-color:var(--cream);}
+  .cta-secondary:hover::before{transform:scaleY(1);}
+  .cta-secondary:active{transform:scale(.985);}
+
+  /* --- Navigation principale : le filet suit le sens de lecture ---
+     À l'entrée le trait se tire depuis la gauche ; à la sortie il se
+     retire vers la droite au lieu de revenir en arrière. Détail
+     imperceptible pris isolément, mais c'est lui qui fait la différence
+     entre un menu correct et un menu soigné. */
+  .navlinks a::after{
+    transform-origin:right center;
+    transition:transform var(--t-survol) var(--e-pose),
+               background var(--t-survol) var(--e-pose);
+  }
+  .navlinks a:hover::after{
+    transform-origin:left center;
+  }
+  .navlinks a.active::after{transform-origin:left center;}
+  .navlinks a:active{transform:translateY(1px);}
+
+  /* --- Liens de renvoi (« Voir le planning → ») ---
+     Le soulignement or se retire sous le texte pendant que la flèche
+     avance : le lien se met en marche vers sa destination. */
+  .lc-link, .see-all, .hist-dl, .rc-foot a, .dl-link{
+    position:relative;display:inline-block;
+    border-bottom-color:transparent !important;
+    transition:color var(--t-survol) var(--e-pose);
+  }
+  .lc-link::after, .see-all::after, .hist-dl::after,
+  .rc-foot a::after, .dl-link::after{
+    content:"";position:absolute;left:0;right:0;bottom:-2px;height:1px;
+    background:var(--gold);
+    transform:scaleX(1);transform-origin:left center;
+    transition:transform var(--t-survol) var(--e-pose),
+               background var(--t-survol) var(--e-pose);
+  }
+  .lc-link:hover::after, .see-all:hover::after, .hist-dl:hover::after,
+  .rc-foot a:hover::after, .dl-link:hover::after{
+    transform:scaleX(1.12);background:var(--wine);
+  }
+  .lucarne:hover .lc-link{letter-spacing:.015em;}
+  .lc-link, .see-all, .hist-dl{
+    transition:letter-spacing var(--t-survol) var(--e-pose),
+               color var(--t-survol) var(--e-pose);
+  }
+
+  /* --- Pilules, onglets, filtres ---
+     Un repère or se tire sous la pilule active. Au clic, enfoncement
+     net et court : c'est un contrôle, il doit répondre au doigt. */
+  .pill, .filter-chip, .page-btn, .register-tabs button, .subnav a{
+    position:relative;
+    transition:background var(--t-survol) var(--e-pose),
+               color var(--t-survol) var(--e-pose),
+               border-color var(--t-survol) var(--e-pose),
+               transform var(--t-touche) var(--e-presse);
+  }
+  .pill::after, .filter-chip::after{
+    content:"";position:absolute;left:8px;right:8px;bottom:3px;height:1.5px;
+    background:var(--gold);
+    transform:scaleX(0);transform-origin:center;
+    transition:transform var(--t-pose) var(--e-filet);
+  }
+  .pill.active::after, .filter-chip.active::after{transform:scaleX(1);}
+  .pill:active, .filter-chip:active, .page-btn:active,
+  .register-tabs button:active, .subnav a:active{
+    transform:scale(.96);
+  }
+  .btn-connexion{
+    transition:background var(--t-survol) var(--e-pose),
+               transform var(--t-touche) var(--e-presse),
+               box-shadow var(--t-survol) var(--e-pose);
+  }
+  .btn-connexion:hover{box-shadow:0 6px 16px -12px rgba(21,34,56,.9);}
+  .btn-connexion:active{transform:scale(.97);}
+
+  /* --- Choix de l'objet de paiement : la coche se dessine ---
+     Un paiement demande de la certitude. La pastille de validation
+     n'apparaît plus d'un coup : elle se pose, et un anneau or confirme
+     la sélection. Le survol reste discret (pas de décollage franc) —
+     on ne veut pas d'un écran de paiement qui gigote. */
+  .pay-objet{
+    transition:border-color var(--t-survol) var(--e-pose),
+               background var(--t-survol) var(--e-pose),
+               box-shadow var(--t-survol) var(--e-pose),
+               transform var(--t-touche) var(--e-presse);
+  }
+  .pay-objet:hover{
+    transform:none;
+    border-color:var(--gold-soft);
+    box-shadow:0 8px 22px -20px rgba(21,34,56,.5);
+  }
+  .pay-objet:active{transform:scale(.99);}
+  .pay-objet.selected{
+    box-shadow:0 0 0 1px var(--gold) inset, 0 10px 26px -22px rgba(21,34,56,.45);
+  }
+  .pay-objet.selected::after{
+    animation:cochePose 380ms var(--e-pose) both;
+  }
+  @keyframes cochePose{
+    0%{transform:scale(.4) rotate(-14deg);opacity:0;}
+    60%{transform:scale(1.06) rotate(2deg);opacity:1;}
+    100%{transform:scale(1) rotate(0);opacity:1;}
+  }
+  .pay-objet .po-montant{
+    transition:color var(--t-survol) var(--e-pose);
+  }
+  .pay-objet.selected .po-montant{color:var(--wine);}
+
+  /* ------------------------------------------------------------------
+     4. RÉVÉLATIONS AU DÉFILEMENT — quatre régimes au lieu d'un
+     Un tableau d'emploi du temps, une barre de résultats et une carte
+     d'actualité n'ont pas à entrer de la même façon. Le script attribue
+     à chaque élément le régime qui correspond à sa nature.
+     ------------------------------------------------------------------ */
+
+  /* Régime « carte » : léger déport vertical, c'est le cas courant. */
+  .reveal[data-r="carte"]{opacity:0;transform:translateY(16px);}
+
+  /* Régime « titre » : aucun déplacement. Le titre est déjà en place,
+     ce sont ses filets qui se tracent (voir §1). Seule l'opacité bouge. */
+  .reveal[data-r="titre"]{opacity:0;transform:none;}
+
+  /* Régime « filet » : l'élément se déplie depuis sa base — frises,
+     barres, tableaux de chiffres. */
+  .reveal[data-r="filet"]{opacity:0;transform:translateY(10px) scaleY(.985);transform-origin:top center;}
+
+  /* Régime « lecture » : blocs de texte long. Entrée quasi nulle,
+     uniquement une montée d'encre. On ne fait pas danser un paragraphe. */
+  .reveal[data-r="lecture"]{opacity:0;transform:translateY(6px);}
+
+  .reveal.seen{
+    opacity:1;transform:none;
+    transition:opacity var(--t-revele) var(--e-pose),
+               transform var(--t-revele) var(--e-pose);
+    transition-delay:var(--d,0ms);
+  }
+  .reveal[data-r="filet"].seen,
+  .reveal[data-r="titre"].seen{
+    transition-duration:1200ms;
+  }
+  /* Les blocs de texte long entrent encore plus posément : c'est le
+     contenu qu'on lit vraiment, il ne doit pas arriver en avance sur
+     l'œil. */
+  .reveal[data-r="lecture"].seen{transition-duration:1150ms;}
+
+  /* ------------------------------------------------------------------
+     5. CHIFFRES, BARRES, FRISE
+     ------------------------------------------------------------------ */
+
+  /* Chasse fixe sur tous les nombres animés : sans cela, le comptage
+     fait vibrer la mise en page à chaque changement de chiffre. */
+  .rc-pct, .bar-pct, .stat .n, .po-montant, .montant{
+    font-variant-numeric:tabular-nums;
+    font-feature-settings:"tnum" 1;
+  }
+
+  /* La barre pousse depuis la gauche, le pourcentage se compte en
+     même temps (script). Léger retard pour que l'œil parte du chiffre
+     et suive la barre. */
+  .bar-fill{transform-origin:left center;}
+  .reveal.seen .bar-fill, .exam-card.seen .bar-fill{
+    animation:barGrow var(--t-compte) var(--e-filet) both;
+    animation-delay:.14s;
+  }
+  .bar-row{transition:background var(--t-survol) var(--e-pose);}
+  .bar-row:hover{background:rgba(201,162,75,.07);}
+  .bar-row.current .bar-track{box-shadow:0 0 0 1px rgba(122,34,49,.18);}
+
+  /* Frise historique : la pastille or se pose après le texte de l'année,
+     avec un halo qui se dissipe. Elle marque la date, elle ne clignote pas. */
+  .t-row .t-year::after{
+    transition:transform var(--t-pose) var(--e-pose) var(--d,0ms);
+  }
+  .t-row.reveal:not(.seen) .t-year::after{transform:scale(0);}
+  .t-row{transition:background var(--t-survol) var(--e-pose);}
+  .t-row:hover{background:rgba(201,162,75,.06);}
+  .t-row .t-year{transition:color var(--t-survol) var(--e-pose);}
+  .t-row:hover .t-year{color:var(--gold);}
+
+  /* ------------------------------------------------------------------
+     6. TABLEAUX, ACCORDÉONS, FORMULAIRES
+     ------------------------------------------------------------------ */
+
+  /* Emploi du temps : un repère or se tire dans la gouttière de gauche
+     pour tenir la ligne lue. Aide réelle à la lecture d'une grille
+     dense, pas une décoration. */
+  .edt-table tbody tr{position:relative;}
+  .edt-table tbody tr td:first-child{position:relative;}
+  .edt-table tbody tr td:first-child::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:2px;
+    background:var(--gold);
+    transform:scaleY(0);transform-origin:center;
+    transition:transform var(--t-survol) var(--e-pose);
+  }
+  .edt-table tbody tr:hover td:first-child::before{transform:scaleY(1);}
+  .edt-table td.edt-slot{transition:background var(--t-survol) var(--e-pose);}
+
+  /* Accordéon : le « + » pivote en croix au lieu d'être remplacé par un
+     « – ». Le corps se déploie en montant plutôt qu'en surgissant. */
+  .acc-item summary::after{
+    transition:transform var(--t-survol) var(--e-pose),
+               color var(--t-survol) var(--e-pose);
+    display:inline-block;
+  }
+  .acc-item[open] summary::after{content:"+";transform:rotate(45deg);}
+  .acc-item summary{transition:background var(--t-survol) var(--e-pose);}
+  .acc-item summary:hover{background:rgba(250,246,239,.05);}
+  .acc-item summary:hover::after{color:var(--gold);}
+  .acc-item[open] .acc-body{
+    animation:deplier var(--t-pose) var(--e-pose) both;
+  }
+  @keyframes deplier{
+    from{opacity:0;transform:translateY(-6px);}
+    to{opacity:1;transform:none;}
+  }
+
+  /* Les lignes de transport reprennent le même vocabulaire : le « + »
+     pivote en croix, le corps se déplie en montant. Un seul geste
+     d'ouverture pour tout le site. */
+  .tr-ligne summary::after{
+    transition:transform var(--t-survol) var(--e-pose),
+               color var(--t-survol) var(--e-pose);
+    display:inline-block;
+  }
+  .tr-ligne[open] summary::after{content:"+";transform:rotate(45deg);}
+  .tr-ligne summary{transition:background var(--t-survol) var(--e-pose);}
+  .tr-ligne summary:hover{background:var(--cream);}
+  .tr-ligne summary:hover::after{color:var(--wine);}
+  .tr-ligne[open] .trl-corps{
+    animation:deplier var(--t-pose) var(--e-pose) both;
+  }
+
+  /* Champs de formulaire : le liseré du bas s'épaissit en or et le
+     libellé se relève légèrement. Pas de halo bleu de navigateur. */
+  .contact-form input, .contact-form textarea, .contact-form select,
+  .login-field input, input[type="text"], input[type="email"],
+  input[type="tel"], textarea, select{
+    transition:border-color var(--t-survol) var(--e-pose),
+               box-shadow var(--t-survol) var(--e-pose),
+               background var(--t-survol) var(--e-pose);
+  }
+  .contact-form input:focus, .contact-form textarea:focus,
+  .contact-form select:focus, .login-field input:focus{
+    border-color:var(--gold);
+    box-shadow:0 2px 0 -1px var(--gold);
+  }
+  .login-field, .cf-row{position:relative;}
+  .login-field label, .cf-row label{
+    transition:color var(--t-survol) var(--e-pose),
+               letter-spacing var(--t-survol) var(--e-pose);
+  }
+  .login-field:focus-within label, .cf-row:focus-within label{
+    color:var(--wine);letter-spacing:.06em;
+  }
+
+  /* ------------------------------------------------------------------
+     7. ÉTAT PRESSÉ ET FOCUS CLAVIER
+     Le fichier ne comptait qu'un :active et deux :focus. Au doigt comme
+     au clavier, le site ne répondait pas.
+     ------------------------------------------------------------------ */
+
+  /* Anneau de focus travaillé : trait or serré doublé d'un halo très
+     dilué. Lisible sur crème comme sur marine, sans le bleu système. */
+  a:focus-visible, button:focus-visible, summary:focus-visible,
+  input:focus-visible, textarea:focus-visible, select:focus-visible,
+  [tabindex]:focus-visible{
+    outline:2px solid var(--gold);
+    outline-offset:3px;
+    border-radius:1px;
+    box-shadow:0 0 0 6px rgba(201,162,75,.16);
+    transition:box-shadow var(--t-touche) var(--e-pose);
+  }
+  /* Sur fond marine, l'anneau passe en or clair pour rester lisible. */
+  .hero a:focus-visible, .hero button:focus-visible,
+  .acc-item summary:focus-visible, footer a:focus-visible,
+  .page-hero a:focus-visible{
+    outline-color:var(--gold-soft);
+    box-shadow:0 0 0 6px rgba(228,205,142,.2);
+  }
+
+  /* Retour au clic sur les cartes cliquables qui n'en avaient aucun. */
+  .quick-card:active, .lucarne:active, .news-card:active,
+  .infra-card:active, .cycle-card:active{
+    transition-duration:var(--t-touche);
+  }
+  .lucarne:active{transform:translateY(0);}
+  .news-card:active .thumb > img{transform:scale(1.02);}
+
+  /* Curseur explicite là où l'élément est réellement actionnable. */
+  .quick-card, .lucarne, .news-card, .doc-card{cursor:pointer;}
+
+  /* ------------------------------------------------------------------
+     8. MOUVEMENT RÉDUIT — neutralisation complète
+     Les états initiaux de cette couche (scaleX(0), opacity:0) doivent
+     être forcés à leur valeur finale, sinon un utilisateur en mouvement
+     réduit verrait des filets et des chiffres manquants.
+     ------------------------------------------------------------------ */
+  @media(prefers-reduced-motion:reduce){
+    .eyebrow .dash, .hero-eyebrow .dash,
+    .section-head::after, .lucarne::before,
+    .quick-card::before, .quick-card::after,
+    .news-card .thumb::after, .doc-card::after,
+    .pill::after, .filter-chip::after,
+    .edt-table tbody tr td:first-child::before{
+      transform:none !important;
+    }
+    .section-head .eyebrow{letter-spacing:.14em !important;}
+    .section-head{border-bottom-color:var(--line) !important;}
+    .section-head::after{display:none !important;}
+    .quick-card::before, .quick-card::after,
+    .lucarne::before, .news-card .thumb::after,
+    .doc-card::after, .pill::after, .filter-chip::after{
+      transform:scaleX(0) !important;
+    }
+    .pill.active::after, .filter-chip.active::after{transform:scaleX(1) !important;}
+    .t-row .t-year::after{transform:scale(1) !important;}
+    .reveal, .reveal[data-r]{opacity:1 !important;transform:none !important;}
+    .cta-primary::after, .dl-btn::after, .submit-login::after,
+    .submit-pay::after, .btn-pdf::after{display:none !important;}
+    .pay-objet.selected::after{animation:none !important;}
+    .acc-item[open] .acc-body{animation:none !important;}
+    .tr-ligne[open] .trl-corps{animation:none !important;}
+    .tr-ligne[open] summary::after{transform:none !important;}
+    .reveal.seen .bar-fill, .exam-card.seen .bar-fill{animation:none !important;}
+    .bar-fill{transform:none !important;}
+  }
+
+  /* ------------------------------------------------------------------
+     9. IMPRESSION — tout doit être visible sur papier
+     ------------------------------------------------------------------ */
+  @media print{
+    .reveal, .reveal[data-r]{opacity:1 !important;transform:none !important;}
+    .eyebrow .dash, .hero-eyebrow .dash{transform:none !important;}
+    .section-head{border-bottom-color:var(--line) !important;}
+    .section-head::after{display:none !important;}
+    .t-row .t-year::after{transform:scale(1) !important;}
+    .bar-fill{animation:none !important;transform:none !important;}
+    .cta-primary::after, .dl-btn::after, .btn-pdf::after{display:none !important;}
+}

@@ -1,0 +1,1058 @@
+/* ==========================================================
+   Espace Enseignant, famille de boutons, acces parent
+   Fichier 8 sur 8 - charge dans cet ordre par les pages.
+   Ne pas reordonner : la cascade en depend.
+   ========================================================== */
+    /* ==================================================================
+     ENTRÉES DIRECTIONNELLES
+     L'élément entre par le côté d'où vient le regard. En descendant il
+     se lève depuis le bas ; en remontant il descend depuis le haut. Le
+     déplacement reste court (18px) : sur un site institutionnel, le
+     mouvement doit accompagner la lecture, jamais la précéder.
+     ================================================================== */
+
+  .reveal[data-venu="bas"]:not(.seen){opacity:0;transform:translateY(18px);}
+  .reveal[data-venu="haut"]:not(.seen){opacity:0;transform:translateY(-18px);}
+
+  /* Les régimes définis plus haut gardent la main sur l'amplitude. */
+  .reveal[data-r="titre"][data-venu]:not(.seen){transform:none;}
+  .reveal[data-r="lecture"][data-venu="bas"]:not(.seen){transform:translateY(8px);}
+  .reveal[data-r="lecture"][data-venu="haut"]:not(.seen){transform:translateY(-8px);}
+  .reveal[data-r="filet"][data-venu="bas"]:not(.seen){transform:translateY(12px) scaleY(.99);}
+  .reveal[data-r="filet"][data-venu="haut"]:not(.seen){transform:translateY(-12px) scaleY(.99);}
+
+  /* La sortie est plus courte que l'entrée : un bloc qui s'efface ne
+     doit pas retenir l'attention qu'il est en train de céder. */
+  .reveal:not(.seen){
+    transition:opacity var(--t-revele-sortie) var(--e-pose),
+               transform var(--t-revele-sortie) var(--e-pose);
+  }
+
+  .stat .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;}
+
+  @media(prefers-reduced-motion:reduce){
+    .reveal[data-venu]:not(.seen){opacity:1 !important;transform:none !important;}
+  }
+
+
+  /* ==================================================================
+     BORDURE PULSÉE — composition
+     Le canvas est composé en « screen » : le noir du shader devient
+     transparent et seule la lumière de la bordure se pose sur la
+     photographie. Sans ce mode de fusion, l'aplat opaque du shader
+     effacerait purement et simplement le visuel du bandeau.
+     ================================================================== */
+  .hero-shader{
+    position:absolute;inset:0;z-index:1;
+    display:block;width:100%;height:100%;
+    pointer-events:none;
+    mix-blend-mode:screen;
+    opacity:0;
+    animation:shaderEntree 2.4s var(--e-pose) .3s forwards;
+  }
+  @keyframes shaderEntree{ to{opacity:.6;} }
+
+  .hero-etablissement > *:not(.hero-shader):not(.hero-paths),
+  .hero-vie-scolaire > *:not(.hero-shader):not(.hero-paths),
+  .hero-paiement > *:not(.hero-shader):not(.hero-paths){position:relative;z-index:2;}
+  /* Et on verrouille le canvas hors du flux, quoi qu'il arrive. */
+  .page-hero > canvas.hero-shader{position:absolute !important;z-index:1;}
+
+  @media(max-width:900px){
+    /* Un contexte WebGL par bandeau reste coûteux sur téléphone, et la
+       bordure pulsée se lit mal sur 46vh de hauteur. */
+    .hero-shader{display:none;}
+  }
+  @media(prefers-reduced-motion:reduce){ .hero-shader{display:none !important;} }
+  @media print{ .hero-shader{display:none !important;} }
+
+
+  /* ==================================================================
+     ESPACE ENSEIGNANT — REPRISE
+     ------------------------------------------------------------------
+     Un enseignant ouvre cette page pour une seule raison : savoir où il
+     doit être, et quand. Tout le reste est subordonné à cette lecture.
+     Trois apports :
+       1. un bandeau de synthèse — sa charge d'un coup d'œil
+       2. une grille qui distingue collège et lycée, et signale sa classe
+          principale : lire 25 cases identiques est épuisant
+       3. la colonne du jour mise en avant — le repère le plus demandé
+     ================================================================== */
+
+  /* ---------- 1. Bandeau de synthèse ---------- */
+  .th-resume{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    gap:1px;background:var(--line);
+    border:1px solid var(--line);
+    margin:0 0 30px;
+  }
+  .th-resume .tr-case{
+    background:#fff;padding:16px 18px;
+    display:flex;flex-direction:column;gap:5px;
+    position:relative;
+  }
+  .th-resume .tr-case::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:2px;
+    background:var(--gold);
+    transform:scaleY(0);transform-origin:center;
+    transition:transform var(--t-pose) var(--e-filet);
+  }
+  .th-resume .tr-case.seen::before,
+  .teacher-section.seen .th-resume .tr-case::before{transform:scaleY(1);}
+  .th-resume .tr-lbl{
+    font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:600;
+  }
+  .th-resume .tr-val{
+    font-family:'Fraunces',serif;font-size:20px;color:var(--navy);
+    line-height:1.15;font-variant-numeric:tabular-nums;
+  }
+  .th-resume .tr-val small{
+    font-family:'Work Sans',sans-serif;font-size:12px;
+    color:var(--ink-soft);font-weight:500;margin-left:3px;
+  }
+  .th-resume .tr-case.est-principal .tr-val{color:var(--wine);}
+
+  /* ---------- 2. La grille ---------- */
+  /* Distinguer les deux cycles : au collège le marine, au lycée le
+     bordeaux. Une grille où toutes les cases se ressemblent oblige à
+     lire chaque libellé ; ici le regard trie avant de lire. */
+  .edt-table td.c-college .cl{
+    background:rgba(21,34,56,.055);
+    border-left:2px solid rgba(21,34,56,.34);
+    color:var(--navy);
+  }
+  .edt-table td.c-lycee .cl{
+    background:rgba(122,34,49,.06);
+    border-left:2px solid rgba(122,34,49,.42);
+    color:var(--wine);
+  }
+  .edt-table td .cl{
+    display:block;padding:7px 9px;
+    font-size:12.5px;font-weight:600;line-height:1.25;
+    border-radius:1px;
+    transition:background var(--t-survol) var(--e-pose),
+               box-shadow var(--t-survol) var(--e-pose);
+  }
+  /* La classe dont on est professeur principal : elle mérite d'être
+     trouvée sans chercher. */
+  .edt-table td.c-principal .cl{
+    background:rgba(201,162,75,.18);
+    border-left:2px solid var(--gold);
+    color:var(--navy);font-weight:700;
+    box-shadow:inset 0 0 0 1px rgba(201,162,75,.3);
+  }
+  .edt-table td.c-principal .cl::after{
+    content:"PP";
+    float:right;font-size:8.5px;letter-spacing:.08em;
+    color:var(--gold);font-weight:700;margin-left:6px;
+    line-height:1.6;
+  }
+  /* Devoirs et activités : ce ne sont pas des cours, ils s'effacent. */
+  .edt-table td.c-devoir .cl{
+    background:repeating-linear-gradient(45deg,
+      rgba(21,34,56,.045) 0 4px, transparent 4px 8px);
+    border-left:2px solid var(--line);
+    color:var(--ink-soft);font-weight:600;
+    font-size:11px;letter-spacing:.06em;
+  }
+  .edt-table td.c-perso .cl{
+    background:transparent;border-left:2px solid var(--line);
+    color:var(--ink-soft);font-style:italic;font-weight:500;font-size:11.5px;
+  }
+  /* Case libre : un tiret discret vaut mieux que du vide, qui laisse
+     douter d'un défaut d'affichage. */
+  .edt-table td.c-vide::before{
+    content:"–";color:var(--line);font-size:13px;
+  }
+  .edt-table td.c-vide{text-align:center;color:var(--line);}
+
+  /* Colonne du jour */
+  .edt-table th.jour-actuel{background:var(--wine);}
+  .edt-table th.jour-actuel::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--gold);
+  }
+  .edt-table td.jour-actuel{background:rgba(201,162,75,.05);}
+
+  .edt-table tbody tr:hover td .cl{box-shadow:0 2px 10px -6px rgba(21,34,56,.45);}
+
+  /* ---------- 3. En-tête de l'espace ---------- */
+  .teacher-head{padding-bottom:22px;border-bottom:1px solid var(--line);}
+  .th-avatar{
+    background:var(--navy);color:var(--gold-soft);
+    font-family:'Fraunces',serif;
+    box-shadow:0 0 0 1px var(--line), 0 0 0 4px #fff, 0 0 0 5px rgba(201,162,75,.28);
+  }
+  .th-meta{font-size:12.5px;color:var(--ink-soft);letter-spacing:.01em;}
+  .th-meta b{color:var(--wine);font-weight:600;}
+
+  /* ---------- 4. Écran de connexion ---------- */
+  .login-card .seal{margin-bottom:16px;color:var(--wine);}
+  .login-field input{
+    width:100%;padding:13px 14px;
+    border:1px solid var(--line);background:var(--cream);
+    font-family:'Work Sans',sans-serif;font-size:14.5px;color:var(--ink);
+    border-radius:var(--radius);
+    transition:border-color var(--t-survol) var(--e-pose),
+               background var(--t-survol) var(--e-pose),
+               box-shadow var(--t-survol) var(--e-pose);
+  }
+  .login-field input:focus{
+    background:#fff;border-color:var(--gold);
+    box-shadow:0 0 0 3px rgba(201,162,75,.16);
+    outline:none;
+  }
+  .login-field input::placeholder{color:#A9B0BC;}
+  .demo-hint{
+    margin-top:18px;padding:13px 15px;
+    background:var(--cream-deep);border-left:2px solid var(--gold);
+    font-size:12px;line-height:1.65;color:var(--ink-soft);
+  }
+  .demo-hint b{color:var(--navy);}
+
+  @media(max-width:900px){
+    .th-resume{grid-template-columns:1fr 1fr;}
+    .th-resume .tr-val{font-size:17px;}
+  }
+  @media(max-width:480px){
+    .th-resume{grid-template-columns:1fr;}
+  }
+  @media print{
+    .th-resume{break-inside:avoid;}
+    .edt-table td.c-principal .cl{box-shadow:none;}
+  }
+
+  /* ==================================================================
+     BOUTONS — UNE FAMILLE, TROIS RANGS
+     ------------------------------------------------------------------
+     Les boutons du site avaient chacun leur hauteur, leur graisse et
+     leur réaction. On leur donne une assise commune — même hauteur, même
+     interlettrage, même retour au clic — puis trois rangs nettement
+     distincts. Sur un écran, le lecteur doit voir en un instant lequel
+     est l'action principale.
+     ================================================================== */
+
+  .btn-pdf, .btn-ghost, .submit-login, .submit-pay, .submit-contact,
+  .as-logout, .dl-btn{
+    font-family:'Work Sans',sans-serif;
+    font-size:13px;font-weight:600;letter-spacing:.03em;
+    border-radius:var(--radius);
+    display:inline-flex;align-items:center;justify-content:center;gap:9px;
+    min-height:46px;padding:0 22px;
+    cursor:pointer;border:1px solid transparent;
+    position:relative;overflow:hidden;
+    transition:background var(--t-survol) var(--e-pose),
+               color var(--t-survol) var(--e-pose),
+               border-color var(--t-survol) var(--e-pose),
+               box-shadow var(--t-survol) var(--e-pose),
+               transform var(--t-touche) var(--e-presse);
+  }
+
+  /* --- Rang 1 : l'action principale, en or ---
+     Elle porte le reflet établi pour les CTA du hero : l'or capte la
+     lumière, il ne se déplace pas. */
+  .btn-pdf, .dl-btn{
+    background:var(--gold);color:var(--navy);
+    border-color:var(--gold);font-weight:700;
+  }
+  .btn-pdf:hover, .dl-btn:hover{
+    background:var(--gold-soft);
+    box-shadow:0 8px 20px -12px rgba(201,162,75,.85);
+  }
+
+  /* --- Rang 2 : l'action de confirmation, en marine --- */
+  .submit-login, .submit-pay, .submit-contact{
+    background:var(--navy);color:var(--cream);border-color:var(--navy);
+  }
+  .submit-login:hover, .submit-pay:hover, .submit-contact:hover{
+    background:var(--navy-light);
+    box-shadow:0 8px 20px -12px rgba(21,34,56,.9);
+  }
+
+  /* --- Rang 3 : l'action secondaire, en creux ---
+     Un liseré, pas un aplat. Au survol le fond se remplit depuis le bas,
+     comme le bouton secondaire du hero : la charte reste la même d'un
+     bout à l'autre du site. */
+  .btn-ghost{
+    background:transparent;color:var(--navy);
+    border-color:var(--line);font-weight:600;
+    z-index:0;
+  }
+  .btn-ghost::before{
+    content:"";position:absolute;inset:0;z-index:-1;
+    background:var(--cream-deep);
+    transform:scaleY(0);transform-origin:bottom center;
+    transition:transform var(--t-survol) var(--e-pose);
+  }
+  .btn-ghost:hover{border-color:var(--navy);}
+  .btn-ghost:hover::before{transform:scaleY(1);}
+
+  /* --- Le bouton de déconnexion : discret par nature ---
+     Il vit sur le bandeau marine ; il ne doit jamais concurrencer le
+     téléchargement de l'emploi du temps. */
+  .as-logout{
+    min-height:34px;padding:0 14px;font-size:11.5px;
+    background:transparent;color:var(--gold-soft);
+    border-color:rgba(228,205,142,.4);font-weight:600;
+  }
+  .as-logout:hover{
+    background:rgba(228,205,142,.12);
+    border-color:var(--gold-soft);color:#fff;
+  }
+
+  /* --- Enfoncement commun ---
+     Un seul geste pour toute la famille : la surface cède de 1,5 % et
+     son ombre se referme. C'est ce que la main attend. */
+  .btn-pdf:active, .btn-ghost:active, .submit-login:active,
+  .submit-pay:active, .submit-contact:active, .as-logout:active,
+  .dl-btn:active{
+    transform:scale(.985);
+    box-shadow:0 1px 3px -2px rgba(21,34,56,.7);
+  }
+
+  /* --- Focus clavier ---
+     L'anneau or déjà en place, mais ramené à l'intérieur du bouton pour
+     les boutons pleine largeur, où un anneau extérieur déborderait. */
+  .btn-pdf:focus-visible, .btn-ghost:focus-visible,
+  .submit-login:focus-visible, .submit-pay:focus-visible,
+  .submit-contact:focus-visible, .as-logout:focus-visible{
+    outline:2px solid var(--gold);outline-offset:2px;
+  }
+
+  /* --- Désactivé --- */
+  .btn-pdf[disabled], .btn-ghost[disabled], .submit-login[disabled]{
+    opacity:.45;cursor:not-allowed;transform:none;box-shadow:none;
+  }
+
+  /* Les icônes d'un bouton ne se déforment pas quand le libellé s'allonge. */
+  .btn-pdf svg, .btn-ghost svg, .submit-login svg, .as-logout svg{flex-shrink:0;}
+
+  .teacher-actions{display:flex;gap:10px;flex-wrap:wrap;}
+  @media(max-width:620px){
+    .teacher-actions{width:100%;}
+    .teacher-actions .btn-pdf, .teacher-actions .btn-ghost{flex:1 1 100%;}
+  }
+
+
+  /* ==================================================================
+     ACCÈS PARENT — RUBRIQUE PAIEMENT
+     ------------------------------------------------------------------
+     La rubrique s'ouvrait directement sur des enfants nommés et des
+     montants dus. Sur une page publique, cela revenait à afficher la
+     situation financière de familles identifiables. L'accès est
+     désormais conditionné à trois informations concordantes.
+     ================================================================== */
+
+  .parent-gate{
+    padding:64px 40px 88px;
+    display:flex;justify-content:center;
+    background:
+      radial-gradient(circle at 84% 12%, rgba(201,162,75,.10), transparent 46%),
+      var(--cream-deep);
+  }
+  .pg-card{
+    width:100%;max-width:520px;background:#fff;
+    border:1px solid var(--line);border-top:4px solid var(--gold);
+    box-shadow:0 24px 60px -30px rgba(21,34,56,.35);
+    padding:42px 40px 34px;position:relative;
+  }
+  .pg-card .seal{width:42px;height:42px;color:var(--wine);margin-bottom:16px;}
+  .pg-card .seal::before{width:26px;height:26px;}
+  .pg-card h2{font-size:24px;color:var(--navy);margin:4px 0 12px;}
+  .pg-intro{font-size:13.5px;color:var(--ink-soft);line-height:1.65;margin-bottom:24px;}
+  .pg-champs{display:flex;flex-direction:column;gap:16px;margin-bottom:22px;}
+  .pg-card .login-field label{
+    display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:600;margin-bottom:7px;
+  }
+  .pg-card .login-foot{margin-top:16px;font-size:12.5px;color:var(--ink-soft);text-align:center;}
+  .pg-card .login-foot a{color:var(--wine);border-bottom:1px solid var(--gold);}
+
+  /* --- Dossier de l'élève ------------------------------------------- */
+  .eleve-entete{
+    padding:34px 40px 0;
+    display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+  }
+  .eleve-entete .ee-avatar{
+    width:56px;height:56px;flex-shrink:0;border-radius:50%;
+    background:var(--navy);color:var(--gold-soft);
+    font-family:'Fraunces',serif;font-size:19px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 0 0 1px var(--line), 0 0 0 4px var(--cream), 0 0 0 5px rgba(201,162,75,.28);
+  }
+  .eleve-entete h2{font-size:23px;color:var(--navy);line-height:1.2;}
+  .eleve-entete .ee-meta{font-size:12.5px;color:var(--ink-soft);margin-top:3px;}
+  .eleve-entete .ee-statut{
+    margin-left:auto;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    font-weight:700;padding:7px 13px;border-radius:var(--radius);
+  }
+  .ee-statut.affecte{background:rgba(63,125,92,.12);color:#2C5A40;border:1px solid rgba(63,125,92,.32);}
+  .ee-statut.payant {background:rgba(122,34,49,.09);color:var(--wine);border:1px solid rgba(122,34,49,.28);}
+
+  /* Les trois postes du gabarit : scolarité, transport, cantine. */
+  .postes{
+    display:grid;grid-template-columns:repeat(3,1fr);
+    gap:1px;background:var(--line);border:1px solid var(--line);
+    margin:26px 40px 0;
+  }
+  .poste{
+    background:#fff;padding:18px 20px;
+    display:flex;flex-direction:column;gap:6px;position:relative;
+  }
+  .poste::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--line);
+  }
+  .poste.du::before{background:var(--wine);}
+  .poste.solde::before{background:#3F7D5C;}
+  .poste.non-souscrit{background:var(--cream);}
+  .poste .p-lbl{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;}
+  .poste .p-val{
+    font-family:'Fraunces',serif;font-size:19px;color:var(--navy);
+    font-variant-numeric:tabular-nums;
+  }
+  .poste.du .p-val{color:var(--wine);}
+  .poste.solde .p-val{color:#2C5A40;}
+  .poste.non-souscrit .p-val{color:var(--ink-soft);font-size:15px;font-style:italic;}
+  .poste .p-note{font-size:11.5px;color:var(--ink-soft);line-height:1.5;}
+
+  @media(max-width:900px){
+    .parent-gate{padding:40px 20px 56px;}
+    .pg-card{padding:32px 22px 26px;}
+    .pg-card h2{font-size:20px;}
+    .eleve-entete{padding:26px 20px 0;gap:14px;}
+    .eleve-entete .ee-statut{margin-left:0;order:3;width:100%;text-align:center;}
+    .postes{grid-template-columns:1fr;margin:20px 20px 0;}
+  }
+
+
+  /* ==================================================================
+     MOBILE — SECONDE PASSE
+     ------------------------------------------------------------------
+     Quatre-vingts pour cent de l'audience visée consulte le site sur un
+     téléphone. Le relevé sur 375 px a montré 48 classes sous 13px, dont
+     certaines à 9px : illisibles à bout de bras, en extérieur, sur un
+     écran lumineux — les conditions réelles d'un parent à Abidjan.
+
+     Le plancher est appliqué par famille, pas uniformément : un surtitre
+     en capitales espacées se lit plus grand que sa taille nominale, un
+     paragraphe non. Trois paliers plutôt qu'une valeur unique.
+     ================================================================== */
+
+  @media(max-width:900px){
+
+    /* --- Palier 1 : micro-libellés en capitales (12px) ---
+       Tags, badges, surtitres. Leur interlettrage et leurs capitales
+       compensent la petite taille. */
+    .eyebrow, .lc-tag, .po-tag, .ncat, .badge, .badge2, .tag,
+    .tl-label, .picker-label, .p-lbl, .tr-lbl, .fcat, .ext,
+    .edt-table th, .rc-year, .th-resume .tr-lbl{
+      font-size:12px !important;letter-spacing:.09em;
+    }
+
+    /* --- Palier 2 : informations secondaires (13,5px) ---
+       Dates, mentions, notes, méta. On les lit, on ne les survole pas. */
+    .news-date, .cs-date, .edt-updated, .edt-note, .privacy-note,
+    .hero-attrib, .ee-meta, .th-meta, .p-note,
+    .breadcrumb, .sep, .current, .pm-sub, .demo-hint, .login-foot,
+    .footer-brand p, .footer-bottom{
+      font-size:13.5px !important;line-height:1.6;
+    }
+
+    /* --- Palier 3 : tout ce qui se touche ou se lit en continu (15px) ---
+       Liens, libellés de formulaire, cellules, pilules. Sous cette
+       taille, la cible devient imprécise autant que le texte illisible. */
+    .navlinks a, .subnav a, .pill, .filter-chip, .page-btn,
+    .lc-link, .see-all, .hist-dl, .dl-link, .flink,
+    label, .login-field label, .cf-row label, .pf-row label,
+    .edt-table td, .subj, .cl{
+      font-size:15px !important;
+    }
+    /* Le tableau d'emploi du temps reste dense par nature : 13,5px y est
+       un compromis assumé, le cadre défile pour compenser. */
+    .edt-table td, .edt-table .subj, .edt-table .cl{font-size:13.5px !important;}
+
+    /* --- Le hero dépassait la hauteur de l'écran ---
+       873px sur un écran de 812 : la carte des résultats était coupée.
+       On resserre pour que l'ensemble tienne d'un seul regard. */
+    .hero{min-height:0;}
+    .hero-grid{padding:26px 20px 30px;gap:20px;}
+    .hero h1{font-size:25px;line-height:1.18;margin-bottom:14px;}
+    .hero p.lead{font-size:14.5px;margin-bottom:20px;}
+    .hero-eyebrow{margin-bottom:14px;}
+    .results-card{padding:16px 18px;}
+    .results-card .rc-row{padding:8px 0;}
+    .rc-pct{font-size:24px;}
+
+    /* --- Mention de défilement des tableaux --- */
+    .table-hint{
+      display:flex;align-items:center;gap:7px;
+      font-size:12.5px;color:var(--ink-soft);font-style:italic;
+      margin:0 0 9px;
+    }
+    .table-hint svg{flex-shrink:0;opacity:.65;}
+  }
+
+  @media(max-width:900px){
+    /* Les neuf derniers cas, relevés un à un : ce sont des balises nues
+       (b, small, th, span) que les règles par classe ne touchaient pas. */
+    .ms-hint b, .ms-hint{font-size:13px !important;}
+    .cap div, .cap .r{font-size:13px !important;}
+    .brk-row span{font-size:12px !important;}
+    th{font-size:12px !important;}
+    .pc-fig div, .pc-fig .l{font-size:12.5px !important;}
+    .jeu-chips span{font-size:12.5px !important;}
+    .tb-date small, small{font-size:12.5px !important;}
+    .bulle span, .bulle{font-size:12.5px !important;}
+    /* Attribution OpenStreetMap : obligatoire, conventionnellement
+       discrète, mais 9,5px n'est plus de la discrétion. */
+    .map-credit, .map-credit a{font-size:11.5px !important;}
+    /* « Contactez le secrétariat » est une action, pas de la prose :
+       elle mérite une zone de contact, sans casser l'interligne. */
+    .login-foot a, .pg-card .login-foot a{
+      display:inline-block;padding:12px 4px;margin:-12px 0;
+      font-size:14px !important;
+    }
+  }
+
+  @media(min-width:901px){ .table-hint{display:none;} }
+  @media print{ .table-hint{display:none !important;} }
+
+
+  /* ==================================================================
+     MOBILE — CORRECTIFS DE MISE EN PAGE
+     Huit défauts relevés sur 375px, traités un à un.
+     ================================================================== */
+
+  @media(max-width:900px){
+
+  /* --- 1 et 2. Le carrousel ------------------------------------------
+     Sur ordinateur, les repères du carrousel sont de simples traits de
+     22px posés sur l'affiche, et l'affiche occupe seule le bandeau.
+     Sur téléphone j'avais ajouté un bandeau de légende et transformé
+     les traits en blocs de 44px pour la cible tactile : l'affiche se
+     retrouvait coiffée de deux bandes qui lui volaient la moitié de sa
+     place.
+
+     On revient au traitement de l'ordinateur. Les traits retrouvent
+     leur finesse ; leur zone de contact est portée à 44px par un
+     pseudo-élément transparent, qui ne se voit pas mais que le doigt
+     trouve. L'affiche occupe tout le bandeau, et l'invitation à
+     l'agrandir passe dans la pastille d'angle, déjà prévue pour cela. */
+  /* Le conteneur extérieur gardait la hauteur du slide de texte pendant
+     que la piste intérieure suivait l'affiche : d'où le vide. Il épouse
+     désormais sa piste. */
+  .hero-slider{padding-bottom:0;height:auto !important;min-height:0 !important;}
+  /* Seule la diapositive active occupe le flux : la piste prend sa
+     hauteur d'elle-même. Le fondu croisé cède la place à une simple
+     apparition — sur un téléphone, la différence ne se voit pas, et la
+     mise en page cesse de sauter. */
+  .hero-slides{height:auto !important;transition:none;}
+  .hero-slide{position:relative !important;display:none !important;}
+  .hero-slide.is-active{
+    display:block !important;
+    animation:diapoEntree 420ms var(--e-pose) both;
+  }
+  @keyframes diapoEntree{from{opacity:0;}to{opacity:1;}}
+
+  .hero-slide.media-slide{
+    height:auto;min-height:0;padding:0;
+    align-items:stretch;flex-direction:column;
+  }
+  .hero-slide.media-slide img{
+    width:100%;height:auto;display:block;object-fit:cover;
+  }
+  /* "Places disponibles" porte une marge marine unie de chaque cote : en
+     ratio natif, le contenu utile resterait minuscule sur un ecran de
+     375px, quelle que soit la hauteur du cadre. Le recadrage a 2,3
+     grossit ce contenu en ne mordant que dans cette marge.
+     Verifie sur le fichier livre le 30 aout (1799x503, ratio 3,58) :
+     la marge unie fait 25% de chaque cote, et le recadrage n'en mange
+     que 18% — le texte et la photo restent intacts, avec 7 points de
+     securite. A remesurer si l'affiche est refaite dans un autre
+     format, faute de quoi ce cadrage entamerait le contenu.
+     L'affiche recrutement n'a pas cette marge : son visuel occupe toute
+     la largeur du fichier, donc aucun recadrage force pour elle. */
+  .hero-slide.flyer-inscriptions img{
+    aspect-ratio:23/10;
+  }
+
+  /* La légende texte disparaît : elle n'existe pas sur ordinateur. */
+  .hero-slide.media-slide .ms-hint,
+  .hero-slide.flyer-recrutement .ms-hint,
+  .hero-slide.flyer-inscriptions .ms-hint{display:none !important;}
+
+  /* Sur l'affiche, plus jamais posés en surimpression : le recadrage
+     serré (cf. ci-dessus) ne laisse plus de zone morte pour les
+     accueillir sans mordre sur le visuel. Ils passent donc dans le
+     flux normal, sous l'image, comme une légende. */
+  .hero-dots{
+    position:static;
+    height:auto;padding:12px 16px;gap:9px;
+    display:flex;align-items:center;
+    background:var(--navy);
+  }
+  /* min-height de la couche tactile l'emportait sur height : le trait
+     restait un bloc de 44px. On le neutralise, la zone de contact étant
+     désormais assurée par le pseudo-élément. */
+  .hero-dots button{
+    width:22px;height:3px !important;min-height:0 !important;
+    position:relative;padding:0;
+    background:rgba(250,246,239,.42);
+  }
+  .hero-dots button.active{background:var(--gold);width:30px;}
+  /* Zone de contact de 44px, invisible : le trait reste fin, le doigt
+     ne rate pas sa cible. */
+  .hero-dots button::after{
+    content:"";position:absolute;
+    left:-6px;right:-6px;top:-20px;bottom:-20px;
+  }
+
+  /* --- 3. Le pied de page tenait sur deux colonnes de 170px ---------
+     Le nom de l'établissement se brisait en trois lignes et le texte
+     courant en mots isolés. Une seule colonne, avec des filets pour
+     garder la séparation entre les blocs. */
+  .footer-top{
+    grid-template-columns:1fr !important;gap:0 !important;
+  }
+  .footer-top > *{
+    padding:22px 0;border-top:1px solid rgba(250,246,239,.1);
+  }
+  .footer-top > *:first-child{padding-top:0;border-top:0;}
+  .footer-brand{gap:14px;align-items:center;}
+  .footer-brand p{max-width:none;font-size:13.5px;line-height:1.65;}
+  .footer-brand .fb-nom, .footer-brand h4{white-space:normal;font-size:16px;line-height:1.25;}
+  .footer-cols, .footer-col{min-width:0;}
+
+  /* --- 4, 7 et 8. La sous-navigation ---------------------------------
+     Elle cumulait flex-wrap et un masque de défilement horizontal :
+     deux mécanismes contradictoires. Le contenu se répartissait sur
+     quatre lignes tandis que le dégradé rognait le bord droit, et le
+     bandeau la coupait par le bas.
+     Elle devient une bande unique qui défile, calée sur ses éléments —
+     le geste est celui que tout le monde connaît des applications. */
+  .subnav{
+    flex-wrap:nowrap !important;
+    overflow-x:auto;overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+    scroll-snap-type:x proximity;
+    scrollbar-width:none;
+    padding:0 16px;margin-top:20px;
+    gap:0;
+    /* le fondu s'arrête à 4% : il signale la suite sans manger un mot */
+    -webkit-mask-image:linear-gradient(90deg,#000 96%,transparent);
+            mask-image:linear-gradient(90deg,#000 96%,transparent);
+  }
+  .subnav::-webkit-scrollbar{display:none;}
+  .subnav a{
+    flex:0 0 auto;scroll-snap-align:start;
+    white-space:nowrap;
+    padding:14px 16px !important;min-height:46px;
+    display:flex;align-items:center;
+    font-size:13.5px !important;
+  }
+  /* Le bandeau ne doit plus rogner sa propre sous-navigation. */
+  .page-hero{max-height:none !important;}
+
+  /* --- 5. Le sélecteur cycle / niveau / classe -----------------------
+     Deux défauts corrigés ici. D'abord, les pilules à 44px débordaient
+     leur groupe de deux pixels, ce qui renvoyait « 3ème » seul à la
+     ligne suivante : chaque groupe tient désormais sur une ligne, les
+     trois groupes s'empilent.
+     Ensuite, le bloc entier mesurait 320px de haut sur téléphone parce
+     que l'écart entre rangées cumulait trois mécanismes en même temps —
+     un gap flexbox de 12px, un margin-top de 14px, un padding-top de
+     14px — soit 40px de vide pur pour une seule séparation. Un seul
+     mécanisme suffit. */
+  .edt-picker{gap:0 !important;padding:14px 16px !important;}
+  .picker-row{
+    flex-direction:column;align-items:flex-start;gap:6px;
+    width:100%;
+  }
+  .picker-row + .picker-row{
+    padding-left:0;border-left:0;
+    padding-top:11px;margin-top:11px;border-top:1px solid var(--line);
+  }
+  .picker-label{font-size:10.5px !important;letter-spacing:.11em;line-height:1;}
+  .pill-group{
+    width:100%;justify-content:space-between;
+    border-radius:8px;padding:3px;gap:3px;
+    flex-wrap:nowrap;
+  }
+  .pill{
+    flex:1 1 0;min-width:0;text-align:center;justify-content:center;
+    font-size:12.5px !important;font-weight:600;line-height:1;
+    padding:0 6px !important;min-height:38px !important;
+    white-space:nowrap;
+  }
+
+  /* --- 6. Les tableaux sans conteneur de défilement -------------------
+     Le tableau des évaluations faisait 469px dans un parent en
+     overflow visible : il était purement et simplement rogné. Tout
+     tableau large reçoit maintenant son cadre défilant. */
+  .eval-block table, .mentions-table, .ech-table{
+    min-width:460px;
+  }
+  .eval-block th, .eval-block td,
+  .mentions-table th, .mentions-table td{
+    padding:10px 9px !important;font-size:13px !important;
+    vertical-align:top;
+  }
+  /* « [dates à publier] » se brisait mot par mot dans une colonne
+     de 40px : on lui laisse de quoi tenir sur une ligne. */
+  .eval-block td em, .eval-block td i{white-space:nowrap;}
+  }
+
+
+  /* Enveloppe de défilement, posée par le script sur tout tableau large */
+  .table-wrap{
+    overflow-x:auto;overflow-y:visible;
+    -webkit-overflow-scrolling:touch;
+    max-width:100%;
+  }
+  .table-wrap::-webkit-scrollbar{height:4px;}
+  .table-wrap::-webkit-scrollbar-thumb{background:var(--line);border-radius:2px;}
+  @media(max-width:900px){
+    .table-wrap{
+      -webkit-mask-image:linear-gradient(90deg,#000 95%,rgba(0,0,0,.35));
+              mask-image:linear-gradient(90deg,#000 95%,rgba(0,0,0,.35));
+    }
+    .table-wrap:focus-within{-webkit-mask-image:none;mask-image:none;}
+    .table-wrap table{min-width:440px;}
+  }
+
+
+  /* ==================================================================
+     TUNNEL DE VERSEMENT
+     ------------------------------------------------------------------
+     Trois ecrans plutot qu'un formulaire unique : un parent qui regle
+     une scolarite depuis son telephone, souvent dans la rue, ne doit
+     avoir qu'une decision a prendre a la fois. Combien, comment,
+     confirmer.
+     Le vocabulaire reste celui du site : filets or, chiffres a chasse
+     fixe, cachet au lieu d'une coche verte. Un recu de scolarite
+     ressemble ici a un document de l'etablissement.
+     ================================================================== */
+
+  .versement{padding:44px 40px 70px;background:var(--cream);}
+
+  .v-fil{display:flex;align-items:center;margin:0 auto 34px;max-width:520px;}
+  .v-etape{display:flex;align-items:center;gap:9px;background:none;border:0;
+    padding:0;cursor:default;font-family:'Work Sans',sans-serif;}
+  .v-num{width:30px;height:30px;flex-shrink:0;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:12.5px;font-weight:700;background:#fff;
+    border:1px solid var(--line);color:var(--ink-soft);
+    transition:background var(--t-survol) var(--e-pose),
+               color var(--t-survol) var(--e-pose),
+               border-color var(--t-survol) var(--e-pose);}
+  .v-lbl{font-size:12px;letter-spacing:.06em;color:var(--ink-soft);font-weight:600;}
+  .v-etape.actif .v-num{background:var(--navy);border-color:var(--navy);color:var(--gold-soft);}
+  .v-etape.actif .v-lbl{color:var(--navy);}
+  .v-etape.faite .v-num{background:var(--gold);border-color:var(--gold);color:var(--navy);}
+  .v-etape.faite .v-lbl{color:var(--navy);}
+  .v-lien{flex:1;height:1px;background:var(--line);margin:0 12px;position:relative;}
+  .v-lien::after{content:"";position:absolute;inset:0;background:var(--gold);
+    transform:scaleX(0);transform-origin:left center;
+    transition:transform var(--t-trace) var(--e-filet);}
+  .v-lien.faite::after{transform:scaleX(1);}
+
+  .v-vue{max-width:820px;margin:0 auto;}
+  .v-vue[hidden]{display:none;}
+  .v-tete h3{font-size:20px;color:var(--navy);margin-bottom:6px;}
+  .v-tete p{font-size:13.5px;color:var(--ink-soft);line-height:1.6;margin-bottom:22px;}
+
+  .v-postes{display:flex;flex-direction:column;gap:1px;background:var(--line);
+    border:1px solid var(--line);margin-bottom:26px;}
+  .v-poste{background:#fff;padding:15px 18px;display:flex;align-items:center;
+    gap:14px;cursor:pointer;transition:background var(--t-survol) var(--e-pose);}
+  .v-poste:hover{background:var(--cream);}
+  .v-poste.coche{background:rgba(201,162,75,.07);}
+  .v-case{width:20px;height:20px;flex-shrink:0;border:1.5px solid var(--line);
+    background:#fff;border-radius:2px;position:relative;
+    transition:background var(--t-touche) var(--e-presse),
+               border-color var(--t-touche) var(--e-presse);}
+  .v-poste.coche .v-case{background:var(--navy);border-color:var(--navy);}
+  .v-case::after{content:"";position:absolute;left:6px;top:2px;width:5px;height:10px;
+    border:solid var(--gold-soft);border-width:0 2px 2px 0;
+    transform:rotate(45deg) scale(0);transform-origin:center;
+    transition:transform var(--t-survol) cubic-bezier(.2,.9,.3,1.4);}
+  .v-poste.coche .v-case::after{transform:rotate(45deg) scale(1);}
+  .v-poste .v-p-nom{flex:1;font-size:14px;color:var(--navy);font-weight:600;}
+  .v-poste .v-p-du{font-family:'Fraunces',serif;font-size:16px;color:var(--wine);
+    font-variant-numeric:tabular-nums;}
+  .v-poste.solde .v-p-du{color:#2C5A40;font-size:13px;font-family:'Work Sans',sans-serif;}
+  .v-poste.solde{opacity:.62;cursor:default;}
+
+  .v-montant{background:#fff;border:1px solid var(--line);
+    border-top:3px solid var(--gold);padding:22px 20px;margin-bottom:24px;}
+  .v-montant label{display:block;font-size:10.5px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--ink-soft);font-weight:600;margin-bottom:10px;}
+  .v-somme-ligne{display:flex;align-items:baseline;gap:8px;
+    border-bottom:2px solid var(--navy);padding-bottom:6px;}
+  .v-somme-ligne input{flex:1;min-width:0;border:0;background:transparent;outline:none;
+    font-family:'Fraunces',serif;font-size:30px;color:var(--navy);
+    font-variant-numeric:tabular-nums;padding:0;}
+  .v-devise{font-size:13px;color:var(--ink-soft);font-weight:600;letter-spacing:.06em;}
+  .v-raccourcis{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+  .v-rac{font-size:12px;font-weight:600;padding:8px 13px;min-height:38px;
+    background:var(--cream-deep);border:1px solid var(--line);color:var(--navy);
+    cursor:pointer;border-radius:var(--radius);display:inline-flex;align-items:center;
+    transition:background var(--t-survol) var(--e-pose),
+               border-color var(--t-survol) var(--e-pose);}
+  .v-rac:hover{background:var(--gold-soft);border-color:var(--gold);}
+  .v-rac:active{transform:scale(.97);}
+  .v-aide{font-size:12px;color:var(--ink-soft);margin-top:12px;font-style:italic;}
+  .v-aide.erreur{color:var(--wine);font-style:normal;font-weight:600;}
+  .v-suivant{width:100%;}
+
+  .v-famille{margin:22px 0 12px;display:flex;align-items:center;gap:10px;}
+  .v-famille::after{content:"";flex:1;height:1px;background:var(--line);}
+  .v-fam-lbl{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--wine);font-weight:700;}
+  .v-moyens{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px;}
+  .v-moyen{background:#fff;border:1.5px solid var(--line);padding:15px 16px;
+    cursor:pointer;position:relative;overflow:hidden;display:flex;align-items:center;gap:12px;
+    transition:border-color var(--t-survol) var(--e-pose),
+               box-shadow var(--t-survol) var(--e-pose),
+               transform var(--t-touche) var(--e-presse);}
+  .v-moyen::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+    background:var(--teinte,var(--gold));transform:scaleY(0);transform-origin:center;
+    transition:transform var(--t-survol) var(--e-pose);}
+  .v-moyen:hover{border-color:var(--gold-soft);}
+  .v-moyen:hover::before{transform:scaleY(.4);}
+  .v-moyen.choisi{border-color:var(--navy);box-shadow:inset 0 0 0 1px var(--navy);}
+  .v-moyen.choisi::before{transform:scaleY(1);}
+  .v-moyen:active{transform:scale(.99);}
+  .v-m-sigle{width:44px;height:32px;flex-shrink:0;border-radius:3px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:10px;font-weight:800;background:var(--teinte,var(--navy));color:#fff;}
+  .v-m-nom{font-size:13.5px;font-weight:600;color:var(--navy);line-height:1.2;}
+  .v-m-sub{font-size:11px;color:var(--ink-soft);margin-top:2px;}
+
+  .v-colonnes{display:grid;grid-template-columns:1.25fr .75fr;gap:26px;align-items:start;}
+  .v-saisie{background:#fff;border:1px solid var(--line);padding:24px 22px;}
+  .v-saisie .login-field{margin-bottom:16px;}
+  .v-saisie label{display:block;font-size:10.5px;letter-spacing:.11em;
+    text-transform:uppercase;color:var(--ink-soft);font-weight:600;margin-bottom:7px;}
+  .v-saisie input{width:100%;padding:13px 14px;border:1px solid var(--line);
+    background:var(--cream);font-size:15px;color:var(--ink);
+    font-family:'Work Sans',sans-serif;border-radius:var(--radius);}
+  .v-saisie input:focus{background:#fff;border-color:var(--gold);outline:none;
+    box-shadow:0 0 0 3px rgba(201,162,75,.16);}
+  .v-consigne{background:var(--cream-deep);border-left:2px solid var(--gold);
+    padding:13px 15px;font-size:12.5px;line-height:1.65;color:var(--ink-soft);margin-bottom:18px;}
+  .v-rib-ligne{display:flex;justify-content:space-between;gap:12px;padding:9px 0;
+    border-bottom:1px dashed var(--line);font-size:13px;}
+  .v-rib-ligne span:first-child{color:var(--ink-soft);}
+  .v-rib-ligne span:last-child{color:var(--navy);font-weight:600;text-align:right;
+    font-variant-numeric:tabular-nums;}
+  .v-copier{margin-top:14px;font-size:12px;font-weight:600;padding:10px 14px;
+    min-height:40px;background:var(--navy);color:var(--cream);border:0;cursor:pointer;
+    display:inline-flex;align-items:center;gap:7px;border-radius:var(--radius);}
+  .v-copier.fait{background:#2C5A40;}
+
+  .v-recu{background:var(--navy);color:var(--cream);padding:22px 20px;position:relative;}
+  .v-recu::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;
+    background:repeating-linear-gradient(90deg,var(--gold) 0 8px,transparent 8px 16px);opacity:.55;}
+  .v-recu h4{font-family:'Fraunces',serif;font-size:14px;color:var(--gold-soft);
+    margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(250,246,239,.16);}
+  .v-r-ligne{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;
+    padding:6px 0;color:#C3C9D6;}
+  .v-r-ligne b{color:var(--cream);font-weight:600;text-align:right;
+    font-variant-numeric:tabular-nums;}
+  .v-r-total{margin-top:12px;padding-top:12px;border-top:1px solid rgba(250,246,239,.2);
+    display:flex;justify-content:space-between;align-items:baseline;}
+  .v-r-total span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-soft);}
+  .v-r-total b{font-family:'Fraunces',serif;font-size:22px;color:#fff;
+    font-variant-numeric:tabular-nums;}
+
+  .v-nav{display:flex;gap:12px;margin-top:24px;}
+  .v-nav .btn-pdf{flex:1;}
+  .v-nav-centre{justify-content:center;}
+
+  .v-fini{text-align:center;max-width:560px;}
+  .v-cachet{width:66px;height:66px;margin:0 auto 18px;border-radius:50%;
+    background:rgba(63,125,92,.1);border:1.5px solid #3F7D5C;color:#2C5A40;
+    display:flex;align-items:center;justify-content:center;
+    animation:cachetPose 520ms var(--e-pose) both;}
+  @keyframes cachetPose{
+    0%{transform:scale(.5) rotate(-12deg);opacity:0;}
+    62%{transform:scale(1.08) rotate(3deg);opacity:1;}
+    100%{transform:scale(1) rotate(0);opacity:1;}}
+  .v-fini h3{font-size:22px;color:var(--navy);margin-bottom:6px;}
+  .v-ref{font-size:13px;color:var(--ink-soft);margin-bottom:22px;}
+  .v-ref b{color:var(--wine);font-family:'Work Sans',sans-serif;letter-spacing:.05em;}
+  .v-recu-final{text-align:left;}
+
+  @media(max-width:900px){
+    .versement{padding:32px 16px 54px;}
+    .v-fil{max-width:none;margin-bottom:26px;position:relative;padding-bottom:22px;}
+    .v-lbl{display:none;}
+    .v-etape.actif .v-lbl{display:block;position:absolute;margin-top:44px;
+      margin-left:-4px;font-size:11px;white-space:nowrap;}
+    .v-lien{margin:0 8px;}
+    .v-tete h3{font-size:17px;}
+    .v-poste{padding:14px;gap:11px;}
+    .v-montant{padding:18px 16px;}
+    .v-somme-ligne input{font-size:26px;}
+    .v-rac{flex:1 1 calc(50% - 4px);justify-content:center;font-size:12.5px;}
+    .v-moyens{grid-template-columns:1fr;gap:9px;}
+    .v-moyen{padding:13px 14px;}
+    .v-colonnes{grid-template-columns:1fr;gap:18px;}
+    .v-recu{order:-1;}
+    .v-saisie{padding:18px 16px;}
+    .v-nav{flex-direction:column-reverse;}
+    .v-nav .btn-ghost,.v-nav .btn-pdf{width:100%;}
+    .v-fini{max-width:none;}
+  }
+
+
+  /* ==================================================================
+     FOND ANIMÉ DES PORTES DE CONNEXION
+     ------------------------------------------------------------------
+     Portage natif d'un composant React à shaders (MeshGradient +
+     PulsingBorder, @paper-design/shaders-react) demandé pour habiller
+     l'Espace Enseignant et la connexion Paiement. Deux écarts assumés :
+       1. La page Paiement fait déjà tourner un contexte WebGL sur son
+          bandeau (bordure pulsée). En superposer un second, plus bas
+          sur la même page, aurait doublé la charge GPU pour un gain
+          à peine perceptible. Le halo est donc en CSS pur — deux
+          dégradés radiaux flous qui dérivent lentement, aucun canvas,
+          aucun calcul par image.
+       2. La palette cyan/orange du composant d'origine tranchait avec
+          l'identité du site. Elle est reprise en or, bordeaux et
+          navy — les mêmes teintes que partout ailleurs.
+     ================================================================== */
+
+  .login-shell, .parent-gate{
+    position:relative;overflow:hidden;
+    background:var(--cream-deep);
+  }
+  .login-shell::before, .login-shell::after,
+  .parent-gate::before, .parent-gate::after{
+    content:"";position:absolute;border-radius:50%;
+    filter:blur(52px);pointer-events:none;z-index:0;
+    will-change:transform;
+  }
+  /* Le halo doit rester visible dans la marge autour de la carte, sans
+     déborder au point que overflow:hidden n'en coupe que la queue déjà
+     transparente : le cœur du dégradé reste posé bien à l'intérieur.
+     Décalé en haut, il se retrouvait sous la nav (sticky, 58px, z-index
+     60) : entièrement masqué, quelle que soit l'opacité. Il descend
+     donc sous elle, dans la marge gauche qui longe la carte. */
+  .login-shell::before, .parent-gate::before{
+    width:440px;height:440px;top:64px;left:-190px;
+    background:radial-gradient(circle, rgba(201,162,75,.72), transparent 72%);
+    animation:porteDerive1 24s ease-in-out infinite alternate;
+  }
+  .login-shell::after, .parent-gate::after{
+    width:400px;height:400px;bottom:-130px;right:-60px;
+    background:radial-gradient(circle, rgba(122,34,49,.58), transparent 72%);
+    animation:porteDerive2 30s ease-in-out infinite alternate;
+  }
+  /* Un troisième halo, plus discret, au centre — l'équivalent des
+     teintes intermédiaires d'un vrai mesh gradient. */
+  .login-card, .pg-card{position:relative;z-index:1;}
+  .login-card::before, .pg-card::before{
+    content:"";position:absolute;inset:-60px;z-index:-1;
+    background:radial-gradient(circle at 50% 0%, rgba(21,34,56,.05), transparent 60%);
+    pointer-events:none;
+  }
+
+  @keyframes porteDerive1{
+    from{transform:translate(0,0) scale(1);}
+    to  {transform:translate(58px,44px) scale(1.08);}
+  }
+  @keyframes porteDerive2{
+    from{transform:translate(0,0) scale(1);}
+    to  {transform:translate(-52px,-36px) scale(1.05);}
+  }
+
+  /* --- L'anneau qui respire autour du sceau -------------------------
+     L'équivalent, en CSS, du PulsingBorder du composant d'origine :
+     un filet or qui se dilate et s'efface, en boucle douce. */
+  .login-card .seal, .pg-card .seal{position:relative;}
+  .login-card .seal::after, .pg-card .seal::after{
+    content:"";position:absolute;inset:-7px;border-radius:50%;
+    border:1px solid var(--gold);
+    animation:sceauRespire 2.8s var(--e-pose) infinite;
+  }
+  @keyframes sceauRespire{
+    0%  {transform:scale(1);opacity:.55;}
+    70% {transform:scale(1.22);opacity:0;}
+    100%{transform:scale(1.22);opacity:0;}
+  }
+
+  @media(max-width:900px){
+    .login-shell::before, .login-shell::after,
+    .parent-gate::before, .parent-gate::after{
+      filter:blur(22px);
+    }
+    /* Rétrécir la tache sans resserrer son décalage la repoussait vers
+       la queue transparente du dégradé, tout près du bord coupé par
+       overflow:hidden — et, pour le halo du haut, sous la nav sticky
+       qui le masquait entièrement. Le décalage suit désormais la
+       taille, cœur bien dans le cadre et sous la nav. */
+    .login-shell::before, .parent-gate::before{
+      width:320px;height:320px;top:70px;left:-130px;
+    }
+    .login-shell::after, .parent-gate::after{
+      width:300px;height:300px;bottom:-100px;right:-55px;
+    }
+  }
+
+  @media(prefers-reduced-motion:reduce){
+    .login-shell::before, .login-shell::after,
+    .parent-gate::before, .parent-gate::after,
+    .login-card .seal::after, .pg-card .seal::after{
+      animation:none !important;
+    }
+    .login-card .seal::after, .pg-card .seal::after{opacity:.35;}
+  }
+  @media print{
+    .login-shell::before, .login-shell::after,
+    .parent-gate::before, .parent-gate::after,
+    .login-card .seal::after, .pg-card .seal::after{display:none !important;}
+  }
+
+
+  /* ==================================================================
+     SEPT GRILLES QUI NE SE REPLIAIENT JAMAIS SUR MOBILE
+     ------------------------------------------------------------------
+     Le tout premier bloc responsive du fichier (@media(max-width:1000px),
+     juste après les styles du pied de page) contenait 32 règles écrites
+     très tôt dans la feuille de style — avant même les règles desktop
+     correspondantes. En CSS, à spécificité égale, la règle la plus
+     tardive dans le fichier gagne, qu'elle soit dans une media query ou
+     non : la règle desktop, définie APRÈS, effaçait donc silencieusement
+     le repliement mobile pour tout composant dont je n'avais pas déjà
+     écrit un second correctif plus loin dans le fichier.
+     25 des 32 étaient couvertes par un correctif ultérieur et
+     fonctionnaient déjà. Ces sept ne l'étaient pas — vérifié une à une
+     en direct, pas suppose. */
+  @media(max-width:900px){
+    .sol-steps{grid-template-columns:1fr !important;}
+    .cond-grid{grid-template-columns:1fr !important;}
+    .dossier-grid{grid-template-columns:1fr !important;}
+    .cal-steps{grid-template-columns:1fr 1fr !important;}
+    .featured-card{grid-template-columns:1fr !important;}
+    .info-grid{grid-template-columns:1fr 1fr !important;}
+    .contact-main-grid{grid-template-columns:1fr !important;}
+    /* le badge "Toutes classes — 6ème à Terminale" dépassait de la carte :
+       nowrap empêchait le texte de se replier dans la largeur mobile */
+    .interclasses .ic-badge{white-space:normal;}
+    /* la colonne "heure" (sticky, 104px) heritait du palier 13,5px
+       applique a toutes les cellules du tableau : "07 h 30 - 08 h 20"
+       devenait trop large pour sa case et mordait sur le lisere de
+       couleur de la case voisine. On la ramene a sa taille d'origine,
+       celle pour laquelle sa largeur a ete calculee. */
+    .edt-table td.edt-time{font-size:11px !important;}
+    /* la grille 2 colonnes ecrasait la carte "Horaires du secretariat"
+       (3 lignes jour/heure) au meme gabarit que "Email" : elle passe
+       seule sur toute la largeur, et chaque ligne empile jour puis
+       heure au lieu de les serrer sur un cote a cote trop etroit. */
+    .info-grid{grid-template-columns:1fr !important;}
+    .info-card-hours .hours-row{flex-direction:column;align-items:flex-start;gap:1px;padding:8px 0;}
+    .info-card-hours .hours-row .time{font-size:12px;}
+  }
+

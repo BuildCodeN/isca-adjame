@@ -1,0 +1,1031 @@
+/* ==========================================================
+   Matiere des fonds, curseur, tiroir mobile, passage mobile
+   Fichier 7 sur 8 - charge dans cet ordre par les pages.
+   Ne pas reordonner : la cascade en depend.
+   ========================================================== */
+    /* ------------------------------------------------------------------
+     10. APPAREILS TACTILES
+     Sans souris, les états de survol restent collés après le doigt.
+     On ne conserve que ce qui a du sens au toucher : le pressé.
+     ------------------------------------------------------------------ */
+  @media(hover:none){
+    .lucarne:hover, .jeu-card:hover, .activite-card:hover{
+      transform:none;box-shadow:none;
+    }
+    .news-card:hover .thumb > img{transform:none;}
+    .news-card:hover .thumb{background-position:32% 32%;}
+    .quick-card:hover::before{transform:scaleX(0);}
+    .cta-primary:hover::after, .dl-btn:hover::after,
+    .btn-pdf:hover::after{animation:none;}
+    .quick-card:active::before{transform:scaleX(1);}
+    .lucarne:active{transform:scale(.995);}
+    .news-card:active{transform:scale(.995);}
+  }
+
+
+  /* ==================================================================
+     MATIÈRE DES FONDS — du papier, pas des aplats
+     ------------------------------------------------------------------
+     Constat : sous le hero, les sections sont des aplats plats posés
+     bord à bord (35 crème foncé, 33 blancs, 8 crème). C'est
+     précisément ce qui trahit le gabarit — une identité imprimée
+     rendue en couleurs d'écran.
+     Correctif en quatre couches, toutes sous les 3 % d'opacité :
+       1. un grain de papier              (le crème devient une matière)
+       2. une réglure de cahier            (rythme, thème scolaire)
+       3. une couture entre les sections   (des pages, pas des blocs)
+       4. un filigrane de sceau            (identité, sections graves)
+     Aucun contenu ajouté, aucune couleur nouvelle.
+     ================================================================== */
+
+  :root{
+    /* Grain généré en SVG inline : aucune requête réseau, aucun fichier
+       à livrer, et il s'adapte à n'importe quelle taille d'écran. */
+    --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23g)' opacity='.34'/%3E%3C/svg%3E");
+    /* Réglure : deux traits d'encre très dilués sur un pas de 34px,
+       calé sur l'interligne du texte courant. */
+    --reglure:repeating-linear-gradient(
+        to bottom,
+        transparent 0 33px,
+        rgba(21,34,56,.028) 33px 34px);
+  }
+
+  /* --- 1. Le grain, sur les fonds clairs uniquement --------------------
+     Volontairement absent des images : on veut du papier, pas un filtre
+     photo. La couleur de fond posée plus haut dans la feuille est
+     conservée, seule la couche d'image est ajoutée. */
+  body,
+  .lucarnes-section, .spirit-band, .pillars-section, .timeline-section,
+  .team-section, .infra-section, .cycles-section, .edt-section,
+  .eval-section, .results-section, .vie-section, .solidarite,
+  .jeux-section, .activites-section, .conditions-section, .tests-section,
+  .frais-section, .dossier-section, .calendrier-section, .child-section,
+  .pay-section, .echeance-section, .hist-section, .featured-section,
+  .filters-section, .news-list-section, .contact-info-section,
+  .contact-main-section, .teacher-section{
+    background-image:var(--grain);
+  }
+
+  /* --- 2. La réglure, sur les sections de fond crème foncé -------------
+     Le cahier d'écolier, cité de très loin. Assez présent pour donner
+     un rythme au regard, trop discret pour être remarqué consciemment. */
+  .lucarnes-section, .spirit-band, .timeline-section,
+  .eval-section, .frais-section, .solidarite{
+    background-image:var(--grain), var(--reglure);
+  }
+
+  /* --- 3. La couture entre deux sections -------------------------------
+     Deux aplats juxtaposés font un bloc ; une couture fait une page.
+     Filet or d'un quart d'opacité, prolongé d'un dégradé très court qui
+     rattrape la différence de valeur entre les deux fonds. */
+  .lucarnes-section, .spirit-band, .pillars-section, .timeline-section,
+  .infra-section, .cycles-section, .eval-section, .results-section,
+  .solidarite, .jeux-section, .conditions-section, .frais-section,
+  .dossier-section, .calendrier-section, .pay-section, .hist-section,
+  .news-list-section, .contact-main-section{
+    position:relative;
+  }
+  .lucarnes-section::before, .spirit-band::before, .timeline-section::before,
+  .eval-section::before, .frais-section::before, .solidarite::before,
+  .dossier-section::before, .hist-section::before{
+    content:"";position:absolute;left:0;right:0;top:0;height:1px;
+    background:linear-gradient(90deg,
+      transparent, rgba(201,162,75,.42) 18%, rgba(201,162,75,.42) 82%, transparent);
+    pointer-events:none;
+  }
+  .lucarnes-section::after, .spirit-band::after, .timeline-section::after,
+  .eval-section::after, .frais-section::after, .solidarite::after{
+    content:"";position:absolute;left:0;right:0;top:1px;height:26px;
+    background:linear-gradient(to bottom, rgba(21,34,56,.035), transparent);
+    pointer-events:none;
+  }
+
+  /* --- 4. Le filigrane du sceau ----------------------------------------
+     Uniquement dans les deux sections qui parlent du caractère propre de
+     l'institution. Deux anneaux concentriques — le sceau de la marque,
+     agrandi et presque effacé. Il donne à ces sections une identité que
+     les autres n'ont pas, sans un mot ni une image de plus. */
+  .spirit-band, .solidarite{overflow:hidden;}
+  .spirit-band > .seal-mark, .solidarite > .seal-mark{
+    position:absolute;pointer-events:none;
+    width:420px;height:420px;border-radius:50%;
+    border:1px solid rgba(122,34,49,.055);
+    right:-120px;top:50%;transform:translateY(-50%);
+    z-index:0;
+  }
+  .spirit-band > .seal-mark::before,
+  .solidarite > .seal-mark::before{
+    content:"";position:absolute;inset:56px;border-radius:50%;
+    border:1px solid rgba(122,34,49,.06);
+  }
+  .spirit-band > .seal-mark::after,
+  .solidarite > .seal-mark::after{
+    content:"";position:absolute;inset:112px;border-radius:50%;
+    border:1px solid rgba(201,162,75,.075);
+  }
+  .spirit-band > *:not(.seal-mark),
+  .solidarite > *:not(.seal-mark){position:relative;z-index:1;}
+
+  /* --- 5. Les fonds marine ne sont plus des plaques --------------------
+     Un aplat marine plein écran est lourd. Un très léger vignettage et
+     une source de lumière haute lui donnent la profondeur d'une page
+     imprimée en aplat foncé, où l'encre n'est jamais parfaitement égale. */
+  .vie-section, .acc-section, .register-section, footer{
+    position:relative;
+  }
+  .vie-section::before, .acc-section::before,
+  .register-section::before, footer::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(ellipse 120% 70% at 50% -10%, rgba(228,205,142,.055), transparent 60%),
+      radial-gradient(ellipse 90% 60% at 50% 115%, rgba(0,0,0,.16), transparent 62%);
+  }
+  .vie-section > *, .acc-section > *,
+  .register-section > *, footer > *{position:relative;}
+
+  /* ==================================================================
+     CURSEUR ÉDITORIAL
+     ------------------------------------------------------------------
+     Un anneau or fin, rien de plus. Sur un site d'établissement
+     catholique, un curseur démonstratif serait un contresens : celui-ci
+     se contente de confirmer où se trouve la main.
+       — au repos      : anneau vide de 22px
+       — sur un lien   : l'anneau se resserre, un point or se pose
+       — sur une affiche : l'anneau s'ouvre et porte le mot « Agrandir »
+       — au clic       : contraction nette
+     N'est activé que sur pointeur fin, souris présente, et hors
+     mouvement réduit — la classe est posée par le script, donc en cas
+     d'échec le curseur système reste en place.
+     ================================================================== */
+
+  .curseur, .curseur-point{display:none;}
+
+  html.a-curseur .curseur,
+  html.a-curseur .curseur-point{
+    display:block;position:fixed;top:0;left:0;
+    pointer-events:none;z-index:9999;
+    will-change:transform;
+  }
+  html.a-curseur .curseur{
+    width:22px;height:22px;margin:-11px 0 0 -11px;
+    border:1px solid var(--gold);border-radius:50%;
+    transition:width var(--t-survol) var(--e-pose),
+               height var(--t-survol) var(--e-pose),
+               margin var(--t-survol) var(--e-pose),
+               background var(--t-survol) var(--e-pose),
+               border-color var(--t-survol) var(--e-pose),
+               opacity var(--t-survol) var(--e-pose);
+  }
+  /* Le point central : il ne suit pas l'anneau, il colle au pointeur.
+     C'est l'écart entre les deux qui donne la sensation de matière. */
+  html.a-curseur .curseur-point{
+    width:3px;height:3px;margin:-1.5px 0 0 -1.5px;
+    background:var(--wine);border-radius:50%;
+    opacity:0;
+    transition:opacity var(--t-survol) var(--e-pose);
+  }
+
+  /* Sur un élément actionnable */
+  html.a-curseur.sur-lien .curseur{
+    width:34px;height:34px;margin:-17px 0 0 -17px;
+    background:rgba(201,162,75,.1);
+    border-color:var(--gold);
+  }
+  html.a-curseur.sur-lien .curseur-point{opacity:1;}
+
+  /* Sur une affiche agrandissable : l'anneau devient une pastille
+     portant son propre libellé — l'intention est dite, pas devinée. */
+  html.a-curseur.sur-affiche .curseur{
+    width:82px;height:82px;margin:-41px 0 0 -41px;
+    background:rgba(21,34,56,.82);
+    border-color:var(--gold);
+  }
+  html.a-curseur.sur-affiche .curseur::after{
+    content:"Agrandir";
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Work Sans',sans-serif;
+    font-size:10px;font-weight:600;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--gold-soft);
+  }
+  html.a-curseur.sur-affiche .curseur-point{opacity:0;}
+
+  /* Sur un champ de saisie : l'anneau s'efface, le curseur texte
+     système reprend la main — on ne gêne jamais la frappe. */
+  html.a-curseur.sur-champ .curseur,
+  html.a-curseur.sur-champ .curseur-point{opacity:0;}
+  html.a-curseur.sur-champ *{cursor:auto;}
+
+  /* Au clic */
+  html.a-curseur.presse .curseur{
+    width:16px;height:16px;margin:-8px 0 0 -8px;
+    background:rgba(122,34,49,.16);border-color:var(--wine);
+  }
+
+  /* Masquage du curseur système, uniquement quand le nôtre est actif */
+  html.a-curseur, html.a-curseur *{cursor:none;}
+  html.a-curseur input, html.a-curseur textarea, html.a-curseur select{cursor:auto;}
+
+  /* Sortie de fenêtre */
+  html.a-curseur.hors-cadre .curseur,
+  html.a-curseur.hors-cadre .curseur-point{opacity:0;}
+
+  /* Jamais sur tactile, jamais en mouvement réduit, jamais à l'impression */
+  @media(hover:none),(pointer:coarse){
+    .curseur, .curseur-point{display:none !important;}
+    html.a-curseur, html.a-curseur *{cursor:auto !important;}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .curseur, .curseur-point{display:none !important;}
+    html.a-curseur, html.a-curseur *{cursor:auto !important;}
+  }
+  @media print{ .curseur, .curseur-point{display:none !important;} }
+
+
+  /* ==================================================================
+     CIBLES TACTILES — critère 07
+     ------------------------------------------------------------------
+     Relevé sur mobile avant correction : 13 cibles sous le seuil des
+     44px, dont les puces du carrousel à 22 × 3 px et les flèches à
+     34 × 34. La zone de contact est agrandie par pseudo-élément, ce qui
+     ne déplace aucun pixel visible : le trait reste fin, le doigt a de
+     la place. C'est la définition même du détail invisible.
+     ================================================================== */
+
+  .hero-dots button, .hero-nav-arrows button,
+  .page-btn, .filter-chip, .pill{position:relative;}
+
+  .hero-dots button::after,
+  .hero-nav-arrows button::after,
+  .page-btn::after{
+    content:"";position:absolute;
+    left:50%;top:50%;transform:translate(-50%,-50%);
+    width:max(100%,44px);height:max(100%,44px);
+  }
+
+  @media(pointer:coarse){
+    /* Corps de texte ramené au seuil de lisibilité mobile : sous 16px,
+       iOS déclenche un zoom automatique à la mise au point d'un champ
+       et la lecture longue devient pénible. */
+    body{font-size:16px;}
+    .lucarne p, .news-card p, .quick-card p,
+    .t-row p, .infra-body p, .acc-item .acc-body p{font-size:15px;line-height:1.7;}
+    .lc-fact, .lucarne .lc-fact{font-size:14px;}
+
+    /* Liens de renvoi : 18px de haut au relevé, portés à 44 sans
+       toucher à la ligne de base du texte. */
+    .lc-link, .see-all, .hist-dl, .dl-link, .rc-foot a{
+      padding-top:13px;padding-bottom:13px;
+    }
+    .navlinks a{padding-top:22px;padding-bottom:22px;}
+
+    /* La marque et les flèches passent le seuil pour de bon. */
+    .hero-nav-arrows button{width:44px;height:44px;}
+    .hero-dots{gap:14px;bottom:20px;}
+    .hero-dots button{height:14px;display:flex;align-items:center;}
+
+    /* Espacement minimal entre deux cibles voisines (règle des 8px). */
+    .filter-chips{gap:10px;}
+    .pill-group{gap:10px;}
+  }
+
+
+  /* Libellé réservé aux lecteurs d'écran */
+  .sr-only{
+    position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+    overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
+  }
+  /* La boîte de recherche accueille désormais un vrai champ */
+  .search-mini{display:flex;align-items:center;gap:8px;}
+  .search-mini input{
+    border:0;background:transparent;outline:none;
+    font-family:'Work Sans',sans-serif;font-size:13px;color:var(--ink);
+    width:100%;min-width:0;padding:4px 0;
+  }
+  .search-mini input::placeholder{color:var(--ink-soft);}
+  .search-mini:focus-within{border-color:var(--gold);}
+  /* État vide de la grille d'actualités */
+  .news-vide{
+    padding:44px 40px 70px;text-align:center;
+    font-size:14px;color:var(--ink-soft);font-style:italic;
+  }
+  .filter-chip{font-family:'Work Sans',sans-serif;border:1px solid var(--line);cursor:pointer;}
+
+
+  /* ==================================================================
+     CORRECTIFS — deux débordements mesurés
+     ================================================================== */
+
+  /* --- 1. Les deux CTA du hero se chevauchaient --------------------
+     Relevé : l'écart entre les boutons est de 14px, mais l'attraction
+     magnétique pouvait en déplacer un de 15,6px. Le second passait donc
+     par-dessus le premier, et son remplissage crème rendait la collision
+     très visible.
+     Correction en trois temps : de l'air entre les deux, une force
+     réduite, et surtout un plafond calculé en JS sur l'espace réellement
+     disponible — le bouton ne peut plus mathématiquement toucher son
+     voisin, quelle que soit la largeur de l'écran. */
+  .hero-ctas{gap:22px;flex-wrap:wrap;}
+  .hero-ctas .cta-primary,
+  .hero-ctas .cta-secondary{position:relative;}
+  /* Le bouton survolé passe au-dessus : si un liseré devait encore se
+     frôler, c'est le bouton actif qui domine, jamais l'inverse. */
+  .hero-ctas .cta-primary:hover,
+  .hero-ctas .cta-secondary:hover{z-index:2;}
+
+  /* Le remplissage du bouton secondaire ne déborde plus de son cadre. */
+  .cta-secondary{overflow:hidden;isolation:isolate;}
+  .cta-secondary::before{border-radius:inherit;}
+
+  /* --- 2. Le filet mordait sur le surtitre -------------------------
+     Relevé : au survol, scaleX(1.9) portait le filet de 20 à 38px. Or
+     une mise à l'échelle ne provoque aucun reflux — le texte ne s'écarte
+     pas. Le filet recouvrait donc 10px du mot suivant, ce qui se lisait
+     comme un texte barré.
+     Le filet ne s'allonge plus du tout. Il s'allume : c'est d'ailleurs
+     la règle que s'était donnée la charte — l'or ne se déplace jamais,
+     il capte la lumière. Aucune géométrie ne bouge, le débordement est
+     structurellement impossible. */
+  .section-head:hover .eyebrow .dash{
+    transform:scaleX(1);
+    background:var(--gold);
+    box-shadow:0 0 6px rgba(201,162,75,.85), 0 0 2px rgba(201,162,75,1);
+  }
+  .eyebrow .dash, .hero-eyebrow .dash{
+    transition:transform var(--t-trace) var(--e-filet),
+               background var(--t-survol) var(--e-pose),
+               box-shadow var(--t-survol) var(--e-pose);
+  }
+  /* Le titre voisin accompagne discrètement, sans bouger non plus. */
+  .section-head h2{transition:color var(--t-survol) var(--e-pose);}
+  .section-head:hover h2{color:var(--navy-light);}
+
+  /* --- 3. Composition typographique des bandeaux -------------------
+     Les bandeaux livraient leur contenu d'un bloc, puis — le titre mis
+     à part — dans un flou qui se résorbait. Le flou est abandonné : sur
+     un texte clair posé sur une photographie sombre, il se lit comme un
+     défaut d'impression, et il force le navigateur à rastériser chaque
+     ligne. Le geste est désormais celui de l'atelier :
+       — le fil d'Ariane glisse depuis la marge de gauche ;
+       — le titre se lève mot à mot derrière sa ligne de base (plus bas) ;
+       — le chapeau suit, plus lent, pendant que le titre finit de poser ;
+       — la sous-navigation s'allume, puis ses liens arrivent l'un après
+         l'autre de la gauche vers la droite, dans le sens de la lecture.
+     Les durées sont longues et les déplacements courts : c'est ce
+     rapport-là qui distingue un mouvement institutionnel d'une
+     apparition d'interface. */
+  .page-section.active .page-hero .breadcrumb{
+    animation:bandeauFil 760ms var(--e-pose) both;
+  }
+  .page-section.active .page-hero .lead,
+  .page-section.active .page-hero p:not(.lead){
+    animation:bandeauLigne 900ms var(--e-pose) both;
+  }
+  .page-section.active .page-hero .lead{animation-delay:520ms;}
+  .page-section.active .page-hero p:not(.lead){animation-delay:620ms;}
+
+  /* La barre de sous-navigation est une structure, pas un contenu :
+     elle ne se déplace pas, elle se révèle. Ses liens, eux, se lèvent. */
+  .page-section.active .page-hero .subnav,
+  .page-section.active > .subnav{
+    animation:bandeauVoile 640ms var(--e-pose) both;
+    animation-delay:640ms;
+  }
+  .page-section.active .page-hero .subnav a,
+  .page-section.active > .subnav a{
+    animation:bandeauLien 560ms var(--e-pose) both;
+  }
+  .page-section.active .page-hero .subnav a:nth-child(1),
+  .page-section.active > .subnav a:nth-child(1){animation-delay:760ms;}
+  .page-section.active .page-hero .subnav a:nth-child(2),
+  .page-section.active > .subnav a:nth-child(2){animation-delay:820ms;}
+  .page-section.active .page-hero .subnav a:nth-child(3),
+  .page-section.active > .subnav a:nth-child(3){animation-delay:880ms;}
+  .page-section.active .page-hero .subnav a:nth-child(4),
+  .page-section.active > .subnav a:nth-child(4){animation-delay:940ms;}
+  .page-section.active .page-hero .subnav a:nth-child(5),
+  .page-section.active > .subnav a:nth-child(5){animation-delay:1000ms;}
+  .page-section.active .page-hero .subnav a:nth-child(n+6),
+  .page-section.active > .subnav a:nth-child(n+6){animation-delay:1060ms;}
+
+  @keyframes bandeauFil{
+    from{opacity:0;transform:translateX(-16px);}
+    to  {opacity:1;transform:none;}
+  }
+  @keyframes bandeauLigne{
+    from{opacity:0;transform:translateY(16px);}
+    to  {opacity:1;transform:none;}
+  }
+  @keyframes bandeauVoile{
+    from{opacity:0;}
+    to  {opacity:1;}
+  }
+  @keyframes bandeauLien{
+    from{opacity:0;transform:translateY(9px);}
+    to  {opacity:1;transform:none;}
+  }
+
+  /* Même traitement pour le hero d'accueil, en remplacement de l'entrée
+     groupée : le paragraphe d'accroche arrive après la citation. */
+  .page-section.active .hero-eyebrow,
+  .page-section.active .hero h1,
+  .page-section.active .hero-attrib,
+  .page-section.active .hero .lead,
+  .page-section.active .hero-ctas,
+  .page-section.active .results-card{
+    animation:bandeauLigne 780ms var(--e-pose) both;
+  }
+  .page-section.active .hero-eyebrow{animation-delay:0ms;}
+  .page-section.active .hero h1{animation-delay:130ms;}
+  .page-section.active .hero-attrib{animation-delay:290ms;}
+  .page-section.active .hero .lead{animation-delay:400ms;}
+  .page-section.active .hero-ctas{animation-delay:520ms;}
+  .page-section.active .results-card{animation-delay:620ms;}
+
+  @media(prefers-reduced-motion:reduce){
+    .page-section.active .page-hero .breadcrumb,
+    .page-section.active .page-hero h1,
+    .page-section.active .page-hero .lead,
+    .page-section.active .page-hero p,
+    .page-section.active .page-hero .subnav,
+    .page-section.active .page-hero .subnav a,
+    .page-section.active > .subnav,
+    .page-section.active > .subnav a,
+    .page-section.active .hero-eyebrow,
+    .page-section.active .hero h1,
+    .page-section.active .hero-attrib,
+    .page-section.active .hero .lead,
+    .page-section.active .hero-ctas,
+    .page-section.active .results-card{animation:none !important;filter:none !important;}
+    .section-head:hover .eyebrow .dash{box-shadow:none !important;}
+  }
+
+  /* ==================================================================
+     CURSEUR — VERSION LUMIÈRE
+     ------------------------------------------------------------------
+     Trois couches, trois inerties différentes. C'est l'écart entre
+     elles qui fait la matière :
+       — la lueur (110px)  suit lentement   : la source lumineuse
+       — l'anneau (24px)   suit franchement : la main
+       — le point (3px)    colle au pixel   : la pointe
+     L'or n'est plus un simple trait : il diffuse. Sur les fonds marine
+     la lueur se lit comme une lampe posée sur la page ; sur le crème
+     elle disparaît presque — ce qui est voulu, un fond clair n'a pas
+     besoin d'être éclairé.
+     ================================================================== */
+
+  html.a-curseur .curseur-lueur{
+    display:block;position:fixed;top:0;left:0;
+    width:110px;height:110px;margin:-55px 0 0 -55px;
+    pointer-events:none;z-index:9998;
+    border-radius:50%;
+    background:radial-gradient(circle closest-side,
+                 rgba(228,205,142,.22), rgba(201,162,75,.10) 45%, transparent 72%);
+    opacity:.75;
+    will-change:transform;
+    transition:opacity var(--t-survol) var(--e-pose),
+               width var(--t-survol) var(--e-pose),
+               height var(--t-survol) var(--e-pose),
+               margin var(--t-survol) var(--e-pose);
+  }
+  .curseur-lueur{display:none;}
+
+  /* L'anneau : plus fin, et cerclé d'un halo court qui lui donne du
+     relief sans le grossir. */
+  html.a-curseur .curseur{
+    width:24px;height:24px;margin:-12px 0 0 -12px;
+    border:1px solid rgba(201,162,75,.9);
+    box-shadow:0 0 10px rgba(201,162,75,.42),
+               inset 0 0 6px rgba(228,205,142,.22);
+    background:transparent;
+  }
+
+  /* Sur un élément actionnable : l'anneau se resserre légèrement et la
+     lumière monte. Rien ne grossit brutalement. */
+  html.a-curseur.sur-lien .curseur{
+    width:30px;height:30px;margin:-15px 0 0 -15px;
+    background:rgba(201,162,75,.07);
+    border-color:var(--gold-soft);
+    box-shadow:0 0 16px rgba(201,162,75,.62),
+               inset 0 0 10px rgba(228,205,142,.3);
+  }
+  html.a-curseur.sur-lien .curseur-lueur{
+    width:150px;height:150px;margin:-75px 0 0 -75px;opacity:1;
+  }
+
+  /* Sur une affiche : la pastille reste, la lueur s'efface pour ne pas
+     voiler le visuel qu'on s'apprête à agrandir. */
+  html.a-curseur.sur-affiche .curseur{
+    box-shadow:0 0 22px rgba(21,34,56,.5);
+  }
+  html.a-curseur.sur-affiche .curseur-lueur{opacity:0;}
+
+  /* Au clic : la lumière se contracte d'un coup, comme un diaphragme. */
+  html.a-curseur.presse .curseur{
+    box-shadow:0 0 4px rgba(122,34,49,.5);
+  }
+  html.a-curseur.presse .curseur-lueur{
+    width:70px;height:70px;margin:-35px 0 0 -35px;opacity:.5;
+  }
+
+  html.a-curseur.sur-champ .curseur-lueur,
+  html.a-curseur.hors-cadre .curseur-lueur{opacity:0;}
+
+  @media(hover:none),(pointer:coarse){ .curseur-lueur{display:none !important;} }
+  @media(prefers-reduced-motion:reduce){ .curseur-lueur{display:none !important;} }
+  @media print{ .curseur-lueur{display:none !important;} }
+
+
+  /* ==================================================================
+     BANDEAUX — COURBES FLOTTANTES
+     ------------------------------------------------------------------
+     Portage natif de « BackgroundPaths ». L'original est un composant
+     React/Tailwind qui s'appuie sur framer-motion ; ce site est du HTML
+     statique. La géométrie des 36 courbes est reprise à l'identique,
+     l'animation pathLength/pathOffset est rendue par stroke-dasharray
+     sur un chemin normalisé (pathLength="1"), ce qui donne exactement
+     le même parcours sans aucune dépendance.
+     Trois écarts assumés par rapport à l'original :
+       — 22 courbes par sens au lieu de 36 : le bandeau fait 180px de
+         haut, pas un plein écran ; à 36 le fond devenait bruyant.
+       — l'or et le crème de l'établissement remplacent le slate-950.
+       — 30 à 46s au lieu de 20 à 30 : sur un site institutionnel, le
+         mouvement doit être à la limite du perceptible.
+     ================================================================== */
+
+  .hero-paths{
+    position:absolute;inset:0;z-index:1;
+    pointer-events:none;
+    opacity:0;
+    transition:opacity 1.4s var(--e-pose);
+  }
+  .hero-paths.visible{opacity:1;}
+  .hero-paths svg{width:100%;height:100%;display:block;}
+  .hero-paths path{
+    fill:none;
+    stroke-dasharray:.32 .68;
+    animation:courantPath var(--dur,34s) linear infinite;
+    animation-delay:var(--lag,0s);
+  }
+  @keyframes courantPath{
+    from{stroke-dashoffset:1;}
+    to  {stroke-dashoffset:-1;}
+  }
+  /* Le contenu du bandeau reste au-dessus des courbes. */
+  /* Le canvas du shader doit rester exclu : cette regle, de
+     specificite (0,2,0), l'emportait sur .hero-shader (0,1,0) et le
+     repassait en position:relative — donc dans le flux, ou il ajoutait
+     sa hauteur au bandeau. C'est ce qui faisait grandir les trois
+     bandeaux concernes. */
+  .page-hero > *:not(.hero-paths):not(.hero-shader){position:relative;z-index:2;}
+
+  /* --- Titre : levée des mots derrière la ligne de base ------------
+     La cascade lettre à lettre avait deux défauts. Elle découpait la
+     lecture — on déchiffrait le titre au lieu de le lire —, et sa courbe
+     à dépassement (1.06) contredisait la charte de mouvement du site,
+     qui pose en première ligne que rien ne rebondit.
+     Chaque mot est maintenant enfermé dans un masque à ses propres
+     dimensions et monte depuis dessous, en séquence. C'est le geste du
+     typographe qui compose sa ligne : le mot arrive entier, net, et se
+     pose sans revenir en arrière.
+
+     Le masque est un clip-path plutôt qu'un overflow:hidden, et c'est
+     délibéré : overflow:hidden change la ligne de base d'une boîte
+     inline-block, ce qui aurait décalé verticalement les huit titres de
+     rubrique. clip-path découpe sans rien toucher à la mise en page.
+
+     Un seul des quatre bords compte, et c'est le bas. Un .mot ne
+     contient que son propre mot : ouvrir le haut et les côtés ne peut
+     donc rien laisser fuir — ni le mot voisin, ni la ligne du dessus.
+     Ces trois bords sont ouverts en grand (-0.5em), ce qui met à l'abri
+     les accents des capitales (É de « L'Établissement »), les hampes et
+     les serifs qui débordent de leur chasse.
+     Le bord bas, lui, est la ligne d'où sortent les mots : il est
+     calibré au plus juste. À 0 exactement, le jambage du « y » de
+     « Payer » affleurait le bord et le « q » de « catholique » passait
+     dessous de 0,4px au corps de 20px. -0.18em laisse 3px de marge au
+     plus petit palier, sans que le mot cesse d'être caché au départ :
+     parti de 125%, il reste 6px sous le bord. */
+  .page-hero h1 .mot{
+    display:inline-block;
+    clip-path:inset(-0.5em -0.5em -0.18em -0.5em);
+  }
+  .page-hero h1 .mot-i{
+    display:inline-block;
+    animation:motLeve 940ms var(--e-pose) both;
+    animation-delay:var(--d,0ms);
+  }
+  @keyframes motLeve{
+    from{transform:translateY(125%);}
+    to  {transform:translateY(0);}
+  }
+  /* Le titre n'est plus animé ligne à ligne : ses mots s'en chargent. */
+  .page-section.active .page-hero h1{animation:none;}
+
+  @media(prefers-reduced-motion:reduce){
+    .hero-paths{display:none !important;}
+    .page-hero h1 .mot{clip-path:none !important;}
+    .page-hero h1 .mot-i{animation:none !important;}
+    .page-section.active .page-hero h1{animation:none !important;}
+  }
+  @media print{ .hero-paths{display:none !important;} }
+
+
+  /* ==================================================================
+     NAVIGATION MOBILE — TIROIR
+     ------------------------------------------------------------------
+     Jusqu'ici, sur petit écran, les huit rubriques se réduisaient à une
+     bande de capitales de 10,5px qui défilait horizontalement : c'est
+     le symptôme classique du desktop rétréci. Rien n'indiquait qu'il
+     fallait faire glisser, les libellés étaient illisibles, et les
+     rubriques hors cadre restaient introuvables.
+     Le tiroir donne à chaque rubrique une ligne entière, un ordre de
+     lecture vertical et une cible de 52px.
+     ================================================================== */
+
+  .nav-toggle{display:none;}
+
+  /* Au-delà de 900px, tiroir et voile doivent disparaître complètement.
+     Toutes leurs règles vivaient dans la requête média mobile : sur
+     grand écran, .nav-tiroir redevenait un <aside> ordinaire en fin de
+     <body>, donc rendu en flux normal sous le pied de page — d'où le
+     bloc « Institut Sacré Cœur d'Adjamé / 27 20 37 10-20 » qui
+     apparaissait en bas de page. Le voile, lui, était bien masqué ;
+     le tiroir avait été oublié. */
+  .nav-tiroir, .nav-voile{display:none;}
+
+  @media(max-width:900px){
+    .nav-tiroir{display:flex;}
+    .nav-voile{display:block;}
+    .nav-toggle{
+      display:flex;align-items:center;justify-content:center;
+      width:46px;height:46px;flex-shrink:0;
+      background:transparent;border:1px solid var(--line);
+      border-radius:var(--radius);cursor:pointer;
+      margin-left:auto;
+      transition:background var(--t-survol) var(--e-pose),
+                 border-color var(--t-survol) var(--e-pose);
+    }
+    .nav-toggle:active{background:var(--cream-deep);}
+    /* Les trois barres deviennent une croix : un seul bouton porte les
+       deux états, l'utilisateur sait toujours quoi attendre. */
+    .nav-toggle .barre{
+      display:block;width:19px;height:1.5px;background:var(--navy);
+      position:relative;
+      transition:transform var(--t-survol) var(--e-pose),
+                 opacity var(--t-survol) var(--e-pose);
+    }
+    .nav-toggle .barre::before,
+    .nav-toggle .barre::after{
+      content:"";position:absolute;left:0;width:19px;height:1.5px;
+      background:var(--navy);
+      transition:transform var(--t-survol) var(--e-pose);
+    }
+    .nav-toggle .barre::before{top:-6px;}
+    .nav-toggle .barre::after{top:6px;}
+    .nav-toggle[aria-expanded="true"] .barre{background:transparent;}
+    .nav-toggle[aria-expanded="true"] .barre::before{transform:translateY(6px) rotate(45deg);}
+    .nav-toggle[aria-expanded="true"] .barre::after{transform:translateY(-6px) rotate(-45deg);}
+
+    /* Le voile : il isole le tiroir du reste de la page et se ferme au
+       toucher. Assez dense pour que le fond cesse de rivaliser. */
+    .nav-voile{
+      position:fixed;inset:0;z-index:60;
+      background:rgba(10,16,28,.52);
+      backdrop-filter:blur(2px);
+      opacity:0;visibility:hidden;
+      transition:opacity var(--t-pose) var(--e-pose), visibility 0s linear var(--t-pose);
+    }
+    body.tiroir-ouvert .nav-voile{
+      opacity:1;visibility:visible;
+      transition:opacity var(--t-pose) var(--e-pose), visibility 0s;
+    }
+
+    .nav-tiroir{
+      position:fixed;top:0;right:0;bottom:0;z-index:61;
+      width:min(84vw,340px);
+      background:var(--navy);
+      color:var(--cream);
+      display:flex;flex-direction:column;
+      padding:22px 0 28px;
+      transform:translateX(100%);
+      transition:transform var(--t-pose) var(--e-pose);
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+      box-shadow:-18px 0 44px -30px rgba(0,0,0,.9);
+    }
+    body.tiroir-ouvert .nav-tiroir{transform:none;}
+
+    .nav-tiroir .tiroir-tete{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 22px 20px;
+      border-bottom:1px solid rgba(250,246,239,.14);
+      margin-bottom:8px;
+    }
+    .nav-tiroir .tiroir-tete .tt-nom{
+      font-family:'Fraunces',serif;font-size:13px;color:var(--gold-soft);
+      letter-spacing:.02em;
+    }
+    .nav-tiroir .tiroir-fermer{
+      width:38px;height:38px;flex-shrink:0;
+      background:transparent;border:1px solid rgba(250,246,239,.3);
+      color:var(--cream);font-size:17px;line-height:1;cursor:pointer;
+      border-radius:var(--radius);
+    }
+
+    /* Les liens repris tels quels, mais remis à l'endroit : une ligne
+       chacun, casse normale, 52px de haut. */
+    .navlinks{
+      display:flex !important;flex-direction:column;align-items:stretch;
+      gap:0 !important;overflow:visible !important;flex:none;
+      padding:0 10px;
+    }
+    .navlinks a{
+      font-size:14px !important;letter-spacing:.02em !important;
+      text-transform:none !important;
+      color:var(--cream) !important;
+      padding:15px 12px !important;min-height:52px;
+      display:flex;align-items:center;
+      border-bottom:1px solid rgba(250,246,239,.09);
+      white-space:normal !important;
+      /* Chaque ligne entre à son tour quand le tiroir s'ouvre. */
+      opacity:0;transform:translateX(14px);
+    }
+    body.tiroir-ouvert .navlinks a{
+      opacity:1;transform:none;
+      transition:opacity 340ms var(--e-pose) var(--dl,0ms),
+                 transform 340ms var(--e-pose) var(--dl,0ms),
+                 color var(--t-survol) var(--e-pose);
+    }
+    .navlinks a::after{display:none;}
+    .navlinks a.active{color:var(--gold-soft) !important;}
+    .navlinks a.active::before{
+      content:"";width:2px;align-self:stretch;background:var(--gold);
+      margin-right:11px;margin-left:-12px;
+    }
+
+    .nav-tiroir .btn-connexion{
+      margin:20px 22px 0;text-align:center;justify-content:center;
+      display:flex;align-items:center;min-height:50px;
+      background:var(--wine);border-color:var(--wine);
+      font-size:12px;
+    }
+    .nav-tiroir .tiroir-pied{
+      margin-top:auto;padding:24px 22px 0;
+      border-top:1px solid rgba(250,246,239,.12);
+      font-size:11.5px;line-height:1.8;color:#9AA1B0;
+    }
+    .nav-tiroir .tiroir-pied a{color:var(--gold-soft);}
+
+    /* La barre du haut ne garde que la marque et le bouton. */
+    nav{gap:12px;}
+    nav > .btn-connexion{display:none;}
+  }
+
+  @media(min-width:901px){
+    .nav-tiroir, .nav-voile{display:none !important;}
+  }
+
+  @media(prefers-reduced-motion:reduce){
+    .nav-tiroir, .nav-voile, .navlinks a{transition:none !important;}
+    .navlinks a{opacity:1 !important;transform:none !important;}
+  }
+
+  /* ==================================================================
+     PASSAGE MOBILE
+     ------------------------------------------------------------------
+     Trois questions posées à chaque élément :
+       — sert-il la même chose sur un écran de 375px ? sinon on le retire
+       — occupe-t-il une place proportionnée à son utilité ? sinon on compacte
+       — sa forme desktop est-elle encore lisible ? sinon on la change
+     Les points de rupture du fichier étaient dispersés sur dix valeurs
+     (1260, 1200, 1099, 1040, 1000, 940, 900, 820, 700, 620). Cette
+     couche s'aligne sur trois paliers nets — 900, 620, 400 — sans
+     toucher aux règles existantes.
+     ================================================================== */
+
+  @media(max-width:900px){
+
+    /* ---- CE QUI DISPARAÎT -----------------------------------------
+       Le bandeau de contact du haut : les mêmes coordonnées figurent
+       dans le tiroir et dans le pied de page. Trois fois, c'est deux
+       fois de trop, et il vole 30px de hauteur au-dessus de la ligne
+       de flottaison. */
+    .topbar{display:none;}
+
+    /* Filigranes de sceau et grain : purement décoratifs, coûteux à
+       peindre au défilement sur téléphone d'entrée de gamme. */
+    .spirit-band > .seal-mark, .solidarite > .seal-mark{display:none;}
+    body, .lucarnes-section, .spirit-band, .timeline-section,
+    .eval-section, .frais-section, .solidarite{background-image:none;}
+
+    /* Flèches du carrousel : le balayage tactile fait déjà le travail,
+       et les puces indiquent la position. */
+    .hero-nav-arrows{display:none;}
+
+    /* ---- CE QUI SE COMPACTE ---------------------------------------
+       Les bandeaux photo montaient à 737 et 782px : sur un écran de
+       812px de haut, le titre occupait tout l'écran et le contenu
+       n'existait plus. Plafond à 46vh. */
+    .page-hero{
+      padding:30px 20px 34px;
+      min-height:0;
+      max-height:46vh;
+      display:flex;flex-direction:column;justify-content:flex-end;
+    }
+    .page-hero h1{font-size:30px;line-height:1.18;}
+
+  /* ---- Cibles tactiles du pied de page ----------------------------
+     Les liens de navigation du pied faisaient 15px de haut : c'est la
+     hauteur de leur texte, sans plus. Au doigt, viser une ligne de
+     15px demande de la precision, et deux liens voisins se touchent.
+     Un peu de hauteur suffit a les rendre confortables, sans changer
+     leur aspect. */
+  .footer-col a{display:block;padding:7px 0;}
+
+    .page-hero .lead{font-size:15.5px;line-height:1.6;}
+    .breadcrumb{margin-bottom:12px;font-size:11.5px;}
+
+    /* Respiration des sections : 74-80px de padding vertical sur
+       téléphone, c'est du vide qui force à défiler sans rien montrer.
+
+       Le sélecteur « section » nu, en tête de liste, était censé servir
+       de filet de sécurité pour toute section oubliée de l'énumération
+       explicite. Il n'a jamais fonctionné : une règle de type (section)
+       a une spécificité plus faible qu'une règle de classe, donc chaque
+       section qui possédait déjà SA PROPRE règle de classe desktop
+       (.edt-section, .eval-section, .filters-section, .results-section
+       — 40px de marge latérale) gagnait toujours, quel que soit l'ordre
+       des règles dans le fichier. C'est ce qui indentait l'emploi du
+       temps de 40px sur téléphone au lieu des 20px habituels. Les
+       quatre classes manquantes sont ajoutées nommément ci-dessous ; le
+       filet « section » nu reste en repli pour tout ce qui n'a pas
+       encore de règle de classe dédiée. */
+    section, .lucarnes-section, .spirit-band, .timeline-section,
+    .team-section, .infra-section, .cycles-section, .vie-section,
+    .solidarite, .jeux-section, .activites-section, .conditions-section,
+    .tests-section, .frais-section, .dossier-section, .calendrier-section,
+    .child-section, .pay-section, .echeance-section, .hist-section,
+    .featured-section, .news-list-section, .contact-info-section,
+    .contact-main-section, .teacher-section, .pillars-section,
+    .edt-section, .eval-section, .filters-section, .results-section{
+      padding-left:20px;padding-right:20px;
+      padding-top:44px;padding-bottom:44px;
+    }
+    .section-head{margin-bottom:26px;padding-bottom:15px;flex-direction:column;align-items:flex-start;gap:12px;}
+    .section-head h2{font-size:22px;}
+    .section-head .see-all{align-self:flex-start;}
+
+    /* ---- CE QUI CHANGE DE FORME -----------------------------------
+       Toutes les grilles multi-colonnes passent en pile. Une carte de
+       120px de large ne se lit pas. */
+    .lucarnes-grid, .quick-grid, .news-grid, .news-list-grid,
+    .pillars-grid, .infra-grid, .cycles-grid, .jeux-grid, .doc-grid,
+    .activites-grid, .tests-grid, .conditions-grid, .pay-objets,
+    .pay-methods, .results-cards, .vie-grid, .team-grid, .stats-row,
+    .contact-cards, .footer-cols{
+      grid-template-columns:1fr !important;
+      gap:14px !important;
+    }
+    /* La grille jointive des rubriques rapides retrouve ses séparateurs. */
+    .quick-grid{gap:1px !important;}
+
+    /* Le bandeau spirituel et le mot du directeur : deux colonnes
+       côte à côte deviennent illisibles, on empile portrait puis texte. */
+    .spirit-band, .director{
+      grid-template-columns:1fr !important;gap:26px !important;
+      padding:44px 20px !important;
+    }
+
+    /* Hero d'accueil */
+    .hero{min-height:0;}
+    .hero-grid{grid-template-columns:1fr !important;padding:34px 20px;gap:24px;}
+    .hero h1{font-size:27px;line-height:1.2;}
+    .hero p.lead{font-size:14.5px;}
+    .hero-ctas{gap:12px;}
+    .hero-ctas .cta-primary, .hero-ctas .cta-secondary{
+      flex:1 1 100%;text-align:center;padding:15px 20px;
+    }
+    /* La carte de résultats reprend sa place sous l'accroche plutôt
+       que de disparaître : c'est la fierté de l'établissement. */
+    .results-card{display:block !important;margin-top:4px;}
+
+    /* Le fil de sous-navigation défile, mais avec une amorce visible
+       à droite qui dit qu'il y a autre chose. */
+    .subnav{
+      overflow-x:auto;scrollbar-width:none;
+      -webkit-overflow-scrolling:touch;
+      position:relative;
+      padding-right:26px;
+      -webkit-mask-image:linear-gradient(90deg,#000 84%,transparent);
+              mask-image:linear-gradient(90deg,#000 84%,transparent);
+    }
+    .subnav::-webkit-scrollbar{display:none;}
+
+    /* ---- LES TABLEAUX, LE VRAI POINT DUR ---------------------------
+       Un emploi du temps ne se replie pas : cinq jours restent cinq
+       jours. On le laisse défiler horizontalement, mais dans un cadre
+       qui l'annonce — un dégradé au bord droit et une mention explicite,
+       plutôt qu'un tableau coupé net qui a l'air cassé. */
+    /* Le conteneur réel s'appelle .edt-frame — et il portait une
+       hauteur fixe de 13cm héritée du desktop, qui coupait le tableau
+       au lieu de le laisser défiler. */
+    .edt-frame{
+      height:auto !important;max-height:none !important;
+      overflow-x:auto;overflow-y:visible;
+      -webkit-overflow-scrolling:touch;
+      position:relative;
+      /* L'amorce de dégradé au bord droit annonce qu'il reste du
+         contenu : sans elle, un tableau coupé net a l'air cassé. */
+      -webkit-mask-image:linear-gradient(90deg,#000 92%,rgba(0,0,0,.35));
+              mask-image:linear-gradient(90deg,#000 92%,rgba(0,0,0,.35));
+    }
+    .edt-frame:focus-within{
+      -webkit-mask-image:none;mask-image:none;
+    }
+    .edt-table{min-width:620px !important;font-size:12px;}
+    .ech-table, .mentions-table{min-width:520px;font-size:12px;}
+    .edt-table th, .edt-table td{padding:8px 6px !important;}
+    .edt-hint{
+      display:block;font-size:11.5px;color:var(--ink-soft);
+      font-style:italic;margin-bottom:10px;
+    }
+
+    /* ---- CIBLES TACTILES ------------------------------------------
+       Les règles posées plus haut sont sous @media(pointer:coarse), ce
+       qui est sémantiquement juste mais ne couvre pas une fenêtre
+       étroite sur ordinateur. On double ici sur la largeur : à 900px et
+       moins, on est presque toujours sur un appareil tenu en main. */
+    .pill, .filter-chip, .page-btn, .register-tabs button{
+      min-height:44px;padding-top:11px;padding-bottom:11px;
+    }
+    .lc-link, .see-all, .hist-dl, .dl-link, .rc-foot a, .flink{
+      display:inline-flex;align-items:center;min-height:44px;
+    }
+    .dl-btn, .btn-pdf, .map-btn{min-height:46px;display:inline-flex;
+      align-items:center;justify-content:center;}
+    .hero-dots{gap:16px;}
+    .hero-dots button{min-height:44px;display:flex;align-items:center;}
+    .news-card h3 a, .subnav a{min-height:44px;display:flex;align-items:center;}
+
+    /* Les huit dernières cibles, relevées une à une plutôt qu'au jugé.
+       Mes sélecteurs précédents visaient .contact-form input, or ces
+       champs n'ont pas cet ancêtre : la règle ne les atteignait pas. */
+    .cf-row input, .cf-row select, .cf-row textarea,
+    .pf-row input, .login-field input,
+    input[type="text"], input[type="email"], input[type="tel"],
+    input[type="search"], select, textarea{
+      min-height:48px;font-size:16px;   /* 16px : évite le zoom auto iOS */
+    }
+    .search-mini{min-height:48px;padding:0 12px;}
+    .search-mini input{min-height:46px;}
+    .cta-primary, .cta-secondary, .admissions-cta .cta-primary{
+      min-height:48px;display:inline-flex;align-items:center;justify-content:center;
+    }
+    .map-zoom button{width:44px;height:44px;}
+    /* Fil d'Ariane : ce sont de vrais liens de navigation, pas du texte
+       courant — ils méritent une zone de contact, sans changer la ligne. */
+    .breadcrumb a{
+      display:inline-block;padding:14px 2px;margin:-14px 0;
+    }
+
+    /* Formulaires : pleine largeur, hauteur de doigt. */
+    .cf-two, .pf-two{grid-template-columns:1fr !important;}
+    .contact-form input, .contact-form textarea, .contact-form select,
+    .pay-form input, .login-field input{
+      width:100%;min-height:48px;font-size:16px;
+    }
+    .contact-form textarea{min-height:130px;}
+    .submit-contact, .submit-pay, .submit-login{width:100%;min-height:50px;}
+
+    /* Pied de page en pile. */
+    footer{padding:44px 20px 22px;}
+    .footer-bottom{flex-direction:column;gap:10px;text-align:center;}
+  }
+
+  /* ---- Très petits écrans ---------------------------------------- */
+  @media(max-width:620px){
+    .page-hero{max-height:52vh;}
+    .page-hero h1{font-size:26px;}
+    .hero h1{font-size:28px;}
+    .section-head h2{font-size:20px;}
+    .flash{flex-direction:column;align-items:flex-start;gap:7px;padding:12px 16px;}
+    /* Le sceau du bandeau spirituel n'a plus la place de respirer. */
+    .spirit-band .seal{width:44px;height:44px;}
+  }
+
+  @media(max-width:400px){
+    section, .lucarnes-section{padding-left:16px;padding-right:16px;}
+    .hero-grid, .page-hero{padding-left:16px;padding-right:16px;}
+    .page-hero h1{font-size:24px;}
+    .hero h1{font-size:25px;}
+    .lucarne, .quick-card{padding:20px 17px;}
+  }
+
+  /* En pile, un titre de soixante signes se répartit sur quatre lignes :
+     la levée des mots doit se resserrer, sinon le dernier mot se pose
+     alors que le chapeau est déjà lu. La cascade elle-même se raccourcit
+     côté script, en fonction du nombre de mots. */
+  @media(max-width:900px){
+    .page-hero h1 .mot-i{animation-duration:720ms;}
+}

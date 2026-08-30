@@ -1,0 +1,163 @@
+/* ==========================================================
+   Barre d'information, navigation, bascule, animations
+   Fichier 4 sur 8 - charge dans cet ordre par les pages.
+   Ne pas reordonner : la cascade en depend.
+   ========================================================== */
+/* ================= COQUILLE — NAVIGATION & RAFFINEMENTS ================= */
+
+  /* ---------- Barre d'information ---------- */
+  .topbar{
+    background:var(--navy);color:var(--gold-soft);
+    font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;
+    padding:8px 32px;display:flex;justify-content:space-between;align-items:center;gap:20px;
+  }
+  .topbar span{opacity:.82;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+  /* ---------- Barre de navigation ---------- */
+  nav{
+    background:var(--cream);
+    border-bottom:1px solid var(--line);
+    padding:0 32px;height:64px;
+    display:flex;align-items:center;justify-content:space-between;gap:24px;
+    position:sticky;top:0;z-index:60;
+  }
+  .brand{display:flex;align-items:center;gap:11px;color:var(--navy);flex-shrink:0;}
+  .brand img.crest{width:34px;height:34px;object-fit:contain;flex-shrink:0;}
+  .brand-text{line-height:1.15;}
+  .brand-text .name{font-family:'Fraunces',serif;font-weight:700;font-size:14px;color:var(--navy);white-space:nowrap;}
+  .brand-text .tag{font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-top:1px;}
+
+  .navlinks{display:flex;align-items:center;gap:19px;flex:1;justify-content:center;min-width:0;}
+  .navlinks a{
+    font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink-soft);position:relative;padding:21px 0;white-space:nowrap;
+    transition:color .18s ease;
+  }
+  .navlinks a::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;height:2px;
+    background:var(--gold);transform:scaleX(0);transform-origin:left;
+    transition:transform .22s ease;
+  }
+  .navlinks a:hover{color:var(--navy);}
+  .navlinks a:hover::after{transform:scaleX(1);}
+  .navlinks a.active{color:var(--navy);}
+  .navlinks a.active::after{transform:scaleX(1);background:var(--wine);}
+
+  .btn-connexion{
+    background:var(--navy);color:var(--cream);
+    font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    padding:10px 16px;border-radius:var(--radius);border:1px solid var(--navy);
+    flex-shrink:0;white-space:nowrap;transition:background .18s ease;
+  }
+  .btn-connexion:hover{background:var(--navy-light);}
+  .btn-connexion.active{background:var(--wine);border-color:var(--wine);}
+
+  /* ---------- Bascule entre rubriques ---------- */
+  .page-section{display:none;padding:0;margin:0;}
+  .page-section.active{display:block;animation:fadeUp .34s ease both;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:none;}}
+
+  /* ---------- Raffinements typographiques ----------
+     Le titre et le chapeau des bandeaux ont ete agrandis quand les
+     bandeaux ont pris les proportions de leurs images : a 398px de haut
+     au lieu de 292, un titre de 34px flottait dans la surface. */
+  .page-hero h1{font-size:44px;letter-spacing:-.015em;}
+  .page-hero .lead{font-size:17px;}
+  .section-head h2{font-size:26px;letter-spacing:-.012em;}
+  .section-head .eyebrow,
+  .eyebrow{font-weight:600;}
+  .hero h1{font-size:41px;letter-spacing:-.02em;}
+
+  /* ---------- Accessibilité ---------- */
+  a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible{
+    outline:2px solid var(--gold);outline-offset:2px;
+  }
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.001ms !important;transition-duration:.001ms !important;}
+  }
+
+  /* ---------- Responsive ---------- */
+  @media(max-width:1260px){
+    nav{padding:0 20px;gap:16px;}
+    .navlinks{gap:14px;}
+    .navlinks a{font-size:10.5px;letter-spacing:.05em;}
+    .brand-text .name{font-size:13px;}
+  }
+  @media(max-width:1040px){
+    .brand-text{display:none;}
+    .navlinks{justify-content:flex-start;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none;}
+    .navlinks::-webkit-scrollbar{display:none;}
+  }
+  @media(max-width:700px){
+    .topbar{font-size:9.5px;padding:7px 16px;}
+    .topbar span:last-child{display:none;}
+    nav{padding:0 16px;height:58px;}
+    .page-hero h1{font-size:26px;}
+    .hero h1{font-size:30px;}
+  }
+
+
+  /* ================= ANIMATIONS ET TRANSITIONS ================= */
+
+  /* ---------- Entrée du hero au changement de rubrique ---------- */
+  .page-section.active .hero-eyebrow,
+  .page-section.active .hero h1,
+  .page-section.active .hero-attrib,
+  .page-section.active .hero .lead,
+  .page-section.active .hero-ctas,
+  .page-section.active .results-card,
+  .page-section.active .page-hero .breadcrumb,
+  .page-section.active .page-hero h1,
+  .page-section.active .page-hero .lead{
+    animation:heroIn .62s cubic-bezier(.22,.68,.32,1) both;
+  }
+  .page-section.active .hero h1,
+  .page-section.active .page-hero h1{animation-delay:.07s;}
+  .page-section.active .hero-attrib{animation-delay:.14s;}
+  .page-section.active .hero .lead,
+  .page-section.active .page-hero .lead{animation-delay:.18s;}
+  .page-section.active .hero-ctas{animation-delay:.26s;}
+  .page-section.active .results-card{animation-delay:.32s;}
+  @keyframes heroIn{
+    from{opacity:0;transform:translateY(16px);}
+    to{opacity:1;transform:none;}
+  }
+
+  /* ---------- Révélation au défilement ---------- */
+  .reveal{opacity:0;transform:translateY(22px);}
+  .reveal.seen{
+    opacity:1;transform:none;
+    transition:opacity .62s cubic-bezier(.22,.68,.32,1), transform .62s cubic-bezier(.22,.68,.32,1);
+    transition-delay:var(--d, 0ms);
+  }
+
+  /* ---------- Réactions au survol ----------
+     Le bloc générique qui se trouvait ici (un même translateY(-4px)
+     pour sept familles de cartes) a été remplacé par la couche
+     « MICRO-INTERACTIONS » en fin de feuille, composant par composant. */
+
+  /* ---------- Barres de résultats ---------- */
+  .bar-fill{transform-origin:left;}
+  .reveal.seen .bar-fill, .exam-card.seen .bar-fill{
+    animation:barGrow 1.05s cubic-bezier(.22,.68,.32,1) both;
+    animation-delay:.16s;
+  }
+  @keyframes barGrow{ from{transform:scaleX(0);} to{transform:scaleX(1);} }
+
+  /* ---------- Pilules et onglets ---------- */
+  .pill, .subnav a, .register-tabs button, .filter-chip{
+    transition:background .22s ease, color .22s ease, border-color .22s ease;
+  }
+
+  /* ---------- Accessibilité : mouvement réduit ---------- */
+  @media(prefers-reduced-motion:reduce){
+    .reveal{opacity:1 !important;transform:none !important;}
+    .page-section.active .hero h1,
+    .page-section.active .page-hero h1{animation:none !important;}
+  }
+
+  /* ---------- Impression : neutraliser les animations ---------- */
+  @media print{
+    .reveal{opacity:1 !important;transform:none !important;}
+    .page-section.active *{animation:none !important;}
+}

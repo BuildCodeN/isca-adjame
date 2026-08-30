@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Espace Enseignant — Institut Sacré Cœur d’Adjamé</title>
+<meta name="description" content="Accès réservé aux enseignants de l’ISCA : emploi du temps personnel.">
+<meta property="og:title" content="Espace Enseignant — Institut Sacré Cœur d’Adjamé">
+<meta property="og:description" content="Accès réservé aux enseignants de l’ISCA : emploi du temps personnel.">
+<meta property="og:type" content="website">
+<link rel="icon" href="assets/images/blason-isca.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/01-fondations.css?v=20260830k">
+<link rel="stylesheet" href="assets/css/02-transport.css?v=20260830k">
+<link rel="stylesheet" href="assets/css/03-cartes.css?v=20260830k">
+<link rel="stylesheet" href="assets/css/04-charpente.css?v=20260830k">
+<link rel="stylesheet" href="assets/css/05-bandeaux.css?v=20260830k">
+<link rel="stylesheet" href="assets/css/06-interactions.css?v=20260830k">
+<link rel="stylesheet" href="assets/css/07-matieres.css?v=20260830k">
+<link rel="stylesheet" href="assets/css/08-espaces.css?v=20260830k">
+</head>
+<body>
+
+
+  <div class="topbar">
+    <span>Abidjan, Côte d'Ivoire — Enseignement catholique de la 6ème à la Terminale</span>
+    <span>27 20 37 10-20 &nbsp;|&nbsp; 07 08 99 54 04 &nbsp;|&nbsp; collegeisca@gmail.com</span>
+  </div>
+
+  <nav>
+    <a class="brand" href="index.html">
+      <img class="crest" src="assets/images/blason-isca.png" alt="Emblème ISCA">
+      <div class="brand-text">
+        <div class="name">Institut Sacré Cœur d'Adjamé</div>
+        <div class="tag">ISCA — Fondé en 1961</div>
+      </div>
+    </a>
+    <div class="navlinks">
+      <a data-nav="accueil" href="index.html">Accueil</a>
+      <a data-nav="etablissement" href="etablissement.html">L'Établissement</a>
+      <a data-nav="scolarite" href="scolarite.html">Scolarité</a>
+      <a data-nav="vie-scolaire" href="vie-scolaire.html">Vie Scolaire</a>
+      <a data-nav="admissions" href="admissions.html">Admissions</a>
+      <a data-nav="paiement" href="paiement.html">Paiement</a>
+      <a data-nav="actualites" href="actualites.html">Actualités</a>
+      <a data-nav="contact" href="contact.html">Contact</a>
+    </div>
+    <a class="btn-connexion active" data-nav="enseignant" href="espace-enseignant.html">Espace Enseignant</a>
+  </nav>
+
+  
+<section class="page-section active" id="sec-enseignant" data-key="enseignant">
+
+
+  <!-- ================= PAGE HERO ================= -->
+  <!-- Le bas du bandeau etait a zero pour coller l'ecran de connexion au
+       fond marine. Depuis que le chapeau est en 17px, sa derniere ligne
+       debordait de 16px sur le fond clair : on lui rend de quoi tenir. -->
+  <header class="page-hero" style="padding-bottom:28px;">
+    <div class="breadcrumb"><a href="index.html">Accueil</a><span class="sep">/</span><span class="current">Espace Enseignant</span></div>
+    <h1>Espace Enseignant</h1>
+    <p class="lead">Connectez-vous pour consulter et télécharger votre emploi du temps personnel.</p>
+  </header>
+
+  <!-- ================= ÉCRAN DE CONNEXION ================= -->
+  <div id="login-shell" class="login-shell">
+    <div class="login-card">
+      <div class="seal"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="11" width="16" height="9" rx="1"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></div>
+      <div class="eyebrow">Accès réservé au corps enseignant</div>
+      <h2>Connexion</h2>
+      <p class="lead2">Chaque enseignant ne peut consulter que son propre emploi du temps. Les emplois du temps des autres enseignants ne sont pas accessibles depuis ce compte.</p>
+
+      <div class="login-error" id="login-error">Nom ou mot de passe incorrect.</div>
+
+      <div class="login-field">
+        <label for="matricule">Nom de l'enseignant</label>
+        <input type="text" id="matricule" list="liste-profs" placeholder="ex. KOUADIO Richard" autocomplete="off">
+        <datalist id="liste-profs"></datalist>
+      </div>
+      <div class="login-field">
+        <label for="password">Mot de passe</label>
+        <input type="password" id="password" placeholder="0000X" autocomplete="off">
+      </div>
+      <button class="submit-login" onclick="teacherLogin()">Se connecter</button>
+
+      <div class="login-foot">Mot de passe oublié ? <a href="contact.html">Contactez l'administration</a></div>
+
+      <div class="demo-hint" id="demo-hint"></div>
+    </div>
+  </div>
+
+  <!-- ================= ESPACE PERSONNEL DE L'ENSEIGNANT ================= -->
+  <div id="teacher-dashboard" style="display:none;">
+    <div class="auth-strip">
+      <div class="as-left">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="9" rx="1"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
+        Espace connecté — <b id="as-nom">—</b>, enseignant
+      </div>
+      <button class="as-logout" onclick="teacherLogout()">Se déconnecter</button>
+    </div>
+
+    <div class="security-note">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Cet emploi du temps est strictement personnel : vous n'avez accès qu'à vos propres cours.
+    </div>
+
+    <section class="teacher-section">
+      <div class="th-resume" id="th-resume" aria-label="Synthèse de service"></div>
+
+      <div class="teacher-head">
+        <div class="th-id">
+          <div class="th-avatar" id="th-initiales">—</div>
+          <div>
+            <h2 id="th-nom">—</h2>
+            <div class="th-meta" id="th-meta">—</div>
+          </div>
+        </div>
+        <div class="teacher-actions">
+          <button class="btn-pdf" onclick="downloadPdf()">↓ Télécharger en PDF</button>
+        </div>
+      </div>
+
+      <!-- Grille horaire, présentée comme celle des classes -->
+      <div class="edt-frame">
+        <table class="edt-table" id="profTable">
+          <thead>
+            <tr>
+              <th>Horaire</th>
+              <th data-c="1">Lundi</th>
+              <th data-c="2">Mardi</th>
+              <th data-c="3">Mercredi</th>
+              <th data-c="4">Jeudi</th>
+              <th data-c="5">Vendredi</th>
+            </tr>
+          </thead>
+          <tbody id="profBody"></tbody>
+        </table>
+      </div>
+      <p class="edt-note" id="prof-note"></p>
+    </section>
+
+    <div class="print-hint">Le bouton « Télécharger en PDF » ouvre l'impression du navigateur — choisissez « Enregistrer au format PDF » comme destination.</div>
+  </div>
+
+  <!-- ================= CHANGEMENT DE MOT DE PASSE ================= -->
+  </div>
+
+  </section>
+
+
+<footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="crest-plate"><img src="assets/images/blason-isca.png" alt="Emblème ISCA"></div>
+        <div>
+          <div class="name">Institut Sacré Cœur d'Adjamé</div>
+          <p>Établissement catholique d'enseignement général, de la 6ème à la Terminale — Abidjan, Côte d'Ivoire.</p>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Établissement</h4>
+        <a href="etablissement.html">Notre projet éducatif</a>
+        <a href="etablissement.html">Histoire et valeurs</a>
+        <a href="etablissement.html">Équipe pédagogique</a>
+      </div>
+      <div class="footer-col">
+        <h4>Familles</h4>
+        <a href="admissions.html">Admissions</a>
+        <a href="paiement.html">Paiement en ligne</a>
+        <a href="scolarite.html#emploi-du-temps">Emploi du temps</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a href="contact.html">Nous écrire</a>
+        <a href="contact.html#carte">Plan d'accès</a>
+        <a href="actualites.html">Actualités</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Institut Sacré Cœur d'Adjamé (ISCA). Tous droits réservés.</span>
+      <span>Maquette interactive — cliquez sur les rubriques du menu</span>
+    </div>
+  </footer>
+
+<script src="assets/js/commun.js?v=20260830k"></script>
+<script src="assets/js/enseignant.js?v=20260830k"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+# Ce depot ne contient que le site publie.
+# Les sources de travail, les sauvegardes et les documents internes
+# restent dans le depot prive college-isca-adjame.
+.DS_Store
+Thumbs.db
+desktop.ini
