@@ -77,3 +77,94 @@
     }
   })();
 
+
+/* ==================================================================
+   GALERIE DES ACTIVITÉS
+   ------------------------------------------------------------------
+   Chaque carte illustrée déclare sa galerie : data-galerie porte la
+   clé des fichiers, data-photos leur nombre, data-legendes les
+   légendes séparées par une barre verticale.
+
+   Les photographies en pleine taille ne sont pas dans la page : elles
+   ne sont demandées qu'au moment où on les regarde. Une carte qui
+   n'est jamais ouverte ne coûte donc que sa vignette.
+   ================================================================== */
+(function galerieActivites(){
+  var boite = document.getElementById('lightbox');
+  var img = document.getElementById('lightboxImg');
+  var legende = document.getElementById('lb-legende');
+  var prec = document.getElementById('lb-prec');
+  var suiv = document.getElementById('lb-suiv');
+  var fermer = document.getElementById('lb-fermer');
+  if(!boite || !img) return;
+
+  var cartes = [].slice.call(document.querySelectorAll('.news-card[data-galerie]'));
+  if(!cartes.length) return;
+
+  var serie = [], rang = 0, declencheur = null;
+
+  function montrer(i){
+    if(!serie.length) return;
+    rang = (i + serie.length) % serie.length;   /* la série boucle */
+    img.src = serie[rang].src;
+    img.alt = serie[rang].legende;
+    legende.textContent = serie.length > 1
+      ? serie[rang].legende + '  (' + (rang + 1) + ' sur ' + serie.length + ')'
+      : serie[rang].legende;
+    var plusieurs = serie.length > 1;
+    prec.hidden = !plusieurs;
+    suiv.hidden = !plusieurs;
+  }
+
+  function ouvrir(carte){
+    var cle = carte.dataset.galerie;
+    var nb = parseInt(carte.dataset.photos, 10) || 1;
+    var legendes = (carte.dataset.legendes || '').split('|').map(function(s){ return s.trim(); });
+    serie = [];
+    for(var n = 1; n <= nb; n++){
+      serie.push({
+        src: 'assets/images/actu-' + cle + '-' + n + '.jpg',
+        legende: legendes[n - 1] || (carte.querySelector('h3') || {}).textContent || ''
+      });
+    }
+    declencheur = carte.querySelector('.thumb img') || carte;
+    montrer(0);
+    boite.classList.add('open');
+    fermer.focus();
+  }
+
+  function refermer(){
+    boite.classList.remove('open');
+    img.removeAttribute('src');     /* on ne garde pas l'image en mémoire */
+    if(declencheur && declencheur.focus) declencheur.focus();
+  }
+
+  cartes.forEach(function(carte){
+    var vignette = carte.querySelector('.thumb');
+    if(!vignette) return;
+    vignette.style.cursor = 'zoom-in';
+    vignette.addEventListener('click', function(){ ouvrir(carte); });
+    /* Au clavier : la vignette devient atteignable et s'ouvre sur Entrée. */
+    vignette.setAttribute('tabindex', '0');
+    vignette.setAttribute('role', 'button');
+    vignette.setAttribute('aria-label',
+      'Voir les photographies : ' + ((carte.querySelector('h3') || {}).textContent || ''));
+    vignette.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); ouvrir(carte); }
+    });
+  });
+
+  prec.addEventListener('click', function(e){ e.stopPropagation(); montrer(rang - 1); });
+  suiv.addEventListener('click', function(e){ e.stopPropagation(); montrer(rang + 1); });
+  fermer.addEventListener('click', refermer);
+  boite.addEventListener('click', function(e){
+    /* Un clic à côté de la photographie referme ; sur la photo, non. */
+    if(e.target === boite) refermer();
+  });
+  document.addEventListener('keydown', function(e){
+    if(!boite.classList.contains('open')) return;
+    if(e.key === 'Escape') refermer();
+    if(e.key === 'ArrowLeft') montrer(rang - 1);
+    if(e.key === 'ArrowRight') montrer(rang + 1);
+  });
+})();

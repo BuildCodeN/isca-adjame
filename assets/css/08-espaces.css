@@ -1056,3 +1056,34 @@
     .info-card-hours .hours-row .time{font-size:12px;}
   }
 
+
+/* ---------- Galerie des activités (rubrique Actualités) ----------
+   La vignette d'une carte illustrée s'ouvre en grand. Les flèches et la
+   légende reprennent le dispositif d'agrandissement des affiches de
+   l'accueil, en y ajoutant la navigation : une activité compte souvent
+   plusieurs clichés. */
+.news-card .thumb[role="button"]:focus-visible{
+  outline:2px solid var(--gold);outline-offset:3px;
+}
+.lightbox .lb-nav{
+  position:fixed;top:50%;transform:translateY(-50%);
+  width:46px;height:46px;border-radius:50%;
+  border:1px solid rgba(250,246,239,.4);background:rgba(21,34,56,.55);
+  color:var(--cream);font-size:22px;line-height:1;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background var(--t-survol) var(--e-pose);
+}
+.lightbox .lb-nav:hover{background:rgba(21,34,56,.85);}
+.lightbox .lb-prec{left:20px;}
+.lightbox .lb-suiv{right:20px;}
+.lightbox .lb-legende{
+  position:fixed;left:0;right:0;bottom:22px;
+  text-align:center;color:#D9DCE4;font-size:13px;
+  padding:0 90px;pointer-events:none;
+}
+@media(max-width:620px){
+  /* Au doigt, les flèches descendent au niveau du pouce plutôt que de
+     rester au milieu, où elles couvrent la photographie. */
+  .lightbox .lb-nav{top:auto;bottom:64px;transform:none;}
+  .lightbox .lb-legende{bottom:16px;padding:0 20px;font-size:12px;}
+}
