@@ -3,7 +3,7 @@
    Fichier 5 sur 8 - charge dans cet ordre par les pages.
    Ne pas reordonner : la cascade en depend.
    ========================================================== */
-  /* ---------- Les deux affiches du carrousel ----------
+  /* ---------- Les affiches du carrousel ----------
    Une affiche n'est pas une photographie : elle porte des tarifs, des
    dates, un numéro d'infoline. La rogner, c'est perdre l'information.
    Le réglage précédent la faisait couvrir tout le cadre, en comptant sur
@@ -18,16 +18,19 @@
    détache alors comme un panneau posé sur le marine, ce qui la cadre
    nettement. */
 .hero-slide.flyer-recrutement,
-.hero-slide.flyer-inscriptions{
+.hero-slide.flyer-inscriptions,
+.hero-slide.flyer-decoupage{
 background:var(--navy);
     padding:0 0 58px;   /* la bande des contrôles reste réservée */
 }
 .hero-slide.flyer-recrutement img,
-.hero-slide.flyer-inscriptions img{
+.hero-slide.flyer-inscriptions img,
+.hero-slide.flyer-decoupage img{
 width:100%;height:100%;object-fit:contain;object-position:center center;cursor:zoom-in;
 }
 .hero-slide.flyer-recrutement .ms-hint,
-.hero-slide.flyer-inscriptions .ms-hint{
+.hero-slide.flyer-inscriptions .ms-hint,
+.hero-slide.flyer-decoupage .ms-hint{
 display:flex;background:none;height:58px;
 }
 
