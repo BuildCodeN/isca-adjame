@@ -1087,3 +1087,29 @@
   .lightbox .lb-nav{top:auto;bottom:64px;transform:none;}
   .lightbox .lb-legende{bottom:16px;padding:0 20px;font-size:12px;}
 }
+
+/* ---------- Défilement des vignettes d'actualités ----------
+   Les photographies d'une même activité se superposent dans la
+   vignette et se relaient en fondu. Seule celle qui porte « visible »
+   est opaque ; les autres attendent en dessous, sans bouger la mise en
+   page — elles sont toutes en position absolue. */
+.news-card .thumb.diapo{overflow:hidden;}
+.news-card .thumb.diapo > img{
+  position:absolute;inset:0;
+  width:100%;height:100%;object-fit:cover;
+  transition:opacity 900ms var(--e-pose);
+}
+/* Tant que le script n'a pas pris la main, la seule image presente
+   reste visible : une vignette ne doit jamais dependre du JavaScript
+   pour s'afficher. Des que le script monte les autres photographies,
+   il pose « en-cours » sur le cadre, et c'est alors « visible » qui
+   designe celle que l'on voit. */
+.news-card .thumb.diapo.en-cours > img{opacity:0;}
+.news-card .thumb.diapo.en-cours > img.visible{opacity:1;}
+/* Le badge de catégorie reste au-dessus des photographies. */
+.news-card .thumb.diapo > .ncat{z-index:2;}
+@media(prefers-reduced-motion:reduce){
+  /* Sans mouvement : la première photographie, et elle seule. */
+  .news-card .thumb.diapo > img{transition:none;}
+  .news-card .thumb.diapo.en-cours > img:not(.visible){display:none;}
+}

@@ -167,7 +167,7 @@
     will-change:transform;
   }
   html.a-curseur .curseur{
-    width:22px;height:22px;margin:-11px 0 0 -11px;
+    width:14px;height:14px;margin:-7px 0 0 -7px;
     border:1px solid var(--gold);border-radius:50%;
     transition:width var(--t-survol) var(--e-pose),
                height var(--t-survol) var(--e-pose),
@@ -187,7 +187,7 @@
 
   /* Sur un élément actionnable */
   html.a-curseur.sur-lien .curseur{
-    width:34px;height:34px;margin:-17px 0 0 -17px;
+    width:24px;height:24px;margin:-12px 0 0 -12px;
     background:rgba(201,162,75,.1);
     border-color:var(--gold);
   }
@@ -218,13 +218,19 @@
 
   /* Au clic */
   html.a-curseur.presse .curseur{
-    width:16px;height:16px;margin:-8px 0 0 -8px;
+    width:11px;height:11px;margin:-5.5px 0 0 -5.5px;
     background:rgba(122,34,49,.16);border-color:var(--wine);
   }
 
-  /* Masquage du curseur système, uniquement quand le nôtre est actif */
-  html.a-curseur, html.a-curseur *{cursor:none;}
-  html.a-curseur input, html.a-curseur textarea, html.a-curseur select{cursor:auto;}
+  /* Le curseur du système reste visible : l'anneau l'accompagne au lieu
+     de le remplacer. Il etait masque (cursor:none) et l'anneau tenait
+     seul lieu de pointeur — on perdait alors la fleche, dont la pointe
+     dit exactement ou l'on clique. L'anneau, plus petit qu'avant, se
+     lit maintenant comme un halo autour d'elle. */
+  html.a-curseur, html.a-curseur *{cursor:auto;}
+  html.a-curseur a, html.a-curseur button,
+  html.a-curseur [role="button"], html.a-curseur summary,
+  html.a-curseur .filter-chip, html.a-curseur label{cursor:pointer;}
 
   /* Sortie de fenêtre */
   html.a-curseur.hors-cadre .curseur,
@@ -491,9 +497,11 @@
   .curseur-lueur{display:none;}
 
   /* L'anneau : plus fin, et cerclé d'un halo court qui lui donne du
-     relief sans le grossir. */
+     relief sans le grossir. Il accompagne desormais la fleche du
+     systeme au lieu de la remplacer : il a donc retreci, pour se lire
+     comme un halo autour d'elle et non comme un pointeur concurrent. */
   html.a-curseur .curseur{
-    width:24px;height:24px;margin:-12px 0 0 -12px;
+    width:14px;height:14px;margin:-7px 0 0 -7px;
     border:1px solid rgba(201,162,75,.9);
     box-shadow:0 0 10px rgba(201,162,75,.42),
                inset 0 0 6px rgba(228,205,142,.22);
@@ -503,14 +511,14 @@
   /* Sur un élément actionnable : l'anneau se resserre légèrement et la
      lumière monte. Rien ne grossit brutalement. */
   html.a-curseur.sur-lien .curseur{
-    width:30px;height:30px;margin:-15px 0 0 -15px;
+    width:22px;height:22px;margin:-11px 0 0 -11px;
     background:rgba(201,162,75,.07);
     border-color:var(--gold-soft);
     box-shadow:0 0 16px rgba(201,162,75,.62),
                inset 0 0 10px rgba(228,205,142,.3);
   }
   html.a-curseur.sur-lien .curseur-lueur{
-    width:150px;height:150px;margin:-75px 0 0 -75px;opacity:1;
+    width:110px;height:110px;margin:-55px 0 0 -55px;opacity:1;
   }
 
   /* Sur une affiche : la pastille reste, la lueur s'efface pour ne pas

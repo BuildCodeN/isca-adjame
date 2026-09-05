@@ -168,3 +168,92 @@
     if(e.key === 'ArrowRight') montrer(rang + 1);
   });
 })();
+
+/* ==================================================================
+   DÉFILEMENT DES VIGNETTES
+   ------------------------------------------------------------------
+   Une activité qui compte plusieurs photographies les fait défiler
+   dans sa vignette, en fondu. Le nombre s'ajuste tout seul : la carte
+   déclare combien elle en a, le script fabrique les images qui
+   manquent.
+
+   Deux précautions. Les photographies suivantes ne sont demandées
+   qu'après le premier affichage, pour ne pas retarder la page — une
+   carte de cinq clichés ne coûte d'abord que le premier. Et le
+   défilement s'arrête dès que la carte sort de l'écran ou que l'onglet
+   passe à l'arrière-plan : rien ne tourne pour personne.
+   ================================================================== */
+(function defilementVignettes(){
+  var DUREE = 4200;   /* temps d'affichage d'une photographie */
+  var cartes = [].slice.call(document.querySelectorAll('.news-card[data-galerie] .thumb.diapo'));
+  if(!cartes.length) return;
+
+  var calme = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  cartes.forEach(function(vignette){
+    var carte = vignette.closest('.news-card');
+    var cle = carte.dataset.galerie;
+    var nb = parseInt(carte.dataset.photos, 10) || 1;
+    var legendes = (carte.dataset.legendes || '').split('|').map(function(s){ return s.trim(); });
+    if(nb < 2) return;                     /* une seule photo : rien à faire */
+
+    var premiere = vignette.querySelector('img');
+    if(!premiere) return;
+    var images = [premiere];
+    var rang = 0, minuteur = null, montees = false;
+
+    function monterLesAutres(){
+      if(montees) return;
+      montees = true;
+      for(var n = 2; n <= nb; n++){
+        var img = document.createElement('img');
+        img.src = 'assets/images/actu-' + cle + '-v' + n + '.jpg';
+        img.alt = legendes[n - 1] || '';
+        img.className = 'diapo-suivante';
+        vignette.insertBefore(img, vignette.firstChild);
+        images.push(img);
+      }
+      /* Le cadre passe sous la conduite du script : c'est desormais
+         « visible » qui designe la photographie affichee. */
+      images[0].classList.add('visible');
+      images.forEach(function(im, i){ if(i) im.classList.remove('visible'); });
+      vignette.classList.add('en-cours');
+    }
+
+    function avancer(){
+      rang = (rang + 1) % images.length;
+      images.forEach(function(im, i){ im.classList.toggle('visible', i === rang); });
+    }
+
+    function demarrer(){
+      if(calme || minuteur) return;
+      monterLesAutres();
+      minuteur = setInterval(avancer, DUREE);
+    }
+    function arreter(){
+      if(minuteur){ clearInterval(minuteur); minuteur = null; }
+    }
+
+    /* Le defilement demarre de lui-meme. L'observateur ne sert qu'a le
+       suspendre quand la carte quitte l'ecran : si le navigateur ne le
+       gere pas, ou ne le declenche pas, les photographies defilent
+       quand meme. L'economie ne doit jamais conditionner l'affichage. */
+    demarrer();
+    if(window.IntersectionObserver){
+      new IntersectionObserver(function(entrees){
+        entrees.forEach(function(e){ e.isIntersecting ? demarrer() : arreter(); });
+      }, { threshold: 0.2 }).observe(vignette);
+    }
+
+    document.addEventListener('visibilitychange', function(){
+      document.hidden ? arreter() : (vignette.getBoundingClientRect().top < innerHeight && demarrer());
+    });
+
+    /* Au survol, l'image en cours se fige : on regarde ce qu'on a choisi
+       de regarder, la vignette ne file pas sous le curseur. */
+    vignette.addEventListener('mouseenter', arreter);
+    vignette.addEventListener('mouseleave', demarrer);
+    vignette.addEventListener('focus', arreter);
+    vignette.addEventListener('blur', demarrer);
+  });
+})();
