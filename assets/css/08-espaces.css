@@ -1097,7 +1097,11 @@
 .news-card .thumb.diapo > img{
   position:absolute;inset:0;
   width:100%;height:100%;object-fit:cover;
-  transition:opacity 900ms var(--e-pose);
+  /* Le léger agrandissement au survol vient de 06-interactions, qui
+     n'anime que « transform ». Cette règle-ci étant écrite plus tard,
+     elle emporte la déclaration entière : sans le rappel du transform,
+     l'agrandissement se ferait d'un coup, sans transition. */
+  transition:opacity 900ms var(--e-pose), transform 900ms var(--e-pose);
 }
 /* Tant que le script n'a pas pris la main, la seule image presente
    reste visible : une vignette ne doit jamais dependre du JavaScript
@@ -1112,4 +1116,81 @@
   /* Sans mouvement : la première photographie, et elle seule. */
   .news-card .thumb.diapo > img{transition:none;}
   .news-card .thumb.diapo.en-cours > img:not(.visible){display:none;}
+}
+
+
+/* ---------- Parcours manuel des vignettes ----------
+   Le visiteur peut regarder les photographies d'une activite a son
+   rythme, sans ouvrir l'agrandissement : deux fleches aux bords, des
+   pastilles en bas. Elles se decouvrent au survol pour ne pas charger
+   la carte au repos, et restent visibles sur les ecrans tactiles, ou
+   il n'y a pas de survol pour les reveler. */
+.news-card .thumb.diapo > .diapo-cmd,
+.news-card .thumb.diapo > .diapo-points{
+  opacity:0;
+  transition:opacity var(--t-survol) var(--e-pose);
+}
+.news-card:hover .thumb.diapo > .diapo-cmd,
+.news-card:hover .thumb.diapo > .diapo-points,
+.news-card .thumb.diapo:focus-visible > .diapo-cmd,
+.news-card .thumb.diapo:focus-visible > .diapo-points{opacity:1;}
+
+.news-card .thumb.diapo > .diapo-cmd{
+  position:absolute;top:50%;transform:translateY(-50%);
+  z-index:3;width:30px;height:30px;padding:0;
+  border:1px solid rgba(250,246,239,.45);border-radius:50%;
+  background:rgba(21,34,56,.5);
+  color:var(--cream);font-size:17px;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  transition:opacity var(--t-survol) var(--e-pose),
+             background var(--t-survol) var(--e-pose);
+}
+.news-card .thumb.diapo > .diapo-prec{left:10px;}
+.news-card .thumb.diapo > .diapo-suiv{right:10px;}
+.news-card .thumb.diapo > .diapo-cmd:hover{background:rgba(21,34,56,.85);}
+
+.news-card .thumb.diapo > .diapo-points{
+  position:absolute;left:0;right:0;bottom:11px;z-index:3;
+  display:flex;justify-content:center;gap:6px;
+}
+.news-card .thumb.diapo > .diapo-points > i{
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(250,246,239,.5);
+  box-shadow:0 0 0 1px rgba(21,34,56,.28);
+  cursor:pointer;
+  transition:width var(--t-survol) var(--e-pose),
+             background var(--t-survol) var(--e-pose),
+             border-radius var(--t-survol) var(--e-pose);
+}
+/* La pastille de la photographie affichee s'allonge : le rang se lit
+   d'un coup d'oeil, meme quand la serie compte cinq cliches. */
+.news-card .thumb.diapo > .diapo-points > i.on{
+  width:16px;border-radius:3px;background:var(--gold);
+}
+
+@media(hover:none){
+  /* Au doigt, rien ne se decouvre au survol : les commandes restent
+     la, un peu en retrait. Le balayage horizontal fait le meme office.
+     Elles s'agrandissent aussi : 30px suffisent a la souris, pas au
+     pouce. A 36px on reste sous la cible confortable de 44px, mais la
+     vignette ne fait que 170px de haut — au-dela, la commande couvre
+     la photographie qu'elle sert a regarder. */
+  .news-card .thumb.diapo > .diapo-cmd{opacity:.9;width:36px;height:36px;}
+  .news-card .thumb.diapo > .diapo-points{opacity:.9;gap:16px;}
+  /* La cible tactile d'une pastille depasse largement sa trace : une
+     pastille de 6px ne se vise pas au pouce. Le pseudo-element ne se
+     voit pas, mais il recoit le contact — 24px de cote, l'ecart
+     minimal recommande. */
+  .news-card .thumb.diapo > .diapo-points > i{position:relative;}
+  .news-card .thumb.diapo > .diapo-points > i::after{
+    content:"";position:absolute;inset:-9px;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  /* Le mouvement automatique est arrete, mais le parcours manuel
+     reste : les commandes ne s'effacent pas. */
+  .news-card .thumb.diapo > .diapo-cmd,
+  .news-card .thumb.diapo > .diapo-points{opacity:.9;transition:none;}
+  .news-card .thumb.diapo > .diapo-points > i{transition:none;}
 }
