@@ -79,6 +79,24 @@
 
 
 /* ==================================================================
+   OÙ SONT LES PHOTOGRAPHIES
+   ------------------------------------------------------------------
+   Elles sont rangées par catégorie d'actualité, sous
+   « assets/images/Galeries_Photos/ ». Une carte qui ne dit rien est
+   réputée relever des Événements ; pour une galerie rangée ailleurs,
+   lui donner data-dossier (par exemple data-dossier="Vie scolaire").
+
+   Les noms de dossiers portent espaces et accents : ils sont donc
+   encodés pour l'adresse (l'espace devient %20, le « è » %C3%A8).
+   C'est encodeURIComponent qui s'en charge — ne pas écrire l'adresse
+   à la main.
+   ================================================================== */
+function dossierPhotos(carte){
+  var d = (carte.dataset.dossier || 'Evènements').trim();
+  return 'assets/images/Galeries_Photos/' + encodeURIComponent(d) + '/';
+}
+
+/* ==================================================================
    GALERIE DES ACTIVITÉS
    ------------------------------------------------------------------
    Chaque carte illustrée déclare sa galerie : data-galerie porte la
@@ -123,7 +141,7 @@
     serie = [];
     for(var n = 1; n <= nb; n++){
       serie.push({
-        src: 'assets/images/actu-' + cle + '-' + n + '.jpg',
+        src: dossierPhotos(carte) + 'actu-' + cle + '-' + n + '.jpg',
         legende: legendes[n - 1] || (carte.querySelector('h3') || {}).textContent || ''
       });
     }
@@ -233,7 +251,7 @@
     var suite = document.createDocumentFragment();
     for(var n = 2; n <= nb; n++){
       var img = document.createElement('img');
-      img.src = 'assets/images/actu-' + cle + '-v' + n + '.jpg';
+      img.src = dossierPhotos(carte) + 'actu-' + cle + '-v' + n + '.jpg';
       img.alt = legendes[n - 1] || '';
       suite.appendChild(img);
       images.push(img);

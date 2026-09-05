@@ -39,7 +39,7 @@ display:flex;background:none;height:58px;
    dégage une zone lisible pour le texte. Pour changer la photo, remplacez
    simplement l'adresse de l'image ci-dessous. */
 .page-hero.hero-etablissement{
-background-image:url("../images/bandeau-etablissement.jpg");
+background-image:url("../images/Bandeau%20et%20logo/bandeau-etablissement.jpg");
     background-size:cover;
     background-position:center right;
     background-repeat:no-repeat;
@@ -102,7 +102,7 @@ background:linear-gradient(180deg,
    Même principe que L'Établissement : la photo occupe la droite et se fond
    vers la gauche. Pour changer la photo, remplacez l'adresse ci-dessous. */
 .page-hero.hero-scolarite{
-background-image:url("../images/bandeau-scolarite.jpg");
+background-image:url("../images/Bandeau%20et%20logo/bandeau-scolarite.jpg");
     background-size:cover;
     background-position:center right;
     background-repeat:no-repeat;
@@ -156,7 +156,7 @@ background:linear-gradient(180deg,
    creme sur beige dore ne donne que 1,0 de contraste, soit un texte
    illisible. */
 .page-hero.hero-paiement{
-background-image:url("../images/bandeau-paiement.jpg");
+background-image:url("../images/Bandeau%20et%20logo/bandeau-paiement.jpg");
     background-size:cover;background-position:center right;background-repeat:no-repeat;
     background-color:var(--navy);
     min-height:284px;display:flex;flex-direction:column;justify-content:center;
@@ -198,7 +198,7 @@ background:linear-gradient(180deg,
    teinte de fond du visuel, pour un raccord invisible. Le texte du bandeau
    reste du HTML modifiable. Pour changer la photo : remplacez l'adresse. */
 .page-hero.hero-contact{
-background-image:url("../images/bandeau-contact.jpg");
+background-image:url("../images/Bandeau%20et%20logo/bandeau-contact.jpg");
     background-size:cover;background-position:center right;background-repeat:no-repeat;
     background-color:rgb(81,29,13);
     min-height:284px;display:flex;flex-direction:column;justify-content:center;
@@ -239,7 +239,7 @@ background:linear-gradient(180deg,
    teinte de fond du visuel, pour un raccord invisible. Le texte du bandeau
    reste du HTML modifiable. Pour changer la photo : remplacez l'adresse. */
 .page-hero.hero-vie-scolaire{
-background-image:url("../images/bandeau-vie-scolaire.jpg");
+background-image:url("../images/Bandeau%20et%20logo/bandeau-vie-scolaire.jpg");
     background-size:cover;background-position:center right;background-repeat:no-repeat;
     background-color:rgb(18,34,55);
     min-height:284px;display:flex;flex-direction:column;justify-content:center;
@@ -279,7 +279,7 @@ background:linear-gradient(180deg,
    La photo occupe la droite et se fond vers la gauche. Le texte du bandeau
    reste du HTML modifiable. Pour changer la photo : remplacez l'adresse. */
 .page-hero.hero-admissions{
-background-image:url("../images/bandeau-admissions.jpg");
+background-image:url("../images/Bandeau%20et%20logo/bandeau-admissions.jpg");
     background-size:cover;background-position:center right;background-repeat:no-repeat;
     background-color:rgb(18,34,55);
     min-height:284px;display:flex;flex-direction:column;justify-content:center;
@@ -506,7 +506,7 @@ background:linear-gradient(180deg,
    Le cadrage a 85% sur telephone amene les djembes et les enfants,
    qui occupent la fin de l'image. */
 .page-hero.hero-actualites{
-background-image:url("../images/bandeau-actualites.jpg");
+background-image:url("../images/Bandeau%20et%20logo/bandeau-actualites.jpg");
     background-size:cover;
     background-position:center right;
     background-repeat:no-repeat;
