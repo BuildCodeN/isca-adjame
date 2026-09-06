@@ -1321,3 +1321,42 @@
    jour/heure y respirent mieux qu'a 295px de large. */
 .info-grid .info-card-hours{grid-column:1 / -1;}
 .info-grid .info-card-hours .hours-row{max-width:520px;}
+
+
+/* ---------- Le lien vers la page Facebook ----------
+   Le « f » sert de reperage : on identifie le lien avant de lire le
+   libelle. Il prend la couleur du texte plutot que le bleu de la
+   marque — sur le marine du pied de page, ce bleu ne donnerait que
+   2,4:1 de contraste, et jurerait avec les six autres liens de la
+   colonne. La forme suffit a la reconnaissance.
+
+   Le libelle et la fleche doivent rester sur la meme ligne que le
+   « f » : le lien passe donc en boite en ligne alignee, alors que les
+   autres liens du pied de page sont de simples blocs. */
+.footer-col a.fb,
+.info-card a.lien-fb{
+  display:inline-flex;align-items:center;gap:7px;
+}
+.footer-col a.fb .ico-fb,
+.info-card a.lien-fb .ico-fb{
+  flex-shrink:0;
+  transition:color var(--t-survol) var(--e-pose),
+             transform var(--t-survol) var(--e-pose);
+}
+.footer-col a.fb:hover .ico-fb,
+.info-card a.lien-fb:hover .ico-fb{
+  color:var(--gold-soft);
+  transform:scale(1.12);
+}
+/* La fleche d'ouverture reste discrete a cote du « f ». */
+.footer-col a.fb [aria-hidden="true"]:not(.ico-fb),
+.info-card a.lien-fb [aria-hidden="true"]:not(.ico-fb){
+  font-size:11px;opacity:.7;
+}
+
+@media(prefers-reduced-motion:reduce){
+  .footer-col a.fb .ico-fb,
+  .info-card a.lien-fb .ico-fb{transition:none;}
+  .footer-col a.fb:hover .ico-fb,
+  .info-card a.lien-fb:hover .ico-fb{transform:none;}
+}
