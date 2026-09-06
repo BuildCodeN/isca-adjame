@@ -579,13 +579,10 @@
     from{stroke-dashoffset:1;}
     to  {stroke-dashoffset:-1;}
   }
-  /* Le contenu du bandeau reste au-dessus des courbes. */
-  /* Le canvas du shader doit rester exclu : cette regle, de
-     specificite (0,2,0), l'emportait sur .hero-shader (0,1,0) et le
-     repassait en position:relative — donc dans le flux, ou il ajoutait
-     sa hauteur au bandeau. C'est ce qui faisait grandir les trois
-     bandeaux concernes. */
-  .page-hero > *:not(.hero-paths):not(.hero-shader){position:relative;z-index:2;}
+  /* Le contenu du bandeau reste au-dessus des courbes. Le canvas du
+     shader n'a plus a etre exclu ici : la bordure pulsee a ete retiree,
+     et avec elle la classe .hero-shader. */
+  .page-hero > *:not(.hero-paths){position:relative;z-index:2;}
 
   /* --- Titre : levée des mots derrière la ligne de base ------------
      La cascade lettre à lettre avait deux défauts. Elle découpait la

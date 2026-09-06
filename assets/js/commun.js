@@ -566,272 +566,20 @@ var API_BASE = 'http://' + window.location.hostname + ':4000';
   })();
 
 /* ==================================================================
-   Bordure pulsee (WebGL)
+   Bordure pulsee (WebGL) — RETIREE
+   ------------------------------------------------------------------
+   Un canvas WebGL faisait circuler une lueur le long des bordures de
+   trois bandeaux (etablissement, vie scolaire, paiement). Retire a la
+   demande : sur des bandeaux qui portent desormais de vraies
+   photographies, cette lueur se lisait comme un defaut d'affichage
+   plutot que comme une intention.
+
+   Avec elle disparaissent 260 lignes de shader et un contexte WebGL
+   par bandeau — autant de batterie rendue aux telephones.
+
+   Pour la retablir : ce bloc est dans l'historique, au commit qui
+   porte « Les bandeaux perdent la lueur de leurs bordures ».
    ================================================================== */
-  /* ==================================================================
-     BORDURE PULSÉE — portage WebGL natif
-     ------------------------------------------------------------------
-     Équivalent du composant React « ShaderBackground » (Paper Shaders,
-     Apache-2.0). Le composant d'origine n'a aucune dépendance : c'est un
-     canvas WebGL piloté par un useEffect. Le portage est donc mécanique
-     — même source GLSL au caractère près, useEffect remplacé par une
-     initialisation directe.
-     Deux adaptations indispensables :
-       1. La palette d'origine est bleu/cyan. Sur une charte marine-or-
-          bordeaux, le cyan jurerait. La couleur de fond passe au NOIR et
-          le canvas est composé en « screen » : le noir devient
-          transparent, seule la bordure lumineuse subsiste au-dessus de
-          la photographie du bandeau.
-       2. Le rendu s'arrête hors champ, onglet masqué, et en mouvement
-          réduit. Trois canvas WebGL qui tournent en permanence
-          videraient la batterie d'un téléphone.
-     ================================================================== */
-  (function bordurePulsee(){
-    var CIBLES = ['etablissement', 'vie-scolaire', 'paiement'];
-
-    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    var VERT = 'attribute vec2 a_position;\n' +
-      'void main() { gl_Position = vec4(a_position, 0.0, 1.0); }';
-
-    var FRAG = [
-      "#ifdef GL_FRAGMENT_PRECISION_HIGH",
-      "precision highp float;",
-      "#else",
-      "precision mediump float;",
-      "#endif",
-      "uniform vec3 u_colors[8];",
-      "uniform vec4 u_scene;",
-      "uniform vec4 u_shape;",
-      "uniform vec4 u_surface;",
-      "uniform vec4 u_finish;",
-      "uniform vec4 u_transform;",
-      "uniform vec4 u_space;",
-      "uniform vec4 u_cursor;",
-      "#define u_resolution u_scene.xy",
-      "#define u_time u_scene.z",
-      "#define u_colorCount u_scene.w",
-      "#define u_scale u_shape.x",
-      "#define u_intensity u_shape.y",
-      "#define u_paramA u_shape.z",
-      "#define u_warp u_shape.w",
-      "#define u_detail u_surface.x",
-      "#define u_contrast u_surface.y",
-      "#define u_brightness u_surface.z",
-      "#define u_saturation u_surface.w",
-      "#define u_hue u_finish.x",
-      "#define u_vignette u_finish.y",
-      "#define u_blur u_finish.z",
-      "#define u_grain u_finish.w",
-      "#ifdef GL_FRAGMENT_PRECISION_HIGH",
-      "#define u_seed u_transform.x",
-      "#else",
-      "#define u_seed mod(u_transform.x, 31.0)",
-      "#endif",
-      "#define u_rotate u_transform.y",
-      "#define u_drift u_transform.z",
-      "#define u_oklab u_transform.w",
-      "#define u_offset u_space.xy",
-      "#define u_mouse u_space.zw",
-      "#define u_cursorPresence u_cursor.x",
-      "#define u_cursorEffect u_cursor.y",
-      "#define u_cursorStrength u_cursor.z",
-      "#define u_cursorRadius u_cursor.w",
-      "float hash21(vec2 p) {",
-      "#ifndef GL_FRAGMENT_PRECISION_HIGH",
-      "  p = mod(p, 31.0);",
-      "#endif",
-      "  p = fract(p * vec2(234.34, 435.345));",
-      "  p += dot(p, p + 34.23);",
-      "  return fract(p.x * p.y);",
-      "}",
-      "float grainHash(vec2 p) {",
-      "  vec3 p3 = fract(vec3(p.xyx) * 0.1031);",
-      "  p3 += dot(p3, p3.yzx + 33.33);",
-      "  return fract((p3.x + p3.y) * p3.z);",
-      "}",
-      "float noise(vec2 p) {",
-      "  vec2 i = floor(p);",
-      "  vec2 f = fract(p);",
-      "  vec2 u = f * f * (3.0 - 2.0 * f);",
-      "  return mix(mix(hash21(i), hash21(i + vec2(1.0, 0.0)), u.x),",
-      "             mix(hash21(i + vec2(0.0, 1.0)), hash21(i + vec2(1.0, 1.0)), u.x), u.y);",
-      "}",
-      "float fbm(vec2 p) {",
-      "  float v = 0.0; float a = 0.5;",
-      "  for (int i = 0; i < 5; i++) { v += a * noise(p); p = p * 2.03 + vec2(17.0, 9.2); a *= 0.5; }",
-      "  return v;",
-      "}",
-      "vec3 mixColour(vec3 a, vec3 b, float t) { return mix(a, b, t); }",
-      "vec3 palette(float x) {",
-      "  float n = max(u_colorCount - 1.0, 1.0);",
-      "  float f = clamp(x, 0.0, 1.0) * n;",
-      "  vec3 col = u_colors[0];",
-      "  for (int i = 0; i < 7; i++) {",
-      "    if (float(i) < n)",
-      "      col = mixColour(col, u_colors[i + 1], smoothstep(0.0, 1.0, clamp(f - float(i), 0.0, 1.0)));",
-      "  }",
-      "  return col;",
-      "}",
-      "vec3 shade(vec2 uv, vec2 p, float t) {",
-      "  // Le cadre d'origine etait fixe a (0.82, 0.47) : sur un bandeau",
-      "  // large, il tombait 35% en retrait des bords lateraux et 25% des",
-      "  // bords haut et bas — un rectangle lumineux flottant au milieu de",
-      "  // l'image au lieu d'en souligner le pourtour. On le calcule donc",
-      "  // a partir de la resolution reelle, ce qui le fait epouser les",
-      "  // bords quel que soit le format du bandeau.",
-      "  float thickness = mix(0.018, 0.11, u_paramA);",
-      "  vec2 demi = 0.5 * u_resolution / min(u_resolution.x, u_resolution.y) * u_scale;",
-      "  vec2 box = max(demi - vec2(thickness * 1.25), vec2(0.02));",
-      "  vec2 d = abs(p) - box;",
-      "  float outside = length(max(d, 0.0)) + min(max(d.x, d.y), 0.0);",
-      "  float edge = 1.0 - smoothstep(thickness * 0.35, thickness, abs(outside));",
-      "  float perimeter = atan(p.y * box.x, p.x * box.y) / 6.2831853 + 0.5;",
-      "  float pulse = 0.5 + 0.5 * sin(perimeter * (5.0 + u_intensity * 9.0) - t * 1.8);",
-      "  float trail = pow(pulse, mix(7.0, 2.0, u_intensity));",
-      "  float innerGlow = exp(-abs(outside) * 24.0) * 0.32;",
-      "  return mix(u_colors[0], palette(trail), clamp(edge + innerGlow, 0.0, 1.0));",
-      "}",
-      "void main() {",
-      "  vec2 uv = gl_FragCoord.xy / u_resolution.xy;",
-      "  vec2 screenUv = uv;",
-      "  vec2 p = (gl_FragCoord.xy - 0.5 * u_resolution.xy) / min(u_resolution.x, u_resolution.y);",
-      "  uv = p * min(u_resolution.x, u_resolution.y) / u_resolution.xy + 0.5;",
-      "  p *= u_scale;",
-      "  if (abs(u_rotate) > 0.0001) { float cr = cos(u_rotate), sr = sin(u_rotate); p = mat2(cr, -sr, sr, cr) * p; }",
-      "  p += u_offset;",
-      "  if (u_drift > 0.0001) p += u_drift * vec2(sin(u_time * 0.31), cos(u_time * 0.23));",
-      "  if (u_warp > 0.0) p += u_warp * (vec2(fbm(p * u_detail + u_seed), fbm(p * u_detail + vec2(5.2, 1.3))) - 0.5);",
-      "  vec3 col = shade(uv, p, u_time);",
-      "  if (abs(u_contrast - 1.0) > 0.0001) col = (col - 0.5) * u_contrast + 0.5;",
-      "  if (abs(u_brightness) > 0.0001) col += u_brightness;",
-      "  if (u_vignette > 0.0001) { float vd = length(screenUv - 0.5) * 1.41421356; col *= 1.0 - u_vignette * smoothstep(0.35, 1.0, vd); }",
-      "  if (u_grain > 0.0001) col += (grainHash(gl_FragCoord.xy + vec2(u_seed * 17.0, u_seed * 31.0)) - 0.5) * u_grain;",
-      "  gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);",
-      "}"
-    ].join('\n');
-
-    var U = {
-      colors: [
-        [0.000, 0.000, 0.000],
-        [0.478, 0.133, 0.192],
-        [0.788, 0.635, 0.294],
-        [0.894, 0.804, 0.557]
-      ],
-      colorCount: 4,
-      scale: 1.26, intensity: 0.28, paramA: 0.22, warp: 0.0,
-      detail: 1.824, contrast: 1.005, brightness: 0.0,
-      vignette: 0.0, grain: 0.0,
-      seed: 3.0, rotate: 0.0, offsetX: 0.0, offsetY: 0.0, drift: 0.0,
-      timeScale: 0.30
-    };
-
-    function monter(hote){
-      if(hote.querySelector('.hero-shader')) return;
-      var cv = document.createElement('canvas');
-      cv.className = 'hero-shader';
-      cv.setAttribute('aria-hidden', 'true');
-      hote.insertBefore(cv, hote.firstChild);
-
-      var gl = cv.getContext('webgl', {antialias:false, alpha:false})
-            || cv.getContext('experimental-webgl', {antialias:false, alpha:false});
-      if(!gl){ cv.remove(); return; }
-
-      function compiler(type, src){
-        var s = gl.createShader(type);
-        gl.shaderSource(s, src); gl.compileShader(s);
-        if(!gl.getShaderParameter(s, gl.COMPILE_STATUS)){
-          console.warn('shader', gl.getShaderInfoLog(s)); return null;
-        }
-        return s;
-      }
-      var vs = compiler(gl.VERTEX_SHADER, VERT);
-      var fs = compiler(gl.FRAGMENT_SHADER, FRAG);
-      if(!vs || !fs){ cv.remove(); return; }
-
-      var prog = gl.createProgram();
-      gl.attachShader(prog, vs); gl.attachShader(prog, fs);
-      gl.linkProgram(prog);
-      gl.deleteShader(vs); gl.deleteShader(fs);
-      gl.useProgram(prog);
-
-      var buf = gl.createBuffer();
-      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
-      var loc = gl.getAttribLocation(prog, 'a_position');
-      gl.enableVertexAttribArray(loc);
-      gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-
-      function u(n){ return gl.getUniformLocation(prog, n); }
-      var plat = [];
-      for(var i = 0; i < 8; i++) plat = plat.concat(U.colors[i] || U.colors[U.colors.length-1]);
-      gl.uniform3fv(u('u_colors'), new Float32Array(plat));
-      gl.uniform4f(u('u_shape'),     U.scale, U.intensity, U.paramA, U.warp);
-      gl.uniform4f(u('u_surface'),   U.detail, U.contrast, U.brightness, 1.0);
-      gl.uniform4f(u('u_finish'),    0.0, U.vignette, 0.0, U.grain);
-      gl.uniform4f(u('u_transform'), U.seed, U.rotate, U.drift, 0.0);
-      gl.uniform4f(u('u_cursor'),    0, 0, 0, 0);
-      gl.uniform4f(u('u_space'),     U.offsetX, U.offsetY, 0, 0);
-      var uScene = u('u_scene');
-
-      var raf = 0, visible = true, dansLeCadre = true;
-      var depart = performance.now();
-
-      function dimensionner(){
-        var r = cv.getBoundingClientRect();
-        if(!r.width || !r.height) return false;
-        var dpr = Math.min(window.devicePixelRatio || 1, 2);
-        var bw = Math.max(1, Math.round(r.width * dpr));
-        var bh = Math.max(1, Math.round(r.height * dpr));
-        var ech = Math.min(1, Math.sqrt(2000000 / Math.max(1, bw * bh)));
-        var w = Math.max(1, Math.round(bw * ech));
-        var h = Math.max(1, Math.round(bh * ech));
-        if(cv.width !== w || cv.height !== h){
-          cv.width = w; cv.height = h; gl.viewport(0, 0, w, h);
-        }
-        return true;
-      }
-
-      function rendre(now){
-        raf = 0;
-        if(!visible || !dansLeCadre) return;
-        if(!dimensionner()){ demander(); return; }
-        gl.uniform4f(uScene, cv.width, cv.height,
-                     ((now - depart) / 1000) * U.timeScale, U.colorCount);
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
-        demander();
-      }
-      function demander(){ if(!raf && visible && dansLeCadre) raf = requestAnimationFrame(rendre); }
-      function suspendre(){ if(raf){ cancelAnimationFrame(raf); raf = 0; } }
-
-      new IntersectionObserver(function(e){
-        dansLeCadre = e[0] ? e[0].isIntersecting : true;
-        if(dansLeCadre) demander(); else suspendre();
-      }).observe(cv);
-
-      document.addEventListener('visibilitychange', function(){
-        visible = document.visibilityState === 'visible';
-        if(visible) demander(); else suspendre();
-      });
-      window.addEventListener('resize', function(){ dimensionner(); demander(); });
-      demander();
-    }
-
-    function equiperShader(cle){
-      if(CIBLES.indexOf(cle) === -1) return;
-      var sec = document.getElementById('sec-' + cle);
-      var hero = sec && sec.querySelector('.page-hero');
-      if(hero) monter(hero);
-    }
-
-    var _goSh = go;
-    go = function(cle, ancre){
-      _goSh(cle, ancre);
-      equiperShader(cle);
-    };
-    var actif = document.querySelector('.page-section.active');
-    if(actif) equiperShader(actif.dataset.key);
-  })();
 
 /* ==================================================================
    Revelations bidirectionnelles et compteurs
@@ -1062,3 +810,266 @@ var API_BASE = 'http://' + window.location.hostname + ':4000';
    deja en train de partir. On rend ici a go() son unique role.
    ================================================================== */
 go = _navigation;
+
+/* ==================================================================
+   OÙ SONT LES PHOTOGRAPHIES
+   ------------------------------------------------------------------
+   Elles sont rangées par catégorie d'actualité, sous
+   « assets/images/Galeries_Photos/ ». Une carte qui ne dit rien est
+   réputée relever des Événements ; pour une galerie rangée ailleurs,
+   lui donner data-dossier (par exemple data-dossier="Vie scolaire").
+
+   Les noms de dossiers portent espaces et accents : ils sont donc
+   encodés pour l'adresse (l'espace devient %20, le « è » %C3%A8).
+   C'est encodeURIComponent qui s'en charge — ne pas écrire l'adresse
+   à la main.
+   ================================================================== */
+function dossierPhotos(carte){
+  var d = (carte.dataset.dossier || 'Evènements').trim();
+  return 'assets/images/Galeries_Photos/' + encodeURIComponent(d) + '/';
+}
+
+/* ==================================================================
+   DÉFILEMENT DES VIGNETTES — UNE SEULE HORLOGE POUR TOUTES
+   ------------------------------------------------------------------
+   Ce bloc vit ici, dans le fichier commun, parce que DEUX pages s'en
+   servent : la rubrique Actualités et le volet « Actualités récentes »
+   de l'accueil. Une seule écriture, donc un seul comportement — deux
+   copies auraient fini par diverger.
+
+   Les activités illustrées changent de photographie au même instant.
+   Une seule horloge bat pour l'ensemble des cartes : à chaque
+   battement, chacune passe au cliché suivant. Les séries n'ont pas la
+   même longueur, si bien qu'elles ne se rebouclent pas ensemble ; mais
+   les transitions, elles, tombent toujours au même moment.
+
+   Le visiteur peut reprendre la main sur une carte : flèches à la
+   souris, pastilles, balayage au doigt, flèches du clavier. La carte
+   se fige alors le temps qu'il la regarde, puis rejoint la cadence
+   commune à l'endroit où il l'a laissée.
+
+   Trois principes tenus ici. Le défilement ne conditionne jamais
+   l'affichage : la première photographie est dans la page et se voit
+   même si ce script ne s'exécute pas. Les suivantes sont montées après
+   le premier affichage — l'accueil y gagne un demi-mégaoctet de plus
+   qu'avant, ce qui est le prix du procédé. Et rien n'est peint pour une
+   carte qu'on ne regarde pas, mais son rang avance quand même, pour
+   qu'elle revienne en phase avec les autres.
+   ================================================================== */
+(function defilementVignettes(){
+  var DUREE = 4200;    /* temps d'affichage d'une photographie */
+  var REPIT = 12000;   /* après une action du visiteur, on lui laisse la main */
+
+  var vignettes = [].slice.call(
+    document.querySelectorAll('.news-card[data-galerie] .thumb.diapo'));
+  if(!vignettes.length) return;
+
+  var calme = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var horloge = null;
+  var diapos = [];
+  var temps = 0;   /* nombre de battements depuis le chargement */
+
+  vignettes.forEach(function(vignette){
+    var carte = vignette.closest('.news-card');
+    var cle = carte.dataset.galerie;
+    var nb = parseInt(carte.dataset.photos, 10) || 1;
+    var legendes = (carte.dataset.legendes || '').split('|').map(function(s){ return s.trim(); });
+    if(nb < 2) return;                     /* une seule photo : rien à parcourir */
+
+    var premiere = vignette.querySelector('img');
+    if(!premiere) return;
+
+    var images = [premiere], points = [];
+    var rang = 0, prete = false;
+    var survole = false, repit = null, enVue = true, balaye = false;
+    var titre = (carte.querySelector('h3') || {}).textContent || '';
+
+    function afficher(){
+      images.forEach(function(im, i){ im.classList.toggle('visible', i === rang); });
+      points.forEach(function(p, i){ p.classList.toggle('on', i === rang); });
+      /* L'agrandissement lit ce rang pour s'ouvrir sur la photographie
+         que l'on est en train de regarder. */
+      vignette.dataset.rang = rang;
+      /* L'intitulé n'a de sens que là où la vignette est elle-même un
+         bouton — dans la rubrique Actualités. Sur l'accueil, c'est la
+         carte entière qui est un lien : lui annoncer des flèches qu'elle
+         n'a pas au clavier tromperait le visiteur. */
+      if(vignette.getAttribute('role') === 'button'){
+        vignette.setAttribute('aria-label',
+          'Voir les photographies : ' + titre + ' — ' + (rang + 1) + ' sur ' + nb
+          + '. Flèches gauche et droite pour les parcourir.');
+      }
+    }
+
+    function mainDuVisiteur(){
+      clearTimeout(repit);
+      repit = setTimeout(function(){ repit = null; }, REPIT);
+    }
+    function figee(){ return survole || repit !== null; }
+
+    function aller(cible){
+      rang = ((cible % nb) + nb) % nb;
+      afficher();
+      mainDuVisiteur();
+    }
+
+    function commande(sens, pas, signe, intitule){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'diapo-cmd diapo-' + sens;
+      b.tabIndex = -1;
+      b.setAttribute('aria-hidden', 'true');
+      b.title = intitule;
+      b.textContent = signe;
+      b.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();      /* parcourir n'agrandit pas, et ne suit pas le lien */
+        aller(rang + pas);
+      });
+      vignette.appendChild(b);
+    }
+
+    /* ---------- Préparation, à l'approche de la carte ----------
+       Les autres photographies ne sont pas dans la page servie, et ne
+       sont demandées qu'ici. On règle le rang sur le nombre de
+       battements déjà écoulés : la carte entre ainsi en phase avec les
+       autres, sans rattrapage visible. */
+    function preparer(){
+      if(prete) return;
+      prete = true;
+
+      var suite = document.createDocumentFragment();
+      for(var n = 2; n <= nb; n++){
+        var img = document.createElement('img');
+        img.src = dossierPhotos(carte) + 'actu-' + cle + '-v' + n + '.jpg';
+        img.alt = legendes[n - 1] || '';
+        suite.appendChild(img);
+        images.push(img);
+      }
+      images[0].classList.add('visible');
+      premiere.parentNode.insertBefore(suite, premiere.nextSibling);
+      vignette.classList.add('en-cours');
+
+      /* Les commandes sont des repères pour la souris et le doigt. La
+         vignette peut être elle-même un bouton, ou tenir dans un lien :
+         dans les deux cas un élément actionnable ne peut pas en contenir
+         d'autres. Elles restent donc hors du parcours de tabulation. */
+      commande('prec', -1, '‹', 'Photographie précédente');
+      commande('suiv',  1, '›', 'Photographie suivante');
+
+      var barre = document.createElement('span');
+      barre.className = 'diapo-points';
+      barre.setAttribute('aria-hidden', 'true');
+      for(var k = 0; k < nb; k++){
+        (function(cible){
+          var p = document.createElement('i');
+          p.addEventListener('click', function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            aller(cible);
+          });
+          barre.appendChild(p);
+          points.push(p);
+        })(k);
+      }
+      vignette.appendChild(barre);
+
+      rang = temps % nb;
+      afficher();
+      diapos.push({
+        /* Le rang avance même hors de l'écran : la carte reste en phase
+           avec les autres, elle se contente de ne rien peindre. */
+        battre: function(){
+          if(figee()) return;
+          rang = (rang + 1) % nb;
+          if(enVue) afficher();
+        }
+      });
+    }
+
+    /* ---------- Clavier ----------
+       Là où la vignette est un bouton, Entrée et Espace ouvrent
+       l'agrandissement ; les flèches parcourent la série sur place. */
+    vignette.addEventListener('keydown', function(e){
+      if(!prete) return;
+      if(e.key === 'ArrowLeft'){ e.preventDefault(); aller(rang - 1); }
+      if(e.key === 'ArrowRight'){ e.preventDefault(); aller(rang + 1); }
+    });
+
+    /* ---------- Doigt ----------
+       Un balayage horizontal fait défiler. On ne détourne pas un
+       défilement vertical de la page, et un balayage n'ouvre pas
+       l'agrandissement et ne suit pas le lien : le clic que le
+       navigateur fabrique après le geste est intercepté avant
+       d'atteindre la carte. */
+    var x0 = null, y0 = null;
+    vignette.addEventListener('touchstart', function(e){
+      x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+    }, { passive: true });
+    vignette.addEventListener('touchend', function(e){
+      if(x0 === null || !prete) return;
+      var dx = e.changedTouches[0].clientX - x0;
+      var dy = e.changedTouches[0].clientY - y0;
+      x0 = null;
+      if(Math.abs(dx) < 45 || Math.abs(dx) < Math.abs(dy)) return;
+      balaye = true;
+      setTimeout(function(){ balaye = false; }, 400);
+      aller(rang + (dx < 0 ? 1 : -1));
+    }, { passive: true });
+    carte.addEventListener('click', function(e){
+      if(!balaye) return;
+      balaye = false;
+      e.preventDefault();
+      e.stopPropagation();
+    }, true);
+
+    /* ---------- Survol ----------
+       L'écoute porte sur la carte entière, et non sur la seule
+       vignette, parce que c'est la carte entière qui fait apparaître les
+       commandes. Les deux signaux doivent coïncider : sinon, survoler le
+       titre montrerait des flèches sur une vignette qui continue de
+       défiler. */
+    carte.addEventListener('mouseenter', function(){ survole = true; });
+    carte.addEventListener('mouseleave', function(){ survole = false; });
+    vignette.addEventListener('focusin', function(){ survole = true; });
+    vignette.addEventListener('focusout', function(){ survole = false; });
+
+    /* ---------- Hors de l'écran ----------
+       L'observateur ne sert qu'à suspendre la peinture quand la carte
+       s'éloigne, et il ne peut qu'infirmer : s'il ne se déclenche
+       jamais, la carte est réputée visible et continue de s'afficher.
+
+       Il a d'abord servi aussi à retarder le montage des photographies,
+       pour épargner un demi-mégaoctet à l'accueil. C'est abandonné :
+       l'observateur ne se déclenche pas partout, et une carte pouvait
+       rester quatre secondes sans ses commandes. Une économie ne doit
+       jamais conditionner l'affichage — les photographies sont donc
+       montées tout de suite, comme dans la rubrique Actualités. */
+    preparer();
+    if(window.IntersectionObserver){
+      new IntersectionObserver(function(entrees){
+        entrees.forEach(function(en){
+          var avant = enVue;
+          enVue = en.isIntersecting;
+          if(enVue && !avant) afficher();
+        });
+      }, { threshold: 0.15 }).observe(vignette);
+    }
+  });
+
+  function battre(){
+    temps++;
+    diapos.forEach(function(d){ d.battre(); });
+  }
+  function lancer(){
+    if(calme || horloge) return;
+    horloge = setInterval(battre, DUREE);
+  }
+  function suspendre(){
+    if(horloge){ clearInterval(horloge); horloge = null; }
+  }
+  document.addEventListener('visibilitychange', function(){
+    document.hidden ? suspendre() : lancer();
+  });
+  lancer();
+})();

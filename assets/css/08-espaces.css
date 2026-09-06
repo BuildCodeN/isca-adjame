@@ -36,35 +36,13 @@
 
 
   /* ==================================================================
-     BORDURE PULSÉE — composition
-     Le canvas est composé en « screen » : le noir du shader devient
-     transparent et seule la lumière de la bordure se pose sur la
-     photographie. Sans ce mode de fusion, l'aplat opaque du shader
-     effacerait purement et simplement le visuel du bandeau.
+     BORDURE PULSÉE — RETIRÉE
+     ------------------------------------------------------------------
+     Le canvas WebGL qui faisait circuler une lueur le long des bordures
+     de trois bandeaux a été retiré, ainsi que son style. Les bandeaux
+     portent de vraies photographies : la lueur s'y lisait comme un
+     défaut d'affichage.
      ================================================================== */
-  .hero-shader{
-    position:absolute;inset:0;z-index:1;
-    display:block;width:100%;height:100%;
-    pointer-events:none;
-    mix-blend-mode:screen;
-    opacity:0;
-    animation:shaderEntree 2.4s var(--e-pose) .3s forwards;
-  }
-  @keyframes shaderEntree{ to{opacity:.6;} }
-
-  .hero-etablissement > *:not(.hero-shader):not(.hero-paths),
-  .hero-vie-scolaire > *:not(.hero-shader):not(.hero-paths),
-  .hero-paiement > *:not(.hero-shader):not(.hero-paths){position:relative;z-index:2;}
-  /* Et on verrouille le canvas hors du flux, quoi qu'il arrive. */
-  .page-hero > canvas.hero-shader{position:absolute !important;z-index:1;}
-
-  @media(max-width:900px){
-    /* Un contexte WebGL par bandeau reste coûteux sur téléphone, et la
-       bordure pulsée se lit mal sur 46vh de hauteur. */
-    .hero-shader{display:none;}
-  }
-  @media(prefers-reduced-motion:reduce){ .hero-shader{display:none !important;} }
-  @media print{ .hero-shader{display:none !important;} }
 
 
   /* ==================================================================
