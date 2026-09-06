@@ -1360,3 +1360,25 @@
   .footer-col a.fb:hover .ico-fb,
   .info-card a.lien-fb:hover .ico-fb{transform:none;}
 }
+
+
+/* ---------- Les cartes d'actualite de l'accueil sont cliquables ----------
+   Elles portent desormais une photographie et renvoient a la rubrique
+   Actualites, ou l'on trouve le detail, les autres cliches et
+   l'agrandissement. Devenues des liens, il faut leur rendre l'aspect
+   qu'elles avaient : un lien herite d'une couleur et d'un
+   soulignement dont une carte n'a que faire. */
+.news-grid a.news-card{
+  display:block;color:inherit;text-decoration:none;
+}
+.news-grid a.news-card .news-date{color:var(--ink-soft);}
+.news-grid a.news-card h3{color:var(--navy);}
+.news-grid a.news-card p{color:var(--ink);}
+/* Le focus au clavier doit se voir : la carte entiere est la cible. */
+.news-grid a.news-card:focus-visible{
+  outline:2px solid var(--gold);outline-offset:3px;
+}
+
+/* La cible d'une ancre ne doit pas se retrouver sous la barre de
+   navigation fixe : on lui reserve la hauteur du bandeau. */
+.news-list-grid .news-card[id]{scroll-margin-top:96px;}
