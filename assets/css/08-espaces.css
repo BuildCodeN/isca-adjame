@@ -1197,62 +1197,156 @@
 
 
 /* ---------- Info flash de la rentree ----------
-   Le bandeau rouge annonce la date ; ce panneau en donne les
-   consequences pratiques. Il se tient juste dessous, plus clair, pour
-   qu'on lise l'un puis l'autre sans les confondre.
+   Une annonce qui doit se voir des l'arrivee, sans crier. Trois
+   ressorts, tous lents :
 
-   L'or ne sert ici qu'a tracer et a marquer, jamais a ecrire : sur ce
-   fond creme il ne donne que 2:1 de contraste, illisible. Les
-   intitules sont donc au bordeaux (8,3:1) et le texte a l'encre
-   (13:1). */
-.flash-rentree{
-  background:var(--cream-deep);
-  border-top:1px solid var(--line);
-  border-bottom:1px solid var(--line);
-  padding:30px 40px 26px;
-}
-.flash-rentree .fr-entete{
-  display:flex;align-items:center;gap:12px;
-  margin-bottom:20px;
-}
-.flash-rentree .fr-marque{
-  background:var(--gold);color:var(--navy);
-  font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
-  padding:4px 9px;border-radius:var(--radius);
-  white-space:nowrap;
-}
-.flash-rentree h2{
-  font-family:'Fraunces',serif;font-weight:600;
-  font-size:21px;color:var(--navy);line-height:1.2;margin:0;
-}
-.flash-rentree .fr-points{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:26px;
-  list-style:none;margin:0;padding:0;
-}
-.flash-rentree .fr-points > li{
+     - une lueur doree traverse le bandeau, puis marque un temps ;
+     - la pastille « Info flash » emet une onde qui se dissipe ;
+     - les messages se relaient, un a la fois, en fondu montant.
+
+   Rien ne clignote : un clignotement rapide est a la fois desagreable
+   et dangereux pour les personnes photosensibles. Toutes les
+   animations s'arretent si le visiteur a demande moins de mouvement,
+   et le survol suspend le relais — on ne fait pas filer un texte que
+   quelqu'un est en train de lire.
+
+   Le marine tranche avec le bandeau bordeaux juste au-dessus : l'un
+   annonce la date, l'autre en donne les consequences. Deux voix, deux
+   fonds. Le creme sur ce marine donne 14,9:1, l'or 6,7:1. */
+.info-flash{
+  position:relative;overflow:hidden;
+  background:var(--navy);color:var(--cream);
   border-top:2px solid var(--gold);
-  padding-top:12px;
+  padding:26px 40px 24px;
 }
-.flash-rentree .fr-quoi{
+
+/* --- la lueur qui traverse --- */
+.info-flash::before{
+  content:"";position:absolute;top:0;bottom:0;left:0;width:34%;
+  background:linear-gradient(100deg,
+    rgba(201,162,75,0) 0%,
+    rgba(201,162,75,.14) 42%,
+    rgba(228,205,142,.30) 50%,
+    rgba(201,162,75,.14) 58%,
+    rgba(201,162,75,0) 100%);
+  transform:translateX(-150%) skewX(-14deg);
+  pointer-events:none;
+  animation:ifLueur 6s var(--e-presse) infinite;
+}
+@keyframes ifLueur{
+  0%{transform:translateX(-150%) skewX(-14deg);}
+  50%,100%{transform:translateX(420%) skewX(-14deg);}
+}
+
+/* --- l'en-tete --- */
+.info-flash .if-tete{
+  position:relative;z-index:2;
+  display:flex;align-items:center;gap:13px;margin-bottom:16px;
+}
+.info-flash .if-marque{
+  background:var(--gold);color:var(--navy);
+  font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 9px;border-radius:var(--radius);white-space:nowrap;
+  animation:ifOnde 2.6s var(--e-pose) infinite;
+}
+/* Une onde qui s'ecarte et se dissipe : l'oeil l'attrape sans etre
+   agresse, contrairement a une opacite qui bat. */
+@keyframes ifOnde{
+  0%{box-shadow:0 0 0 0 rgba(201,162,75,.55);}
+  60%,100%{box-shadow:0 0 0 9px rgba(201,162,75,0);}
+}
+.info-flash h2{
+  font-family:'Fraunces',serif;font-weight:600;
+  font-size:21px;color:var(--cream);line-height:1.2;margin:0;
+}
+
+/* --- les messages --- */
+/* Au repos, sans script : ils se suivent, tous lisibles. */
+.info-flash .if-messages{
+  position:relative;z-index:2;
+  list-style:none;margin:0;padding:0;
+  display:flex;flex-direction:column;gap:14px;
+}
+.info-flash .if-msg{border-left:2px solid var(--gold);padding-left:14px;}
+.info-flash .if-quoi{
   display:block;
   font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--wine);margin-bottom:7px;
+  color:var(--gold-soft);margin-bottom:6px;
 }
-.flash-rentree .fr-points p{
-  font-size:13.5px;line-height:1.62;color:var(--ink);margin:0;
+.info-flash .if-msg p{
+  font-size:14.5px;line-height:1.6;color:var(--cream);margin:0;
+  max-width:74ch;
 }
-.flash-rentree .fr-points b{font-weight:700;color:var(--navy);}
-.flash-rentree .fr-mot{
-  margin:22px 0 0;padding-top:14px;
-  border-top:1px solid var(--line);
-  font-size:13px;font-style:italic;color:var(--ink-soft);
+.info-flash .if-msg b{font-weight:700;color:var(--gold-soft);}
+
+/* Des que le script prend la main, les messages se superposent et se
+   relaient. La hauteur du cadre est calee sur le plus grand, mesure
+   par le script : sans quoi le bandeau sauterait a chaque relais. */
+.info-flash.en-relais .if-messages{display:block;}
+.info-flash.en-relais .if-msg{
+  position:absolute;left:0;right:0;top:0;
+  opacity:0;transform:translateY(10px);
+  transition:opacity 620ms var(--e-pose), transform 620ms var(--e-pose);
+}
+.info-flash.en-relais .if-msg.visible{opacity:1;transform:none;}
+
+/* --- pied : pastilles et mot de la direction --- */
+.info-flash .if-pied{
+  position:relative;z-index:2;
+  display:flex;align-items:center;gap:18px;
+  margin-top:18px;padding-top:14px;
+  border-top:1px solid rgba(201,162,75,.28);
+}
+.info-flash .if-mot{
+  font-size:13px;font-style:italic;color:#C7CAD3;margin:0;
+}
+.info-flash .if-points{display:flex;gap:7px;flex-shrink:0;}
+.info-flash .if-points i{
+  width:7px;height:7px;border-radius:50%;
+  background:rgba(250,246,239,.34);
+  cursor:pointer;
+  transition:width var(--t-survol) var(--e-pose),
+             background var(--t-survol) var(--e-pose),
+             border-radius var(--t-survol) var(--e-pose);
+}
+.info-flash .if-points i.on{width:20px;border-radius:4px;background:var(--gold);}
+
+/* --- la jauge : le temps qui reste au message affiche --- */
+.info-flash .if-jauge{
+  position:absolute;left:0;bottom:0;height:2px;width:0;
+  background:var(--gold);
+  transition:width 120ms linear;
 }
 
 @media(max-width:900px){
-  /* Les trois points s'empilent : sur un telephone, trois colonnes de
-     45px de large ne se lisent pas. */
-  .flash-rentree{padding:22px 20px 20px;}
-  .flash-rentree .fr-points{grid-template-columns:1fr;gap:18px;}
-  .flash-rentree .fr-entete{flex-direction:column;align-items:flex-start;gap:8px;margin-bottom:16px;}
-  .flash-rentree h2{font-size:19px;}
+  .info-flash{padding:20px 20px 18px;}
+  .info-flash .if-tete{flex-direction:column;align-items:flex-start;gap:9px;margin-bottom:14px;}
+  .info-flash h2{font-size:19px;}
+  .info-flash .if-msg p{font-size:13.5px;}
+  .info-flash .if-pied{flex-direction:column;align-items:flex-start;gap:11px;}
 }
+
+@media(prefers-reduced-motion:reduce){
+  /* Aucun mouvement : ni lueur, ni onde, ni relais. Les trois messages
+     restent alors affiches ensemble — le script ne lance pas le relais
+     dans ce cas, rien n'est donc perdu. */
+  .info-flash::before{display:none;}
+  .info-flash .if-marque{animation:none;}
+  .info-flash .if-msg{transition:none;}
+  .info-flash .if-jauge{display:none;}
+}
+
+@media print{
+  .info-flash::before, .info-flash .if-jauge, .info-flash .if-points{display:none;}
+}
+
+
+/* ---------- Contact : cinq cartes sur une grille de quatre ----------
+   L'ajout de la carte « Sur les reseaux » a fait passer la grille de
+   quatre a cinq cartes : la derniere se retrouvait seule sur sa ligne,
+   laissant 890 x 260 px de fond beige a cote d'elle — le fond de la
+   grille, qui ne sert normalement qu'a dessiner les filets de 1px.
+   La carte des horaires occupe donc toute la ligne : ses trois lignes
+   jour/heure y respirent mieux qu'a 295px de large. */
+.info-grid .info-card-hours{grid-column:1 / -1;}
+.info-grid .info-card-hours .hours-row{max-width:520px;}

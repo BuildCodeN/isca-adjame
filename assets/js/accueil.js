@@ -158,3 +158,138 @@
   })();
   
 
+
+/* ==================================================================
+   INFO FLASH — LES MESSAGES SE RELAIENT
+   ------------------------------------------------------------------
+   Une seule annonce à la fois, sept secondes chacune, en fondu
+   montant. Le nombre s'ajuste tout seul : ajouter un <li class="if-msg">
+   suffit, les pastilles suivent.
+
+   Trois précautions.
+
+   Sans ce script, les messages restent tous affichés à la suite : une
+   annonce de la direction ne doit pas dépendre d'un JavaScript pour
+   être lue. Le relais ne commence qu'une fois la reprise assurée.
+
+   Le survol et le focus suspendent le relais — on ne fait pas filer un
+   texte que quelqu'un est en train de lire. Une jauge montre le temps
+   qui reste, pour que le changement ne surprenne pas.
+
+   Les trois messages restent dans la page, superposés : un lecteur
+   d'écran les annonce tous, dans l'ordre, même si l'œil n'en voit
+   qu'un.
+   ================================================================== */
+(function infoFlash(){
+  var bandeau = document.querySelector('.info-flash');
+  if(!bandeau) return;
+
+  /* Une info flash a une fin. Passé la date, le bandeau s'efface de
+     lui-même. Le script ne fait que MASQUER : s'il ne s'exécute pas,
+     l'annonce reste visible — jamais l'inverse. La suppression du bloc
+     dans la page reste ce qui fait foi. */
+  var jusquAu = bandeau.dataset.jusquAu;
+  if(jusquAu){
+    var fin = new Date(jusquAu + 'T23:59:59');
+    if(!isNaN(fin.getTime()) && Date.now() > fin.getTime()){
+      bandeau.hidden = true;
+      return;
+    }
+  }
+
+  var liste = bandeau.querySelector('.if-messages');
+  var messages = [].slice.call(bandeau.querySelectorAll('.if-msg'));
+  var pied = bandeau.querySelector('.if-pied');
+  var jauge = bandeau.querySelector('.if-jauge');
+  if(!liste || messages.length < 2 || !pied) return;
+
+  /* Moins de mouvement : pas de relais du tout. Les trois messages
+     demeurent affichés ensemble — rien n'est perdu. */
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var DUREE = 7000;
+  var rang = 0, minuteur = null, tic = null, depart = 0, suspendu = false;
+
+  /* La hauteur du cadre est celle du plus grand message. On la mesure
+     en remettant chaque message dans le flux à tour de rôle : sans
+     cela, le bandeau sauterait à chaque relais. */
+  function hauteur(){
+    var h = 0;
+    messages.forEach(function(m){
+      m.style.position = 'static';
+      h = Math.max(h, m.offsetHeight);
+      m.style.position = '';
+    });
+    return h;
+  }
+  function caler(){
+    liste.style.height = hauteur() + 'px';
+  }
+
+  var points = [];
+  var barre = document.createElement('span');
+  barre.className = 'if-points';
+  barre.setAttribute('aria-hidden', 'true');
+  messages.forEach(function(_, i){
+    var p = document.createElement('i');
+    p.title = 'Message ' + (i + 1);
+    p.addEventListener('click', function(){ aller(i); relancer(); });
+    barre.appendChild(p);
+    points.push(p);
+  });
+  pied.insertBefore(barre, pied.firstChild);
+
+  function afficher(){
+    messages.forEach(function(m, i){ m.classList.toggle('visible', i === rang); });
+    points.forEach(function(p, i){ p.classList.toggle('on', i === rang); });
+  }
+  function aller(i){
+    rang = ((i % messages.length) + messages.length) % messages.length;
+    afficher();
+  }
+
+  function relancer(){
+    clearTimeout(minuteur); clearInterval(tic);
+    depart = Date.now();
+    if(jauge) jauge.style.width = '0';
+    minuteur = setTimeout(function(){ aller(rang + 1); relancer(); }, DUREE);
+    tic = setInterval(function(){
+      if(suspendu){ depart += 120; return; }   /* le temps ne court plus */
+      if(jauge) jauge.style.width = Math.min(100, (Date.now() - depart) / DUREE * 100) + '%';
+    }, 120);
+  }
+  function suspendre(){
+    if(suspendu) return;
+    suspendu = true;
+    clearTimeout(minuteur);
+  }
+  function reprendre(){
+    if(!suspendu) return;
+    suspendu = false;
+    /* On repart du temps déjà écoulé, sans rejouer le message. */
+    var reste = Math.max(600, DUREE - (Date.now() - depart));
+    clearTimeout(minuteur);
+    minuteur = setTimeout(function(){ aller(rang + 1); relancer(); }, reste);
+  }
+
+  bandeau.addEventListener('mouseenter', suspendre);
+  bandeau.addEventListener('mouseleave', reprendre);
+  bandeau.addEventListener('focusin', suspendre);
+  bandeau.addEventListener('focusout', reprendre);
+  document.addEventListener('visibilitychange', function(){
+    document.hidden ? suspendre() : reprendre();
+  });
+
+  /* Le cadre passe sous la conduite du script. */
+  bandeau.classList.add('en-relais');
+  caler();
+  afficher();
+  relancer();
+
+  var t;
+  window.addEventListener('resize', function(){
+    clearTimeout(t);
+    t = setTimeout(caler, 160);
+  });
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(caler);
+})();
