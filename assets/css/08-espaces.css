@@ -1194,3 +1194,65 @@
   .news-card .thumb.diapo > .diapo-points{opacity:.9;transition:none;}
   .news-card .thumb.diapo > .diapo-points > i{transition:none;}
 }
+
+
+/* ---------- Info flash de la rentree ----------
+   Le bandeau rouge annonce la date ; ce panneau en donne les
+   consequences pratiques. Il se tient juste dessous, plus clair, pour
+   qu'on lise l'un puis l'autre sans les confondre.
+
+   L'or ne sert ici qu'a tracer et a marquer, jamais a ecrire : sur ce
+   fond creme il ne donne que 2:1 de contraste, illisible. Les
+   intitules sont donc au bordeaux (8,3:1) et le texte a l'encre
+   (13:1). */
+.flash-rentree{
+  background:var(--cream-deep);
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  padding:30px 40px 26px;
+}
+.flash-rentree .fr-entete{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:20px;
+}
+.flash-rentree .fr-marque{
+  background:var(--gold);color:var(--navy);
+  font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  padding:4px 9px;border-radius:var(--radius);
+  white-space:nowrap;
+}
+.flash-rentree h2{
+  font-family:'Fraunces',serif;font-weight:600;
+  font-size:21px;color:var(--navy);line-height:1.2;margin:0;
+}
+.flash-rentree .fr-points{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:26px;
+  list-style:none;margin:0;padding:0;
+}
+.flash-rentree .fr-points > li{
+  border-top:2px solid var(--gold);
+  padding-top:12px;
+}
+.flash-rentree .fr-quoi{
+  display:block;
+  font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--wine);margin-bottom:7px;
+}
+.flash-rentree .fr-points p{
+  font-size:13.5px;line-height:1.62;color:var(--ink);margin:0;
+}
+.flash-rentree .fr-points b{font-weight:700;color:var(--navy);}
+.flash-rentree .fr-mot{
+  margin:22px 0 0;padding-top:14px;
+  border-top:1px solid var(--line);
+  font-size:13px;font-style:italic;color:var(--ink-soft);
+}
+
+@media(max-width:900px){
+  /* Les trois points s'empilent : sur un telephone, trois colonnes de
+     45px de large ne se lisent pas. */
+  .flash-rentree{padding:22px 20px 20px;}
+  .flash-rentree .fr-points{grid-template-columns:1fr;gap:18px;}
+  .flash-rentree .fr-entete{flex-direction:column;align-items:flex-start;gap:8px;margin-bottom:16px;}
+  .flash-rentree h2{font-size:19px;}
+}
