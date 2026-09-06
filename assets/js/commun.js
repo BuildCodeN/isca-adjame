@@ -46,16 +46,34 @@ function downloadPdf(){ window.print(); }
 /* ==================================================================
    ADRESSE DU BACK-END
    ------------------------------------------------------------------
-   Deduite du nom d'hote de la page plutot que figee en dur : depuis
-   l'ordinateur de travail cela reste localhost ; depuis un telephone
-   sur le meme Wi-Fi (192.168.x.x) cela pointe vers la meme machine,
-   sans reglage a changer.
    Cette adresse vit ici, et non dans le fichier d'une rubrique, parce
    que deux espaces s'y connectent : l'Espace Enseignant et l'acces
    parent de la page Paiement. Or chaque page ne charge que son propre
    fichier de rubrique — les deux ne se voient jamais.
+
+   DEUX SITUATIONS.
+
+   En developpement, le back-end ecoute sur le port 4000 de la meme
+   machine. On deduit l'hote de la page : depuis l'ordinateur de
+   travail cela reste localhost ; depuis un telephone sur le meme
+   Wi-Fi (192.168.x.x) cela pointe vers la meme machine, sans reglage.
+
+   EN LIGNE, ON N'APPELLE PAS « http:// » DEPUIS UNE PAGE « https:// ».
+   Le navigateur refuse purement et simplement la requete — c'est le
+   blocage du contenu mixte — et l'Espace Enseignant comme l'acces
+   parent cesseraient de fonctionner, sans message d'erreur visible
+   pour le visiteur. On appelle donc le meme domaine, dans le meme
+   protocole, et c'est l'hebergeur qui renvoie « /api » vers le
+   back-end (mandataire inverse). Voir la marche a suivre dans
+   LISEZ-MOI.md, section « Mise en ligne sur Hostinger ».
    ================================================================== */
-var API_BASE = 'http://' + window.location.hostname + ':4000';
+var API_BASE = (function(){
+  var h = window.location.hostname;
+  var enLocal = h === 'localhost' || h === '127.0.0.1'
+             || /^192\.168\./.test(h) || /^10\./.test(h)
+             || /^172\.(1[6-9]|2\d|3[01])\./.test(h);
+  return enLocal ? 'http://' + h + ':4000' : window.location.origin;
+})();
 
 /* ==================================================================
    Revelation progressive au defilement
@@ -885,7 +903,17 @@ function dossierPhotos(carte){
     var titre = (carte.querySelector('h3') || {}).textContent || '';
 
     function afficher(){
-      images.forEach(function(im, i){ im.classList.toggle('visible', i === rang); });
+      /* Le rang avance ; l'affichage, lui, ne saute pas sur une image
+         qui n'est pas encore arrivee. On tient la precedente, et le
+         « load » de la retardataire rappellera cette fonction. */
+      var montre = rang;
+      if(images[montre] && !images[montre].complete){
+        var dejaLa = images.findIndex ? images.findIndex(function(im){
+          return im.classList.contains('visible');
+        }) : -1;
+        if(dejaLa !== -1) montre = dejaLa;
+      }
+      images.forEach(function(im, i){ im.classList.toggle('visible', i === montre); });
       points.forEach(function(p, i){ p.classList.toggle('on', i === rang); });
       /* L'agrandissement lit ce rang pour s'ouvrir sur la photographie
          que l'on est en train de regarder. */
@@ -941,8 +969,32 @@ function dossierPhotos(carte){
       var suite = document.createDocumentFragment();
       for(var n = 2; n <= nb; n++){
         var img = document.createElement('img');
-        img.src = dossierPhotos(carte) + 'actu-' + cle + '-v' + n + '.jpg';
+        var base = dossierPhotos(carte) + 'actu-' + cle + '-v' + n;
+        /* Deux tailles, comme sur la vignette deja dans la page : le
+           cadre d'une carte fait environ 380px de large, si bien qu'un
+           ecran a un point par pixel — la plupart des ordinateurs —
+           n'a que faire des 760. Le navigateur choisit seul. */
+        /* L'ORDRE COMPTE. Poser « src » en premier lance aussitot le
+           telechargement de la grande taille ; « srcset » arrivant
+           ensuite, le navigateur choisissait la petite et la
+           telechargeait a son tour — les deux, donc. On decrit d'abord
+           le choix, on ne donne « src » qu'ensuite, comme recours pour
+           les navigateurs qui ignorent srcset. */
+        img.srcset = base + '-480.jpg 480w, ' + base + '.jpg 760w';
+        img.sizes = '(max-width:1000px) 100vw, 380px';
+        img.src = base + '.jpg';
         img.alt = legendes[n - 1] || '';
+        /* Le navigateur les prend a l'approche du cadre, pas au
+           chargement de la page : sur l'accueil, le volet est loin sous
+           la ligne de flottaison, et ces cliches pesent un demi-
+           megaoctet sur telephone. C'est lui qui decide du moment — pas
+           un observateur maison, dont j'ai deja constate qu'il ne se
+           declenche pas partout. */
+        img.loading = 'lazy';
+        /* Si une photographie n'est pas encore la quand son tour vient,
+           on garde la precedente et l'on repasse des qu'elle arrive :
+           jamais de cadre vide. */
+        img.addEventListener('load', function(){ afficher(); });
         suite.appendChild(img);
         images.push(img);
       }

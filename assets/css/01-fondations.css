@@ -342,7 +342,7 @@ font-family:'Fraunces',serif;color:var(--cream);font-size:17px;margin-bottom:6px
 .footer-brand p{
 font-size:12.5px;line-height:1.6;color:#9BA0AC;max-width:220px;
 }
-.footer-col h4{
+.footer-col h2{
 font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-soft);margin-bottom:16px;
 }
 .footer-col a{
@@ -769,7 +769,7 @@ font-family:'Fraunces',serif;font-size:19px;color:var(--wine);position:relative;
 content:"";position:absolute;right:-35px;top:8px;width:9px;height:9px;border-radius:50%;
     background:var(--gold);border:2px solid var(--cream);box-shadow:0 0 0 1px var(--line);
 }
-.t-row h4{
+.t-row h3{
 font-size:16px;color:var(--navy);margin-bottom:6px;
 }
 .t-row p{
@@ -1225,7 +1225,7 @@ background:rgba(250,246,239,.05);border:1px solid rgba(250,246,239,.18);
 width:44px;height:44px;border:1.5px solid var(--gold-soft);color:var(--gold-soft);
     display:flex;align-items:center;justify-content:center;margin-bottom:20px;
 }
-.reglement-card h4{
+.reglement-card h3{
 font-family:'Fraunces',serif;font-size:16px;color:var(--cream);margin-bottom:10px;
 }
 .reglement-card p{
@@ -1392,7 +1392,7 @@ background:var(--navy);padding:28px 26px;
 font-family:'Fraunces',serif;font-size:12px;color:var(--gold);letter-spacing:.1em;
     display:block;margin-bottom:12px;
 }
-.sol-step h4{
+.sol-step h3{
 font-size:15px;color:var(--cream);margin-bottom:8px;
 }
 .sol-step p{
@@ -1486,7 +1486,7 @@ width:38px;height:38px;border:1.5px solid var(--wine);color:var(--wine);
 .doc-card .ext{
 font-size:10.5px;letter-spacing:.05em;color:var(--ink-soft);background:var(--cream-deep);padding:4px 8px;
 }
-.doc-card h4{
+.doc-card h3{
 font-size:14.5px;color:var(--navy);
 }
 .doc-card p{
