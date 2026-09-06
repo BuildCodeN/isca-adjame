@@ -1196,148 +1196,119 @@
 }
 
 
-/* ---------- Info flash de la rentree ----------
-   Une annonce qui doit se voir des l'arrivee, sans crier. Trois
-   ressorts, tous lents :
+/* ---------- Bandeau d'information : les messages se relaient ----------
+   Un seul bandeau, celui qui existait deja, mais les messages y
+   defilent. Chacun entre par la droite, bat deux fois, se pose le
+   temps d'etre lu, puis sort par la gauche pendant que le suivant
+   entre. Une lueur doree traverse le bandeau en continu.
 
-     - une lueur doree traverse le bandeau, puis marque un temps ;
-     - la pastille « Info flash » emet une onde qui se dissipe ;
-     - les messages se relaient, un a la fois, en fondu montant.
+   LE BATTEMENT EST LENT — DEUX PULSATIONS EN 1,4 SECONDE, SOIT 1,4 Hz.
+   Au-dela de 3 Hz, un clignotement peut declencher une crise chez une
+   personne photosensible ; c'est la limite fixee par les regles
+   d'accessibilite. On reste tres en deca, et l'opacite ne descend qu'a
+   0,32 : le texte s'attenue, il ne s'eteint pas.
 
-   Rien ne clignote : un clignotement rapide est a la fois desagreable
-   et dangereux pour les personnes photosensibles. Toutes les
-   animations s'arretent si le visiteur a demande moins de mouvement,
-   et le survol suspend le relais — on ne fait pas filer un texte que
-   quelqu'un est en train de lire.
-
-   Le marine tranche avec le bandeau bordeaux juste au-dessus : l'un
-   annonce la date, l'autre en donne les consequences. Deux voix, deux
-   fonds. Le creme sur ce marine donne 14,9:1, l'or 6,7:1. */
-.info-flash{
+   Le texte est en creme sur le bordeaux : 8,3:1. Les intitules en or
+   pale : 6,4:1. */
+.flash.flash-relais{
   position:relative;overflow:hidden;
-  background:var(--navy);color:var(--cream);
-  border-top:2px solid var(--gold);
-  padding:26px 40px 24px;
+  align-items:center;gap:14px;
+  padding:11px 40px;
 }
 
 /* --- la lueur qui traverse --- */
-.info-flash::before{
-  content:"";position:absolute;top:0;bottom:0;left:0;width:34%;
+.flash.flash-relais::before{
+  content:"";position:absolute;top:0;bottom:0;left:0;width:30%;
   background:linear-gradient(100deg,
-    rgba(201,162,75,0) 0%,
-    rgba(201,162,75,.14) 42%,
-    rgba(228,205,142,.30) 50%,
-    rgba(201,162,75,.14) 58%,
-    rgba(201,162,75,0) 100%);
-  transform:translateX(-150%) skewX(-14deg);
+    rgba(228,205,142,0) 0%,
+    rgba(228,205,142,.10) 42%,
+    rgba(250,246,239,.24) 50%,
+    rgba(228,205,142,.10) 58%,
+    rgba(228,205,142,0) 100%);
+  transform:translateX(-160%) skewX(-14deg);
   pointer-events:none;
-  animation:ifLueur 6s var(--e-presse) infinite;
+  animation:flLueur 6s var(--e-presse) infinite;
 }
-@keyframes ifLueur{
-  0%{transform:translateX(-150%) skewX(-14deg);}
-  50%,100%{transform:translateX(420%) skewX(-14deg);}
-}
-
-/* --- l'en-tete --- */
-.info-flash .if-tete{
-  position:relative;z-index:2;
-  display:flex;align-items:center;gap:13px;margin-bottom:16px;
-}
-.info-flash .if-marque{
-  background:var(--gold);color:var(--navy);
-  font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  padding:4px 9px;border-radius:var(--radius);white-space:nowrap;
-  animation:ifOnde 2.6s var(--e-pose) infinite;
-}
-/* Une onde qui s'ecarte et se dissipe : l'oeil l'attrape sans etre
-   agresse, contrairement a une opacite qui bat. */
-@keyframes ifOnde{
-  0%{box-shadow:0 0 0 0 rgba(201,162,75,.55);}
-  60%,100%{box-shadow:0 0 0 9px rgba(201,162,75,0);}
-}
-.info-flash h2{
-  font-family:'Fraunces',serif;font-weight:600;
-  font-size:21px;color:var(--cream);line-height:1.2;margin:0;
+@keyframes flLueur{
+  0%{transform:translateX(-160%) skewX(-14deg);}
+  50%,100%{transform:translateX(460%) skewX(-14deg);}
 }
 
-/* --- les messages --- */
-/* Au repos, sans script : ils se suivent, tous lisibles. */
-.info-flash .if-messages{
-  position:relative;z-index:2;
-  list-style:none;margin:0;padding:0;
-  display:flex;flex-direction:column;gap:14px;
-}
-.info-flash .if-msg{border-left:2px solid var(--gold);padding-left:14px;}
-.info-flash .if-quoi{
-  display:block;
-  font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--gold-soft);margin-bottom:6px;
-}
-.info-flash .if-msg p{
-  font-size:14.5px;line-height:1.6;color:var(--cream);margin:0;
-  max-width:74ch;
-}
-.info-flash .if-msg b{font-weight:700;color:var(--gold-soft);}
+.flash.flash-relais > .tag{position:relative;z-index:2;flex-shrink:0;}
 
-/* Des que le script prend la main, les messages se superposent et se
-   relaient. La hauteur du cadre est calee sur le plus grand, mesure
-   par le script : sans quoi le bandeau sauterait a chaque relais. */
-.info-flash.en-relais .if-messages{display:block;}
-.info-flash.en-relais .if-msg{
-  position:absolute;left:0;right:0;top:0;
-  opacity:0;transform:translateY(10px);
-  transition:opacity 620ms var(--e-pose), transform 620ms var(--e-pose);
+/* --- la piste ou defilent les messages --- */
+.flash.flash-relais .fl-piste{
+  position:relative;z-index:2;flex:1;min-width:0;
 }
-.info-flash.en-relais .if-msg.visible{opacity:1;transform:none;}
+.flash.flash-relais .fl-msg{
+  margin:0;
+  font-size:13px;line-height:1.5;color:var(--cream-deep);
+}
+.flash.flash-relais .fl-msg b{
+  font-weight:700;color:var(--gold-soft);
+  letter-spacing:.02em;
+}
 
-/* --- pied : pastilles et mot de la direction --- */
-.info-flash .if-pied{
-  position:relative;z-index:2;
-  display:flex;align-items:center;gap:18px;
-  margin-top:18px;padding-top:14px;
-  border-top:1px solid rgba(201,162,75,.28);
+/* Sans script, les messages se suivent : tous lisibles. */
+.flash.flash-relais .fl-msg + .fl-msg{margin-top:5px;}
+
+/* Des que le script prend la main, ils se superposent et se relaient. */
+.flash.flash-relais.en-relais .fl-msg{
+  position:absolute;left:0;right:0;top:0;margin:0;
+  opacity:0;transform:translateX(30px);
+  transition:opacity 380ms var(--e-pose), transform 520ms var(--e-pose);
 }
-.info-flash .if-mot{
-  font-size:13px;font-style:italic;color:#C7CAD3;margin:0;
+/* Entree : le message glisse depuis la droite, puis bat deux fois. */
+.flash.flash-relais.en-relais .fl-msg.visible{
+  transform:translateX(0);
+  animation:flBattement 2.1s var(--e-pose) forwards;
 }
-.info-flash .if-points{display:flex;gap:7px;flex-shrink:0;}
-.info-flash .if-points i{
-  width:7px;height:7px;border-radius:50%;
-  background:rgba(250,246,239,.34);
-  cursor:pointer;
+@keyframes flBattement{
+  0%   {opacity:0;}
+  10%  {opacity:1;}
+  27%  {opacity:.32;}
+  44%  {opacity:1;}
+  61%  {opacity:.32;}
+  78%,100%{opacity:1;}
+}
+/* Sortie : il continue sa course vers la gauche. */
+.flash.flash-relais.en-relais .fl-msg.sortant{
+  opacity:0;transform:translateX(-30px);
+}
+
+/* --- les pastilles --- */
+.flash.flash-relais .fl-points{
+  position:relative;z-index:2;flex-shrink:0;
+  display:flex;gap:6px;
+}
+.flash.flash-relais .fl-points i{
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(250,246,239,.34);cursor:pointer;
   transition:width var(--t-survol) var(--e-pose),
              background var(--t-survol) var(--e-pose),
              border-radius var(--t-survol) var(--e-pose);
 }
-.info-flash .if-points i.on{width:20px;border-radius:4px;background:var(--gold);}
-
-/* --- la jauge : le temps qui reste au message affiche --- */
-.info-flash .if-jauge{
-  position:absolute;left:0;bottom:0;height:2px;width:0;
-  background:var(--gold);
-  transition:width 120ms linear;
+.flash.flash-relais .fl-points i.on{
+  width:18px;border-radius:3px;background:var(--gold-soft);
 }
 
 @media(max-width:900px){
-  .info-flash{padding:20px 20px 18px;}
-  .info-flash .if-tete{flex-direction:column;align-items:flex-start;gap:9px;margin-bottom:14px;}
-  .info-flash h2{font-size:19px;}
-  .info-flash .if-msg p{font-size:13.5px;}
-  .info-flash .if-pied{flex-direction:column;align-items:flex-start;gap:11px;}
+  /* Sur telephone un message ne tient pas sur une ligne : il se replie.
+     On ne le coupe pas — une annonce tronquee ne sert a rien. */
+  .flash.flash-relais{padding:12px 16px;gap:9px;}
+  .flash.flash-relais .fl-msg{font-size:12.5px;}
+  .flash.flash-relais .fl-points{align-self:flex-start;}
 }
 
 @media(prefers-reduced-motion:reduce){
-  /* Aucun mouvement : ni lueur, ni onde, ni relais. Les trois messages
-     restent alors affiches ensemble — le script ne lance pas le relais
-     dans ce cas, rien n'est donc perdu. */
-  .info-flash::before{display:none;}
-  .info-flash .if-marque{animation:none;}
-  .info-flash .if-msg{transition:none;}
-  .info-flash .if-jauge{display:none;}
+  /* Ni lueur, ni battement, ni glissement. Le script ne lance pas le
+     relais dans ce cas : les messages restent tous affiches. */
+  .flash.flash-relais::before{display:none;}
+  .flash.flash-relais .fl-msg{transition:none;animation:none;}
 }
 
 @media print{
-  .info-flash::before, .info-flash .if-jauge, .info-flash .if-points{display:none;}
+  .flash.flash-relais::before, .flash.flash-relais .fl-points{display:none;}
 }
 
 
