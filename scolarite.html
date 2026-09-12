@@ -12,14 +12,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/01-fondations.css?v=20260906n">
+<link rel="stylesheet" href="assets/css/01-fondations.css?v=20260912a">
 <link rel="stylesheet" href="assets/css/02-transport.css?v=20260906n">
 <link rel="stylesheet" href="assets/css/03-cartes.css?v=20260906n">
 <link rel="stylesheet" href="assets/css/04-charpente.css?v=20260906n">
 <link rel="stylesheet" href="assets/css/05-bandeaux.css?v=20260906n">
 <link rel="stylesheet" href="assets/css/06-interactions.css?v=20260906n">
 <link rel="stylesheet" href="assets/css/07-matieres.css?v=20260906n">
-<link rel="stylesheet" href="assets/css/08-espaces.css?v=20260906n">
+<link rel="stylesheet" href="assets/css/08-espaces.css?v=20260912b">
 </head>
 <body>
 
@@ -66,6 +66,7 @@
   <div class="subnav">
     <a href="#cycles" class="active">Cycles</a>
     <a href="#emploi-du-temps">Emploi du temps</a>
+    <a href="#liste-eleves">Liste des élèves</a>
     <a href="#evaluations">Évaluations et examens</a>
     <a href="#resultats">Résultats aux examens</a>
     <a href="#vie-scolaire">Règlement intérieur</a>
@@ -164,7 +165,39 @@
     <p class="edt-note" id="edtNote">Grille réelle confirmée pour la classe de 6ème 1.</p>
   </section>
 
-  
+  <!-- ================= LISTE DES ÉLÈVES ================= -->
+  <section class="edt-section" id="liste-eleves" style="background:#fff;">
+    <div class="section-head" style="border-bottom:1px solid var(--line);">
+      <div>
+        <div class="eyebrow"><span class="dash"></span> Sous-rubrique 3</div>
+        <h2>Liste des élèves par classe</h2>
+      </div>
+    </div>
+    <p style="font-size:13.5px;color:var(--ink-soft);max-width:640px;margin-top:16px;">Consultable librement, sans connexion — choisissez le cycle, le niveau puis la classe pour afficher la liste complète, classée par ordre alphabétique.</p>
+
+    <div class="edt-picker" style="margin-top:28px;">
+      <div class="picker-row">
+        <span class="picker-label">Cycle</span>
+        <div class="pill-group" id="eleCycleGroup"></div>
+      </div>
+      <div class="picker-row">
+        <span class="picker-label">Niveau</span>
+        <div class="pill-group" id="eleNiveauGroup"></div>
+      </div>
+      <div class="picker-row">
+        <span class="picker-label">Classe</span>
+        <div class="pill-group" id="eleClasseGroup"></div>
+      </div>
+    </div>
+
+    <div class="edt-controls" style="margin-top:8px;">
+      <h3 class="edt-current" style="margin-bottom:0;">Élèves de la classe — <span id="eleClassLabel">6ème 1</span></h3>
+      <div class="eleves-compte" id="eleCompte"></div>
+    </div>
+
+    <div id="eleCorps"></div>
+    <p class="eleves-avis">Listes fournies par la direction, en attente de mise à jour pour certaines classes. En cas d'erreur ou d'absence d'un nom, contactez le secrétariat.</p>
+  </section>
 
   <!-- ================= RÉSULTATS AUX EXAMENS ================= -->
 
@@ -172,7 +205,7 @@
   <section class="eval-section" id="evaluations">
     <div class="section-head" style="border-bottom:1px solid var(--line);">
       <div>
-        <div class="eyebrow"><span class="dash"></span> Sous-rubrique 3</div>
+        <div class="eyebrow"><span class="dash"></span> Sous-rubrique 4</div>
         <h2>Évaluations et examens</h2>
       </div>
     </div>
@@ -251,7 +284,7 @@
   <section class="results-section" id="resultats">
     <div class="section-head">
       <div>
-        <div class="eyebrow"><span class="dash"></span> Sous-rubrique 4</div>
+        <div class="eyebrow"><span class="dash"></span> Sous-rubrique 5</div>
         <h2>Résultats aux examens</h2>
       </div>
     </div>
@@ -285,7 +318,7 @@
   <section class="vie-section" id="vie-scolaire">
     <div class="section-head" style="border-bottom:1px solid rgba(250,246,239,.14);">
       <div>
-        <div class="eyebrow"><span class="dash"></span> Sous-rubrique 5</div>
+        <div class="eyebrow"><span class="dash"></span> Sous-rubrique 6</div>
         <h2>Règlement intérieur</h2>
       </div>
     </div>
@@ -413,5 +446,6 @@
 
 <script src="assets/js/commun.js?v=20260906n"></script>
 <script src="assets/js/scolarite.js?v=20260912a"></script>
+<script src="assets/js/effectifs.js?v=20260912c"></script>
 </body>
 </html>
