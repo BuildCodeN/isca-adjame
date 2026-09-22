@@ -280,6 +280,13 @@ font-size:16.5px;color:var(--navy);line-height:1.35;margin-bottom:10px;
 .news-card p{
 font-size:13px;color:var(--ink-soft);line-height:1.5;
 }
+/* Le lien vers le mot complet du Directeur, sous le texte de la carte
+   « Salut aux couleurs ». Meme famille que .doc-card .dl-link, ici
+   independante de .doc-card puisque la carte d'actualite est deja son
+   propre cadre. */
+.news-body .dl-link{
+display:inline-block;margin-top:12px;font-size:12.5px;font-weight:600;color:var(--wine);
+}
 .spirit-band{
 background:var(--cream-deep);
     padding:70px 40px;
@@ -693,8 +700,15 @@ padding:80px 40px;
 .director-portrait{
 aspect-ratio:3/3.6;
     background:linear-gradient(160deg,var(--navy) 0%, var(--navy-light) 55%, var(--wine) 130%);
-    border-radius:2px;position:relative;
+    border-radius:2px;position:relative;overflow:hidden;
     display:flex;align-items:flex-end;padding:22px;
+}
+/* Le degrade sert de fond tant qu'aucune photographie n'est fournie :
+   « initials » (les initiales geantes) n'a de sens que sur ce fond, et
+   disparait donc avec lui des qu'une vraie photo remplit le cadre. */
+.director-portrait img{
+position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    object-position:50% 22%;
 }
 .director-portrait .initials{
 font-family:'Fraunces',serif;font-size:64px;color:rgba(250,246,239,.14);
@@ -704,6 +718,10 @@ font-family:'Fraunces',serif;font-size:64px;color:rgba(250,246,239,.14);
 background:rgba(21,34,56,.55);backdrop-filter:blur(4px);
     color:var(--cream);padding:14px 16px;width:100%;
     border-left:2px solid var(--gold);
+    /* L'image du directeur est en position absolue : sans « position »
+       ici, ce bandeau resterait dans le flux normal et l'image, elle
+       positionnee, passerait devant lui a l'affichage. */
+    position:relative;z-index:1;
 }
 .director-portrait .cap .n{
 font-family:'Fraunces',serif;font-size:15px;margin-bottom:2px;
