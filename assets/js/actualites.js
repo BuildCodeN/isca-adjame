@@ -117,13 +117,12 @@
   }
 
   function ouvrir(carte){
-    var cle = carte.dataset.galerie;
     var nb = parseInt(carte.dataset.photos, 10) || 1;
     var legendes = (carte.dataset.legendes || '').split('|').map(function(s){ return s.trim(); });
     serie = [];
     for(var n = 1; n <= nb; n++){
       serie.push({
-        src: dossierPhotos(carte) + 'actu-' + cle + '-' + n + '.jpg',
+        src: dossierPhotos(carte) + n + '.jpg',
         legende: legendes[n - 1] || (carte.querySelector('h3') || {}).textContent || ''
       });
     }

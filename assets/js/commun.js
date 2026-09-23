@@ -833,9 +833,16 @@ go = _navigation;
    OÙ SONT LES PHOTOGRAPHIES
    ------------------------------------------------------------------
    Elles sont rangées par catégorie d'actualité, sous
-   « assets/images/Galeries_Photos/ ». Une carte qui ne dit rien est
+   « assets/images/Galeries_Photos/ » — une carte qui ne dit rien est
    réputée relever des Événements ; pour une galerie rangée ailleurs,
    lui donner data-dossier (par exemple data-dossier="Vie scolaire").
+   Puis, DANS cette catégorie, chaque activité a son propre sous-dossier
+   nommé d'après sa clé data-galerie (Événements/formation/,
+   Événements/accueil/, …) : jamais les photographies de plusieurs
+   activités mélangées au même endroit — c'est ce sous-dossier, et lui
+   seul, qui dit à quelle activité un cliché appartient. Ajouter une
+   activité, c'est donc déposer ses photographies dans un nouveau
+   sous-dossier : ce nom seul suffit à la rubrique pour les retrouver.
 
    Les noms de dossiers portent espaces et accents : ils sont donc
    encodés pour l'adresse (l'espace devient %20, le « è » %C3%A8).
@@ -844,7 +851,9 @@ go = _navigation;
    ================================================================== */
 function dossierPhotos(carte){
   var d = (carte.dataset.dossier || 'Evènements').trim();
-  return 'assets/images/Galeries_Photos/' + encodeURIComponent(d) + '/';
+  var cle = (carte.dataset.galerie || '').trim();
+  var chemin = 'assets/images/Galeries_Photos/' + encodeURIComponent(d) + '/';
+  return cle ? chemin + encodeURIComponent(cle) + '/' : chemin;
 }
 
 /* ==================================================================
@@ -889,7 +898,6 @@ function dossierPhotos(carte){
 
   vignettes.forEach(function(vignette){
     var carte = vignette.closest('.news-card');
-    var cle = carte.dataset.galerie;
     var nb = parseInt(carte.dataset.photos, 10) || 1;
     var legendes = (carte.dataset.legendes || '').split('|').map(function(s){ return s.trim(); });
     if(nb < 2) return;                     /* une seule photo : rien à parcourir */
@@ -969,7 +977,7 @@ function dossierPhotos(carte){
       var suite = document.createDocumentFragment();
       for(var n = 2; n <= nb; n++){
         var img = document.createElement('img');
-        var base = dossierPhotos(carte) + 'actu-' + cle + '-v' + n;
+        var base = dossierPhotos(carte) + 'v' + n;
         /* Deux tailles, comme sur la vignette deja dans la page : le
            cadre d'une carte fait environ 380px de large, si bien qu'un
            ecran a un point par pixel — la plupart des ordinateurs —
