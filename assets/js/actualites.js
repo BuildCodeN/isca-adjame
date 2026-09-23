@@ -174,3 +174,43 @@
     if(e.key === 'ArrowRight') montrer(rang + 1);
   });
 })();
+
+
+/* ==================================================================
+   FENÊTRE DU MOT DU DIRECTEUR
+   ------------------------------------------------------------------
+   Le texte complet vit déjà dans la page (voir actualites.html) : pas
+   de PDF à charger, pas de nouvel onglet, pas de nouvelle page à
+   quitter. Mêmes gestes de fermeture que la galerie ci-dessus (la
+   croix, un clic à côté, Échap), et le focus revient au bouton qui a
+   ouvert la fenêtre plutôt que de se perdre en haut du document.
+   ================================================================== */
+(function motDuDirecteur(){
+  var bouton = document.getElementById('ouvrirMotDirecteur');
+  var boite = document.getElementById('dirModal');
+  var fermer = document.getElementById('dirModalFermer');
+  if(!bouton || !boite || !fermer) return;
+
+  function ouvrir(){
+    boite.classList.add('open');
+    document.body.style.overflow = 'hidden';   /* verrou de défilement */
+    fermer.focus();
+  }
+
+  function refermer(){
+    if(!boite.classList.contains('open')) return;
+    boite.classList.remove('open');
+    document.body.style.overflow = '';
+    bouton.focus();
+  }
+
+  bouton.addEventListener('click', ouvrir);
+  fermer.addEventListener('click', refermer);
+  boite.addEventListener('click', function(e){
+    /* Un clic à côté de la fenêtre referme ; dedans, non. */
+    if(e.target === boite) refermer();
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') refermer();
+  });
+})();

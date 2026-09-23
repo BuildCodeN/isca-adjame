@@ -280,12 +280,15 @@ font-size:16.5px;color:var(--navy);line-height:1.35;margin-bottom:10px;
 .news-card p{
 font-size:13px;color:var(--ink-soft);line-height:1.5;
 }
-/* Le lien vers le mot complet du Directeur, sous le texte de la carte
-   « Salut aux couleurs ». Meme famille que .doc-card .dl-link, ici
-   independante de .doc-card puisque la carte d'actualite est deja son
-   propre cadre. */
+/* Le declencheur de la fenetre du mot du Directeur, sous le texte de
+   la carte « Salut aux couleurs ». Meme famille que .doc-card .dl-link
+   pour la couleur et le soulignement anime ; un <button>, pas un
+   <a>, puisqu'il n'y a plus de page a atteindre — d'ou la remise a
+   zero du fond, de la bordure et du curseur qu'un bouton porte par
+   defaut. */
 .news-body .dl-link{
 display:inline-block;margin-top:12px;font-size:12.5px;font-weight:600;color:var(--wine);
+    background:none;border:none;padding:0;font-family:inherit;cursor:pointer;text-align:left;
 }
 .spirit-band{
 background:var(--cream-deep);
@@ -522,6 +525,65 @@ position:fixed;top:20px;right:24px;width:40px;height:40px;border-radius:50%;
     border:1px solid rgba(250,246,239,.4);background:transparent;color:var(--cream);
     font-size:17px;cursor:pointer;
 }
+/* ==================================================================
+   Fenetre du mot du Directeur (assets/js/actualites.js)
+   ------------------------------------------------------------------
+   Meme squelette que .lightbox juste au-dessus (voile plein ecran,
+   classe .open pour afficher, fermeture par la croix / un clic a cote
+   / Echap) mais un fond nettement plus clair : on lit un texte ici,
+   pas une photographie, et un noir quasi opaque genait la lecture de
+   la page derriere sans rien apporter.
+   ================================================================== */
+.dir-modal{
+position:fixed;inset:0;z-index:410;background:rgba(21,34,56,.55);
+    display:none;align-items:center;justify-content:center;padding:24px;
+}
+.dir-modal.open{
+display:flex;
+}
+.dir-modal-card{
+background:var(--cream);border-radius:14px;width:100%;max-width:720px;
+    max-height:85vh;position:relative;display:flex;flex-direction:column;
+    box-shadow:0 34px 70px -28px rgba(12,18,30,.55);
+}
+.dir-modal-close{
+position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;
+    border:1px solid var(--line);background:#fff;color:var(--navy);
+    font-size:15px;cursor:pointer;z-index:1;
+    transition:background var(--t-survol) var(--e-pose);
+}
+.dir-modal-close:hover{background:var(--cream-deep);}
+.dir-modal-corps{
+padding:46px 46px 40px;overflow-y:auto;
+}
+.dir-modal-corps .eyebrow{
+font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--wine);
+    margin-bottom:14px;display:flex;align-items:center;gap:8px;
+}
+.dir-modal-corps .eyebrow .dash{
+width:20px;height:1px;background:var(--wine);
+}
+.dir-modal-corps h2{
+font-family:'Fraunces',serif;font-size:25px;color:var(--navy);margin-bottom:6px;
+}
+.dir-modal-date{
+font-size:12px;color:var(--ink-soft);font-style:italic;margin-bottom:26px;
+}
+.dir-modal-salut, .dir-modal-corps p{
+font-family:'Work Sans',sans-serif;font-size:14.5px;line-height:1.75;
+    color:var(--ink-soft);margin-bottom:15px;
+}
+.dir-modal-salut{
+font-weight:600;color:var(--wine);
+}
+.dir-modal-signature{
+margin-top:10px;color:var(--navy);
+}
+@media(max-width:620px){
+.dir-modal{padding:0;}
+    .dir-modal-card{max-width:100%;height:100%;max-height:100%;border-radius:0;}
+    .dir-modal-corps{padding:58px 22px 34px;}
+}
 @media(max-width:900px){
 .hero-slide.media-slide{padding:16px 20px 64px;}
     .hero-dots{left:20px;bottom:18px;}
@@ -695,7 +757,7 @@ position:relative;z-index:2;font-size:15px;color:#D9DCE4;max-width:560px;line-he
 }
 .director{
 padding:80px 40px;
-    display:grid;grid-template-columns:.62fr 1.38fr;gap:56px;align-items:start;
+    display:grid;grid-template-columns:1.38fr .62fr;gap:56px;align-items:start;
 }
 .director-portrait{
 aspect-ratio:3/3.6;
@@ -730,10 +792,12 @@ font-family:'Fraunces',serif;font-size:15px;margin-bottom:2px;
 font-size:11.5px;color:var(--gold-soft);letter-spacing:.04em;text-transform:uppercase;
 }
 .director-quote{
-position:relative;padding-left:26px;
+/* Le filet dore marque la transition vers la photographie : a droite
+   maintenant que le texte passe a gauche et le portrait a droite. */
+position:relative;padding-right:26px;
 }
 .director-quote::before{
-content:"";position:absolute;left:0;top:6px;bottom:6px;width:2px;background:var(--gold);
+content:"";position:absolute;right:0;top:6px;bottom:6px;width:2px;background:var(--gold);
 }
 .director-quote .eyebrow{
 font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--wine);margin-bottom:16px;display:flex;align-items:center;gap:8px;

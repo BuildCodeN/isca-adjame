@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/01-fondations.css?v=20260922a">
+<link rel="stylesheet" href="assets/css/01-fondations.css?v=20260923a">
 <link rel="stylesheet" href="assets/css/02-transport.css?v=20260906n">
 <link rel="stylesheet" href="assets/css/03-cartes.css?v=20260906n">
 <link rel="stylesheet" href="assets/css/04-charpente.css?v=20260906n">
@@ -142,16 +142,13 @@
           <p>Les kits scolaires sont remis aux élèves à l'ISCA, sur trois jours, de 8h00 à 12h00, avant la reprise des cours. La direction demande de respecter ce calendrier.</p>
         </div>
       </div>
-      <!-- Pas de photographie propre a cette ceremonie pour le moment :
-           la carte suit donc le meme modele sans image que « Distribution
-           des kits scolaires » ci-dessus, plutot qu'une galerie inventee. -->
-      <div class="news-card" id="accueil-nouveaux">
-        <div class="thumb" style="background:linear-gradient(135deg,var(--navy) 0%, var(--wine) 65%, var(--gold) 150%);"><span class="ncat">Événements</span></div>
+      <div class="news-card" id="accueil-nouveaux" data-galerie="accueil" data-photos="6" data-legendes="Le salut aux couleurs, sous le regard de tout l'établissement. | Un nouvel élève prend la parole devant l'assemblée. | Le Directeur entouré d'élèves, autour d'une œuvre du Sacré-Cœur. | Prise de parole devant le personnel d'encadrement. | Des parents venus assister à la cérémonie. | Le drapeau ivoirien, au centre de la cour.">
+        <div class="thumb diapo" style="background:linear-gradient(135deg,var(--navy) 0%, var(--wine) 65%, var(--gold) 150%);"><img src="assets/images/Galeries_Photos/Ev%C3%A8nements/actu-accueil-v1.jpg" srcset="assets/images/Galeries_Photos/Ev%C3%A8nements/actu-accueil-v1-480.jpg 480w, assets/images/Galeries_Photos/Ev%C3%A8nements/actu-accueil-v1.jpg 760w" sizes="(max-width:1000px) 100vw, 380px" alt="Salut aux couleurs du 21 septembre 2026 : toute l'école rassemblée autour du mât, pour l'accueil des nouveaux élèves."><span class="ncat">Événements</span></div>
         <div class="news-body">
           <div class="news-date">Lundi 21 septembre 2026</div>
           <h3>Salut aux couleurs : accueil des nouveaux élèves</h3>
           <p>Le salut aux couleurs du lundi a rassemblé toute la communauté éducative autour de l'hymne national et des informations de la semaine, avec un temps d'accueil pour les nouveaux élèves, notamment ceux de 6ème. Dans son mot de bienvenue, le Directeur leur a adressé ces mots : « Vous n'entrez pas seulement dans une école, mais dans une famille qui vous accueille à bras ouverts, avec joie ; vos aînés et vos éducateurs seront à vos côtés pour vous guider dans vos premiers pas. »</p>
-          <a href="Documents/Communication/Mot%20de%20bienvenue%20du%20Dr_2026-2027.pdf" target="_blank" rel="noopener" class="dl-link">Lire le mot de bienvenue complet du Directeur ↓</a>
+          <button type="button" class="dl-link" id="ouvrirMotDirecteur">Découvrir le mot de bienvenue du Directeur</button>
         </div>
       </div>
     </div>
@@ -170,6 +167,56 @@
     <img id="lightboxImg" alt="">
     <button type="button" class="lb-nav lb-suiv" id="lb-suiv" aria-label="Photographie suivante">›</button>
     <p class="lb-legende" id="lb-legende"></p>
+  </div>
+
+  <!-- Mot de bienvenue du Directeur, en fenetre plutot qu'en PDF telecharge :
+       declenchee par #ouvrirMotDirecteur, sur la carte « Salut aux
+       couleurs » ci-dessus. Fond attenue (pas le noir quasi-opaque du
+       lightbox : on lit un texte ici, on ne regarde pas une photographie),
+       fermeture par la croix, un clic a cote, ou Echap — voir assets/js/actualites.js. -->
+  <div class="dir-modal" id="dirModal">
+    <div class="dir-modal-card" role="dialog" aria-modal="true" aria-labelledby="dirModalTitre">
+      <button type="button" class="dir-modal-close" id="dirModalFermer" aria-label="Fermer">✕</button>
+      <div class="dir-modal-corps">
+        <div class="eyebrow"><span class="dash"></span> Mot de bienvenue et orientations 2026-2027</div>
+        <h2 id="dirModalTitre">Mot du Directeur</h2>
+        <p class="dir-modal-date">Adresse à la communauté éducative — le lundi 21 septembre 2026</p>
+
+        <p class="dir-modal-salut">Chers collaborateurs dans la mission commune (personnel administratif, personnel enseignant, personnel d'encadrement, service d'ordre, de propreté, de santé, de transport, du marché et de la cuisine), chers parents d'élèves, chers élèves,</p>
+
+        <p>Au nom du Supérieur provincial, Frère DAGOU Assalé Mathurin, au nom de la communauté des Frères du Sacré-Cœur de l'ISCA, et au nom de toute la communauté éducative, je vous souhaite, la bienvenue en cette rentrée scolaire 2026-2027.</p>
+
+        <p>Cette année s'inscrit sous un thème choisi par le Ministère de l'Éducation nationale, de l'Alphabétisation et de l'Enseignement technique : « Ensemble, restaurons la confiance pour transformer durablement l'école ».</p>
+
+        <p>À l'ISCA, nous le déclinons à travers un thème qui nous est propre : « Rigueur, engagement et excellence pour une éducation de qualité ».</p>
+
+        <p>Rigueur, engagement et excellence : voilà les conditions concrètes d'une confiance restaurée. L'école se construit par l'alliance de l'élève, de l'enseignant, de la famille et de la communauté éducative, une exigence inscrite dans notre charisme de Frères du Sacré-Cœur, pour qui l'éducation est un acte d'amour.</p>
+
+        <p>Les résultats de l'an dernier nous encouragent (96,10 % de réussite au BEPC, 66,35 % au BAC), et nous invitent à poursuivre l'effort autour de quatre piliers : la confiance entre l'École, la Famille et la Communauté éducative ; l'engagement auprès de chaque élève, qui reste au centre de nos décisions ; la transformation de nos pratiques pour mieux répondre aux défis de demain ; et l'excellence, qui allie performance des résultats et attention à la personne.</p>
+
+        <p>Une pensée toute particulière pour nos nouveaux venus :</p>
+
+        <p>Aux nouveaux professeurs, qui rejoignez notre famille enseignante : soyez assurés de notre confiance et de notre entière disponibilité pour vous accompagner dans la découverte de notre projet éducatif et de notre charisme. Aux nouveaux élèves, de la sixième à la terminale, qui découvrez aujourd'hui l'ISCA : n'ayez aucune crainte, car ici, vous n'entrez pas seulement dans une école, mais dans une famille qui vous accueille à bras ouverts, avec joie ; vos aînés et vos éducateurs seront à vos côtés pour vous guider dans vos premiers pas. Que chacune et chacun d'entre vous se sente, dès aujourd'hui, pleinement chez lui à l'Institut Sacré-Cœur d'Adjamé.</p>
+
+        <p>Chers enseignants, vous êtes bien plus que des transmetteurs de savoir : par votre exemple autant que par vos cours, vous façonnez le caractère et l'avenir de chaque élève qui vous est confié. Votre engagement quotidien, souvent invisible aux yeux du monde, est le pilier discret mais essentiel sur lequel repose toute notre institution.</p>
+
+        <p>Chers collaborateurs de l'administration, votre rigueur et votre disponibilité assurent, jour après jour, le bon fonctionnement de notre école.</p>
+
+        <p>Je pense aussi, avec une reconnaissance toute particulière, aux personnels du service d'ordre, de la propreté, de la santé, du transport, du marché et de la cantine, ainsi qu'à tous ceux et celles qui travaillent dans l'ombre, souvent avant que les premiers élèves n'arrivent et bien après que les derniers ne soient partis : votre travail, discret mais indispensable, rend possible chaque jour la vie de notre école. Sans vous, aucune classe ne pourrait ouvrir dans un cadre sain et sécurisé, aucun repas ne serait servi, aucun déplacement ne serait assuré. Sans vous, rien de tout cela ne serait possible ; soyez-en chaleureusement remerciés. À l'ISCA, aucun travail n'est supérieur à l'autre : chacun doit bien faire ce qu'il a à faire, et chacun, là où il travaille, contribue au bon fonctionnement de l'école.</p>
+
+        <p>Chers parents, votre soutien est indispensable : la réussite de chaque enfant est le fruit d'un triangle d'or : l'élève qui travaille, l'enseignant qui guide, le parent qui encourage et suit avec assiduité cahiers, devoirs et bulletins.</p>
+
+        <p>Et vous, chers élèves, cette année sera la vôtre si vous en faites une année de travail, de respect et de persévérance. Pour atteindre l'excellence, je vous demande trois choses. D'abord, le travail : il n'y a pas d'excellence sans effort régulier ; organisez votre temps, planifiez vos révisions, ne remettez pas à demain ce qui peut être appris aujourd'hui. Ensuite, la discipline : respectez le règlement intérieur, la tenue, la ponctualité, le langage, vos camarades et vos aînés. Enfin, la foi : restez proches de Dieu, et agissez avec droiture même quand personne ne vous regarde.</p>
+
+        <p>Sachez que l'excellence n'est pas réservée à quelques-uns : c'est le progrès que chacun peut accomplir, à son propre rythme, par un travail sérieux et constant. Ne vous découragez jamais devant un échec : analysez vos erreurs, demandez de l'aide sans honte, et recommencez avec plus de méthode. Participez en classe, osez poser vos questions, entraidez-vous entre camarades : c'est ainsi que se construit, jour après jour, la confiance en vous-mêmes et dans votre école. Nous avons confiance en vous.</p>
+
+        <p>Ainsi portés, ensemble, par la confiance, l'engagement, la transformation et l'excellence, nous pouvons aborder cette année avec espérance. Que le Sacré-Cœur de Jésus bénisse notre communauté éducative et guide nos pas.</p>
+
+        <p>Excellente rentrée à toutes et à tous ! Tous frères ! Tous unis ! Je vous remercie.</p>
+
+        <p class="dir-modal-signature"><b>Frère OUEDRAOGO Yabré Jean-Baptiste, sc</b><br>Directeur de l'Institut Sacré-Cœur d'Adjamé</p>
+      </div>
+    </div>
   </div>
 
 <footer>
@@ -207,6 +254,6 @@
   </footer>
 
 <script src="assets/js/commun.js?v=20260906n"></script>
-<script src="assets/js/actualites.js?v=20260906n"></script>
+<script src="assets/js/actualites.js?v=20260923a"></script>
 </body>
 </html>
