@@ -12,14 +12,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/01-fondations.css?v=20260923a">
-<link rel="stylesheet" href="assets/css/02-transport.css?v=20260906n">
-<link rel="stylesheet" href="assets/css/03-cartes.css?v=20260906n">
-<link rel="stylesheet" href="assets/css/04-charpente.css?v=20260906n">
-<link rel="stylesheet" href="assets/css/05-bandeaux.css?v=20260906n">
-<link rel="stylesheet" href="assets/css/06-interactions.css?v=20260906n">
-<link rel="stylesheet" href="assets/css/07-matieres.css?v=20260906n">
-<link rel="stylesheet" href="assets/css/08-espaces.css?v=20260912b">
+<link rel="stylesheet" href="assets/css/01-fondations.css?v=20260926c">
+<link rel="stylesheet" href="assets/css/02-transport.css?v=20260926c">
+<link rel="stylesheet" href="assets/css/03-cartes.css?v=20260926c">
+<link rel="stylesheet" href="assets/css/04-charpente.css?v=20260926c">
+<link rel="stylesheet" href="assets/css/05-bandeaux.css?v=20260926c">
+<link rel="stylesheet" href="assets/css/06-interactions.css?v=20260926c">
+<link rel="stylesheet" href="assets/css/07-matieres.css?v=20260926c">
+<link rel="stylesheet" href="assets/css/08-espaces.css?v=20260926c">
 </head>
 <body>
 
@@ -62,11 +62,40 @@
   <div class="hero-slider" id="heroSlider">
     <div class="hero-slides" id="heroSlides">
 
-    <!-- ---------- SLIDE 1 — Accroche institutionnelle ---------- -->
-    <header class="hero hero-slide is-active" data-label="Accroche">
+    <!-- ---------- SLIDE 1 — Thème de l'année 2026-2027 ----------
+         L'affiche est un PDF en portrait (A3) : elle serait minuscule dans
+         un cadre en bandeau. La diapositive est donc faite de texte, avec la
+         miniature de l'affiche à droite. « Voir l'affiche » et la miniature
+         ouvrent la grande image dans la visionneuse (attribut data-agrandir,
+         voir assets/js/accueil.js) ; sans JavaScript, le lien ouvre l'image.
+         L'an prochain : outils/extraire-affiche-pdf.py, puis remplacer
+         « affiche-theme-2026-2027 » et le texte ci-dessous. -->
+    <div class="hero hero-slide slide-theme is-active" data-label="Thème de l'année 2026-2027">
     <div class="hero-grid">
       <div>
-        <div class="hero-eyebrow"><span class="dash"></span> Année scolaire 2025 – 2026</div>
+        <div class="hero-eyebrow"><span class="dash"></span> Année scolaire 2026 – 2027</div>
+        <h2 class="st-titre">L'intégrité, <em>chemin de confiance.</em></h2>
+        <p class="hero-attrib">Trois thèmes, une seule exigence</p>
+        <p class="lead">Restaurer la confiance à l'école : c'est l'appel du Ministère et de l'Éducation catholique. À l'ISCA, notre réponse tient en trois mots.</p>
+        <ul class="st-mots"><li>Rigueur</li><li>Engagement</li><li>Excellence</li></ul>
+        <div class="hero-ctas">
+          <a href="assets/images/Bandeau%20et%20logo/affiche-theme-2026-2027.jpg" class="cta-primary" data-agrandir data-alt="Affiche de l'année scolaire 2026-2027 de l'Institut Sacré-Cœur d'Adjamé : « L'intégrité, chemin de confiance ». Trois thèmes, une seule exigence : le Ministère (pourquoi ?), « Ensemble, restaurons la confiance pour transformer durablement l'école » ; l'Éducation catholique (contre quoi ?), « Non à la drogue et à la tricherie » ; l'ISCA (comment ?), « Rigueur, engagement et excellence pour une éducation de qualité ». Notre priorité : former, sensibiliser, accompagner. Je m'engage : je travaille honnêtement, je dis non à la tricherie, je dis non à la drogue, je vise l'excellence.">Voir l'affiche</a>
+          <a href="assets/images/Bandeau%20et%20logo/Affiche_ISCA_2026-2027_A3.pdf" class="cta-secondary" target="_blank" rel="noopener">Télécharger le PDF</a>
+        </div>
+        <p class="st-suite"><a href="etablissement.html#theme-annee">Lire le thème de l'année →</a></p>
+      </div>
+      <a class="st-affiche" href="assets/images/Bandeau%20et%20logo/affiche-theme-2026-2027.jpg" data-agrandir data-alt="Affiche de l'année scolaire 2026-2027 de l'Institut Sacré-Cœur d'Adjamé : « L'intégrité, chemin de confiance ». Trois thèmes, une seule exigence : le Ministère (pourquoi ?), « Ensemble, restaurons la confiance pour transformer durablement l'école » ; l'Éducation catholique (contre quoi ?), « Non à la drogue et à la tricherie » ; l'ISCA (comment ?), « Rigueur, engagement et excellence pour une éducation de qualité ». Notre priorité : former, sensibiliser, accompagner. Je m'engage : je travaille honnêtement, je dis non à la tricherie, je dis non à la drogue, je vise l'excellence.">
+        <img src="assets/images/Bandeau%20et%20logo/affiche-theme-2026-2027-600.jpg" width="600" height="849" alt="Affiche de l'année scolaire 2026-2027 : « L'intégrité, chemin de confiance ». Trois thèmes, une seule exigence ; notre thème : rigueur, engagement et excellence pour une éducation de qualité.">
+        <span class="st-agrandir" aria-hidden="true">⤢ Agrandir</span>
+      </a>
+    </div>
+    </div>
+
+    <!-- ---------- SLIDE 2 — Accroche institutionnelle ---------- -->
+    <header class="hero hero-slide" data-label="Accroche">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-eyebrow"><span class="dash"></span> Année scolaire 2026 – 2027</div>
         <h1 class="hero-quote">« On a les hommes <em>comme on les forme.</em> »</h1>
         <p class="hero-attrib">André Coindre</p>
         <p class="lead">De la 6ème à la Terminale, l'Institut Sacré Cœur d'Adjamé fait sienne cette exigence : former l'intelligence autant que le caractère, et accompagner chaque élève jusqu'au bout de son parcours.</p>
@@ -99,14 +128,19 @@
 
     </header>
 
-    <!-- ---------- SLIDE 2 — Affiche recrutement 2026-2027 ----------
-         L'affiche s'affiche entière, jamais rognée : elle porte des tarifs,
-         des dates et un numéro d'infoline. Les bandes laissées libres
-         au-dessus et au-dessous prennent le marine du site. -->
+    <!-- ---------- Affiche recrutement 2026-2027 — RETIRÉE le 26 septembre 2026 ----------
+         Périmée : composition le 3 août 2026, inscriptions closes le 18 août.
+         Le bloc ci-dessous et ses images (affiche-recrutement*.jpg, dans
+         « Bandeau et logo ») sont conservés. Pour la remettre, ou en poser
+         une nouvelle sur ce modèle : supprimer la ligne d'ouverture de
+         commentaire qui suit cette note, et la ligne de fermeture placée
+         juste après le bloc. -->
+    <!--
     <div class="hero-slide media-slide flyer-recrutement" data-label="Recrutement 2026-2027">
       <img srcset="assets/images/Bandeau%20et%20logo/affiche-recrutement-900.jpg 900w, assets/images/Bandeau%20et%20logo/affiche-recrutement.jpg 1799w" sizes="(max-width:1000px) 100vw, 1200px" src="assets/images/Bandeau%20et%20logo/affiche-recrutement.jpg" alt="Recrutement 2026-2027 à l'Institut Sacré-Cœur d'Adjamé. Étude de dossier : 2500 F. Test d'entrée à l'ISCA : 2500 F. Date de composition : 3 août 2026, à partir de 8h. Premier cycle : français, mathématiques, physique-chimie. Second cycle, série A : français, philosophie, anglais ; série D et C : mathématiques, physique-chimie, sciences de la vie et de la terre. Inscriptions et réinscriptions du 1er juillet au 18 août 2026. Infoline : 27 203 710 20 et 07 089 954 04.">
       <div class="ms-hint"><b>Recrutement 2026-2027</b> — cliquez sur l'affiche pour l'agrandir</div>
     </div>
+    -->
 
     <!-- ---------- SLIDE 3 — Places disponibles 2026-2027 ----------
          Même traitement que le slide 2 : marges latérales prolongées dans
@@ -172,6 +206,14 @@
 
        SANS JAVASCRIPT, les messages s'affichent tous, l'un sous
        l'autre : une annonce ne doit pas dependre d'un script. -->
+  <!-- RETIRÉ le 26 septembre 2026 : tous les messages étaient périmés (kits
+       scolaires du 7 au 9 septembre, cars dès le 14, rentrée du 14). Le bloc
+       est conservé pour servir de modèle à la prochaine annonce : supprimer
+       la ligne d'ouverture de commentaire qui suit cette note et celle de
+       fermeture placée juste après le bloc, puis remplacer les messages et
+       régler data-jusqu-au. Le bandeau s'efface maintenant vraiment après sa
+       date (correctif dans 01-fondations.css : .flash[hidden]). -->
+  <!--
   <div class="flash flash-relais" data-jusqu-au="2026-09-15">
     <span class="tag tag-blink">Info flash</span>
     <div class="fl-piste">
@@ -183,6 +225,7 @@
     </div>
     <span class="fl-points" aria-hidden="true"></span>
   </div>
+  -->
 
   <!-- ================= LUCARNES — INFORMATIONS AUX PARENTS ================= -->
   <section class="lucarnes-section">
@@ -211,7 +254,9 @@
         <p>L'admission à l'ISCA est précédée d'un test d'entrée. Les dates, les niveaux concernés et les modalités d'inscription au test sont communiqués aux familles.</p>
         <div class="lc-facts">
           <div class="lc-fact"><span>Niveaux concernés</span><span>Premier cycle : 5e et 4e<br>Second cycle : 1ère et Terminale</span></div>
+          <!-- RETIRÉ le 26 septembre 2026 (date passée) :
           <div class="lc-fact"><span>Session de recrutement</span><span>3 août 2026</span></div>
+          -->
         </div>
         <a href="admissions.html#tests" class="lc-link">Modalités du test →</a>
       </div>
@@ -250,7 +295,7 @@
       <a href="admissions.html" class="quick-card">
         <span class="num">02</span>
         <h3>Admissions</h3>
-        <p>Conditions d'inscription, dossier à télécharger, frais et calendrier.</p>
+        <p>Conditions d'inscription, dossier à télécharger, frais et transport.</p>
         <span class="go">Consulter →</span>
       </a>
       <a href="paiement.html" class="quick-card">
@@ -371,7 +416,7 @@
     </div>
   </footer>
 
-<script src="assets/js/commun.js?v=20260924a"></script>
-<script src="assets/js/accueil.js?v=20260906n"></script>
+<script src="assets/js/commun.js?v=20260926c"></script>
+<script src="assets/js/accueil.js?v=20260926c"></script>
 </body>
 </html>

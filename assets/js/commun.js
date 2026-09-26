@@ -93,7 +93,8 @@ var API_BASE = (function(){
     '.sol-step', '.eval-block', '.info-card', '.timeline-item', '.acc-item',
     '.cycle-card', '.pay-method', '.hist-row', '.ech-table', '.mentions-table',
     '.interclasses', '.prep-callout', '.tests-band', '.class-chips', '.contact-form',
-    '.t-row', '.bar-row', '.cal-step', '.tc-step', '.infra-card', '.pay-objet'
+    '.t-row', '.bar-row', '.cal-step', '.tc-step', '.infra-card', '.pay-objet',
+    '.an-ligne', '.an-priorite'
   ].join(',');
 
   /* Régime d'entrée par nature de contenu — voir §4 de la feuille de style.

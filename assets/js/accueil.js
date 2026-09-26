@@ -136,6 +136,16 @@
         lbImg.src = img.src; lbImg.alt = img.alt; lb.classList.add('open');
       });
     });
+    /* Un lien marqué data-agrandir ouvre la visionneuse sur l'image de son
+       href : la diapositive du thème de l'année montre une miniature, et
+       c'est la grande affiche qui s'agrandit. Sans JavaScript, le lien
+       ouvre simplement cette image. */
+    slidesWrap.querySelectorAll('a[data-agrandir]').forEach(function(a){
+      a.addEventListener('click', function(e){
+        e.preventDefault();
+        lbImg.src = a.getAttribute('href'); lbImg.alt = a.getAttribute('data-alt') || ''; lb.classList.add('open');
+      });
+    });
     window.closeLightbox = function(){ lb.classList.remove('open'); };
     document.addEventListener('keydown', function(e){
       if(e.key === 'Escape') window.closeLightbox();

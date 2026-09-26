@@ -12,14 +12,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/01-fondations.css?v=20260923a">
-<link rel="stylesheet" href="assets/css/02-transport.css?v=20260906n">
-<link rel="stylesheet" href="assets/css/03-cartes.css?v=20260906n">
-<link rel="stylesheet" href="assets/css/04-charpente.css?v=20260906n">
-<link rel="stylesheet" href="assets/css/05-bandeaux.css?v=20260906n">
-<link rel="stylesheet" href="assets/css/06-interactions.css?v=20260906n">
-<link rel="stylesheet" href="assets/css/07-matieres.css?v=20260906n">
-<link rel="stylesheet" href="assets/css/08-espaces.css?v=20260912b">
+<link rel="stylesheet" href="assets/css/01-fondations.css?v=20260926c">
+<link rel="stylesheet" href="assets/css/02-transport.css?v=20260926c">
+<link rel="stylesheet" href="assets/css/03-cartes.css?v=20260926c">
+<link rel="stylesheet" href="assets/css/04-charpente.css?v=20260926c">
+<link rel="stylesheet" href="assets/css/05-bandeaux.css?v=20260926c">
+<link rel="stylesheet" href="assets/css/06-interactions.css?v=20260926c">
+<link rel="stylesheet" href="assets/css/07-matieres.css?v=20260926c">
+<link rel="stylesheet" href="assets/css/08-espaces.css?v=20260926c">
 </head>
 <body>
 
@@ -69,9 +69,28 @@
         <h2>Dernière actualité</h2>
       </div>
     </div>
-    <!-- La rentrée est l'échéance que tout le monde cherche : elle tient
-         la place d'honneur. Pour mettre une photographie à la place du
-         dégradé, glisser une <img> dans .featured-thumb. -->
+    <!-- La « une » porte le thème de l'année 2026-2027. L'affiche se pose
+         entière dans le cadre de gauche (classe featured-affiche) ; sa
+         miniature et sa grande version viennent de
+         outils/extraire-affiche-pdf.py. Pour une photographie, glisser une
+         <img> dans .featured-thumb à la place de l'affiche. -->
+    <div class="featured-card">
+      <div class="featured-thumb featured-affiche">
+        <span class="fcat">Thème de l'année</span>
+        <a href="assets/images/Bandeau%20et%20logo/affiche-theme-2026-2027.jpg" target="_blank" rel="noopener"><img src="assets/images/Bandeau%20et%20logo/affiche-theme-2026-2027-600.jpg" width="600" height="849" loading="lazy" alt="Affiche de l'année scolaire 2026-2027 : « L'intégrité, chemin de confiance ». Cliquez pour l'agrandir."></a>
+      </div>
+      <div class="featured-body">
+        <div class="fdate">Année scolaire 2026 – 2027</div>
+        <h2>« L'intégrité, chemin de confiance »</h2>
+        <p>Trois thèmes, une seule exigence : le Ministère appelle à restaurer la confiance pour transformer durablement l'école, l'Éducation catholique dit non à la drogue et à la tricherie, et l'ISCA y répond par la rigueur, l'engagement et l'excellence. Former, sensibiliser, accompagner : une priorité pour tout le personnel, les parents d'élèves et les élèves.</p>
+        <a class="flink" href="etablissement.html#theme-annee">Lire le thème de l'année →</a>
+      </div>
+    </div>
+    <!-- RETIRÉ le 26 septembre 2026 : la carte « Rentrée des classes »
+         (14 septembre 2026) est passée. Elle est conservée ci-dessous : pour
+         la remettre, supprimer la ligne d'ouverture de commentaire qui suit
+         cette note et la ligne de fermeture placée après la carte. -->
+    <!--
     <div class="featured-card">
       <div class="featured-thumb"><span class="fcat">Événements</span></div>
       <div class="featured-body">
@@ -81,6 +100,7 @@
         <span class="flink">Voir le calendrier complet de la rentrée ↓</span>
       </div>
     </div>
+    -->
   </section>
 
   <!-- ================= FILTRES ================= -->
@@ -253,7 +273,7 @@
     </div>
   </footer>
 
-<script src="assets/js/commun.js?v=20260924a"></script>
-<script src="assets/js/actualites.js?v=20260924a"></script>
+<script src="assets/js/commun.js?v=20260926c"></script>
+<script src="assets/js/actualites.js?v=20260926c"></script>
 </body>
 </html>
