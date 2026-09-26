@@ -54,7 +54,12 @@
 
   /* ---------- Bascule entre rubriques ---------- */
   .page-section{display:none;padding:0;margin:0;}
-  .page-section.active{display:block;animation:fadeUp .34s ease both;}
+  /* « backwards » et non « both » : « both » garde l'état final de
+     l'animation une fois terminée, et un transform conservé fait de la
+     rubrique le repère de tout ce qui est en position fixed — la
+     visionneuse (#lightbox) s'ouvrait alors au milieu de la page, hors
+     de l'écran, au lieu de couvrir la fenêtre. */
+  .page-section.active{display:block;animation:fadeUp .34s ease backwards;}
   @keyframes fadeUp{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:none;}}
 
   /* ---------- Raffinements typographiques ----------
