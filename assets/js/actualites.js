@@ -176,38 +176,55 @@
 
 
 /* ==================================================================
-   FENÊTRE DU MOT DU DIRECTEUR
+   FENÊTRES DES MOTS DU DIRECTEUR
    ------------------------------------------------------------------
    Le texte complet vit déjà dans la page (voir actualites.html) : pas
    de PDF à charger, pas de nouvel onglet, pas de nouvelle page à
    quitter. Mêmes gestes de fermeture que la galerie ci-dessus (la
    croix, un clic à côté, Échap), et le focus revient au bouton qui a
    ouvert la fenêtre plutôt que de se perdre en haut du document.
-   ================================================================== */
-(function motDuDirecteur(){
-  var bouton = document.getElementById('ouvrirMotDirecteur');
-  var boite = document.getElementById('dirModal');
-  var fermer = document.getElementById('dirModalFermer');
-  if(!bouton || !boite || !fermer) return;
 
-  function ouvrir(){
+   Chaque actualité peut proposer le sien : un bouton porte
+   data-ouvre-modal="<id>", qui désigne la fenêtre à ouvrir (ex.
+   « dirModal », « messeModal »). Une seule fenêtre à la fois ; rien à
+   toucher ici pour qu'une prochaine actualité ait la sienne — ajouter
+   le bouton et le bloc .dir-modal dans la page suffit. */
+(function motsDuDirecteur(){
+  var boutons = [].slice.call(document.querySelectorAll('[data-ouvre-modal]'));
+  var boites = [].slice.call(document.querySelectorAll('.dir-modal'));
+  if(!boutons.length || !boites.length) return;
+
+  var ouverte = null, declencheur = null;
+
+  function ouvrir(bouton){
+    var boite = document.getElementById(bouton.dataset.ouvreModal);
+    if(!boite) return;
+    declencheur = bouton;
+    ouverte = boite;
     boite.classList.add('open');
     document.body.style.overflow = 'hidden';   /* verrou de défilement */
-    fermer.focus();
+    var fermer = boite.querySelector('.dir-modal-close');
+    if(fermer) fermer.focus();
   }
 
   function refermer(){
-    if(!boite.classList.contains('open')) return;
-    boite.classList.remove('open');
+    if(!ouverte) return;
+    ouverte.classList.remove('open');
     document.body.style.overflow = '';
-    bouton.focus();
+    if(declencheur) declencheur.focus();
+    ouverte = null;
   }
 
-  bouton.addEventListener('click', ouvrir);
-  fermer.addEventListener('click', refermer);
-  boite.addEventListener('click', function(e){
-    /* Un clic à côté de la fenêtre referme ; dedans, non. */
-    if(e.target === boite) refermer();
+  boutons.forEach(function(bouton){
+    bouton.addEventListener('click', function(){ ouvrir(bouton); });
+  });
+  boites.forEach(function(boite){
+    var fermer = boite.querySelector('.dir-modal-close');
+    if(fermer) fermer.addEventListener('click', refermer);
+    boite.addEventListener('click', function(e){
+      /* Un clic à côté de la fenêtre referme ; dedans, non. */
+      if(e.target === boite) refermer();
+    });
   });
   document.addEventListener('keydown', function(e){
     if(e.key === 'Escape') refermer();

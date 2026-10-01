@@ -12,14 +12,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/01-fondations.css?v=20260926e">
-<link rel="stylesheet" href="assets/css/02-transport.css?v=20260926e">
-<link rel="stylesheet" href="assets/css/03-cartes.css?v=20260926e">
-<link rel="stylesheet" href="assets/css/04-charpente.css?v=20260926e">
-<link rel="stylesheet" href="assets/css/05-bandeaux.css?v=20260926e">
-<link rel="stylesheet" href="assets/css/06-interactions.css?v=20260926e">
-<link rel="stylesheet" href="assets/css/07-matieres.css?v=20260926e">
-<link rel="stylesheet" href="assets/css/08-espaces.css?v=20260926e">
+<link rel="stylesheet" href="assets/css/01-fondations.css?v=20261001">
+<link rel="stylesheet" href="assets/css/02-transport.css?v=20261001">
+<link rel="stylesheet" href="assets/css/03-cartes.css?v=20261001">
+<link rel="stylesheet" href="assets/css/04-charpente.css?v=20261001">
+<link rel="stylesheet" href="assets/css/05-bandeaux.css?v=20261001">
+<link rel="stylesheet" href="assets/css/06-interactions.css?v=20261001">
+<link rel="stylesheet" href="assets/css/07-matieres.css?v=20261001">
+<link rel="stylesheet" href="assets/css/08-espaces.css?v=20261001">
 </head>
 <body>
 
@@ -154,8 +154,8 @@
           <p>Une journée de recueillement pour tout le personnel, au sanctuaire Notre-Dame de la Garde, à Bonoua.</p>
         </div>
       </div>
-      <div class="news-card">
-        <div class="thumb" style="background:linear-gradient(135deg,var(--navy-light) 0%, var(--wine) 130%);"><span class="ncat">Événements</span></div>
+      <div class="news-card" id="kits" data-galerie="kits" data-photos="1" data-legendes="Distribution des kits scolaires : cahiers, fournitures et manuels prêts à être remis aux élèves.">
+        <div class="thumb diapo" style="background:linear-gradient(135deg,var(--navy-light) 0%, var(--wine) 130%);"><img src="assets/images/Galeries_Photos/Ev%C3%A8nements/kits/v1.jpg" srcset="assets/images/Galeries_Photos/Ev%C3%A8nements/kits/v1-480.jpg 480w, assets/images/Galeries_Photos/Ev%C3%A8nements/kits/v1.jpg 760w" sizes="(max-width:1000px) 100vw, 380px" alt="Distribution des kits scolaires, du 7 au 9 septembre 2026 : cahiers et fournitures remis aux élèves, sur le parvis de l'établissement."><span class="ncat">Événements</span></div>
         <div class="news-body">
           <div class="news-date">Du lundi 7 au mercredi 9 septembre 2026 — de 8h00 à 12h00</div>
           <h3>Distribution des kits scolaires</h3>
@@ -168,7 +168,24 @@
           <div class="news-date">Lundi 21 septembre 2026</div>
           <h3>Salut aux couleurs : accueil des nouveaux élèves</h3>
           <p>Le salut aux couleurs du lundi a rassemblé toute la communauté éducative autour de l'hymne national et des informations de la semaine, avec un temps d'accueil pour les nouveaux élèves, notamment ceux de 6ème. Dans son mot de bienvenue, le Directeur leur a adressé ces mots : « Vous n'entrez pas seulement dans une école, mais dans une famille qui vous accueille à bras ouverts, avec joie ; vos aînés et vos éducateurs seront à vos côtés pour vous guider dans vos premiers pas. »</p>
-          <button type="button" class="dl-link" id="ouvrirMotDirecteur">Découvrir le mot de bienvenue du Directeur</button>
+          <button type="button" class="dl-link" data-ouvre-modal="dirModal">Découvrir le mot de bienvenue du Directeur</button>
+        </div>
+      </div>
+      <div class="news-card" id="salut28sept" data-galerie="salut28sept" data-photos="5" data-legendes="Le drapeau ivoirien hissé au mât, sous le regard des élèves. | Le personnel éducatif rassemblé pour le hissage du drapeau, devant la fresque du Sacré-Cœur. | Prise de parole devant l'assemblée, au micro. | Les élèves en rangs dans la cour, pour le salut du lundi. | Une distinction remise à une élève, dans une ambiance musicale.">
+        <div class="thumb diapo" style="background:linear-gradient(135deg,var(--navy) 0%, var(--gold-soft) 75%, var(--wine) 160%);"><img src="assets/images/Galeries_Photos/Ev%C3%A8nements/salut28sept/v1.jpg" srcset="assets/images/Galeries_Photos/Ev%C3%A8nements/salut28sept/v1-480.jpg 480w, assets/images/Galeries_Photos/Ev%C3%A8nements/salut28sept/v1.jpg 760w" sizes="(max-width:1000px) 100vw, 380px" alt="Salut aux couleurs du 28 septembre 2026 : le drapeau ivoirien hissé au mât, dans la cour de l'ISCA."><span class="ncat">Événements</span></div>
+        <div class="news-body">
+          <div class="news-date">Lundi 28 septembre 2026</div>
+          <h3>Salut aux couleurs</h3>
+          <p>Toute la communauté éducative rassemblée dans la cour pour le salut aux couleurs du lundi, avec l'hymne national et les informations de la semaine.</p>
+        </div>
+      </div>
+      <div class="news-card" id="messe30sept" data-galerie="messe30sept" data-photos="16" data-legendes="L'entrée : les servants d'autel ouvrent la procession, croix en tête. | Ouverture de la célébration, à l'autel. | Lecture de la Parole. | La chorale, accompagnée au clavier. | L'offertoire, en procession. | La consécration du pain et du vin. | Communion : le prêtre et les servants d'autel. | Communion : un servant d'autel. | Communion distribuée aux fidèles. | Le mot du Directeur. | Les servants de messe. | Bénédiction du personnel enseignant. | Bénédiction des parents d'élèves. | Les officiels, réunis pour la célébration. | Photo de famille, à l'issue de la messe. | Un dernier moment de groupe, avant de se quitter.">
+        <div class="thumb diapo" style="background:linear-gradient(135deg,var(--gold) 0%, var(--wine) 80%, var(--navy) 160%);"><img src="assets/images/Galeries_Photos/Ev%C3%A8nements/messe30sept/v1.jpg" srcset="assets/images/Galeries_Photos/Ev%C3%A8nements/messe30sept/v1-480.jpg 480w, assets/images/Galeries_Photos/Ev%C3%A8nements/messe30sept/v1.jpg 760w" sizes="(max-width:1000px) 100vw, 380px" alt="Messe de rentrée scolaire 2026-2027, le 30 septembre 2026 : les servants d'autel ouvrent la procession d'entrée, croix en tête."><span class="ncat">Événements</span></div>
+        <div class="news-body">
+          <div class="news-date">Mercredi 30 septembre 2026</div>
+          <h3>Messe de rentrée : fête de la fondation</h3>
+          <p>Présidée par le curé de la paroisse Saint Charles Lwanga, en présence du Frère Supérieur provincial, cette messe a rassemblé toute la communauté éducative et coïncidait avec le 205e anniversaire de la fondation de l'Institut des Frères du Sacré-Cœur, le 30 septembre 1821. Elle s'est conclue par les bénédictions du personnel enseignant et non enseignant, des parents et des élèves.</p>
+          <button type="button" class="dl-link" data-ouvre-modal="messeModal">Découvrir le mot du Directeur</button>
         </div>
       </div>
     </div>
@@ -190,10 +207,12 @@
   </div>
 
   <!-- Mot de bienvenue du Directeur, en fenetre plutot qu'en PDF telecharge :
-       declenchee par #ouvrirMotDirecteur, sur la carte « Salut aux
-       couleurs » ci-dessus. Fond attenue (pas le noir quasi-opaque du
-       lightbox : on lit un texte ici, on ne regarde pas une photographie),
-       fermeture par la croix, un clic a cote, ou Echap — voir assets/js/actualites.js. -->
+       declenchee par le bouton data-ouvre-modal="dirModal", sur la carte
+       « Salut aux couleurs » ci-dessus (une actualite peut avoir la
+       sienne : voir messeModal plus bas, meme mecanique generique).
+       Fond attenue (pas le noir quasi-opaque du lightbox : on lit un
+       texte ici, on ne regarde pas une photographie), fermeture par la
+       croix, un clic a cote, ou Echap — voir assets/js/actualites.js. -->
   <div class="dir-modal" id="dirModal">
     <div class="dir-modal-card" role="dialog" aria-modal="true" aria-labelledby="dirModalTitre">
       <button type="button" class="dir-modal-close" id="dirModalFermer" aria-label="Fermer">✕</button>
@@ -239,6 +258,58 @@
     </div>
   </div>
 
+  <!-- Mot du Directeur pour la messe de rentree, meme dispositif que dirModal
+       ci-dessus : declenchee par data-ouvre-modal="messeModal" sur la carte
+       « Messe de rentree » en Actualites. -->
+  <div class="dir-modal" id="messeModal">
+    <div class="dir-modal-card" role="dialog" aria-modal="true" aria-labelledby="messeModalTitre">
+      <button type="button" class="dir-modal-close" aria-label="Fermer">✕</button>
+      <div class="dir-modal-corps">
+        <div class="eyebrow"><span class="dash"></span> Messe de rentrée scolaire 2026-2027</div>
+        <h2 id="messeModalTitre">Mot du Directeur</h2>
+        <p class="dir-modal-date">Fête de la fondation de l'Institut des Frères du Sacré-Cœur (1821-2026) — le mercredi 30 septembre 2026</p>
+
+        <p class="dir-modal-salut">Révérend Père Curé, Révérend, Frère Supérieur provincial, chers Frères, chers collaborateurs dans la mission commune, chers parents d'élèves, chers élèves,</p>
+
+        <p>C'est avec un cœur rempli de joie et de gratitude que je prends la parole en ce jour béni, où toute notre communauté éducative est rassemblée dans l'enceinte de l'Institut pour la messe de rentrée scolaire 2026-2027. Ce 30 septembre revêt une portée particulière : nous célébrons le 205e anniversaire de la fondation de l'Institut des Frères du Sacré-Cœur, né le 30 septembre 1821.</p>
+
+        <p>Je voudrais, avant tout, exprimer notre profonde gratitude à vous, Révérend Père Curé, ainsi qu'à vos vicaires, qui avez bien voulu vous déplacer pour venir présider cette célébration eucharistique au cœur de notre établissement. Par cette célébration, vous avez placé notre année scolaire sous le regard de Dieu et vous avez nourri de votre parole, notre communauté éducative. Que le Seigneur vous rende au centuple votre disponibilité et votre bienveillance.</p>
+
+        <p>Je salue et remercie, avec une joie toute fraternelle, le Frère Mathurin DAGOU ASSALÉ, Supérieur provincial, qui nous fait l'honneur et la grâce de sa présence dans cet événement. En ce jour où nous faisons mémoire de la fondation de notre Institut, cette présence est pour toute la communauté éducative de l'ISCA un signe fort de communion avec la Province et avec la grande famille des Frères du Sacré-Cœur, ainsi qu'un précieux encouragement pour la mission que nous portons ensemble.</p>
+
+        <p>Ma gratitude va aussi à mes Frères de la communauté, qui portent, dans la prière et le service de chaque jour, l'âme de cette maison commune. Et comment ne pas évoquer, en ce jour anniversaire, ceux qui nous ont précédés ? Nous rendons hommage aux premiers Frères, ces pionniers humbles et pauvres qui, dès 1821, ont répondu à l'appel et fait le pari de l'éducation des enfants les plus délaissés. Nous pensons aussi aux Frères qui, sur cette terre d'Adjamé, ont posé les premières pierres de l'ISCA et l'ont façonné, souvent dans le silence, la simplicité et le sacrifice. Si cette maison est debout aujourd'hui, c'est parce qu'ils ont semé avec foi : nous sommes les héritiers de leur fidélité, et nous leur disons, du fond du cœur, notre reconnaissance.</p>
+
+        <p>Je remercie également, nos collaborateurs dans la mission commune : enseignants, personnel administratif, technique et de service, pour votre engagement fidèle au service de l'éducation de nos enfants. Jour après jour, souvent dans la discrétion, vous donnez corps à une mission que les Frères ont voulu partager avec vous, et dont vous êtes devenus, avec eux, les artisans.</p>
+
+        <p>Merci à vous, chers parents, d'avoir répondu à cette invitation et de témoigner, par votre présence, de votre attachement à l'éducation chrétienne que nous voulons offrir à vos enfants. Votre confiance renouvelée est pour nous à la fois un encouragement précieux et une exigence.</p>
+
+        <p>Je n'oublie pas la chorale, dont les chants ont donné à cette célébration toute sa beauté et sa ferveur, ni celles et ceux qui ont organisé cette journée et œuvré avec soin dans l'ombre, pour aménager cet espace et faire que tout se déroule dans l'ordre et la dignité. Que Dieu récompense leur dévouement.</p>
+
+        <p>Et à vous, chers élèves, merci d'être venus nombreux confier, avec nous, cette nouvelle année scolaire au Seigneur. Que cette messe soit pour vous le point de départ d'une année vécue dans la foi, le travail et la persévérance.</p>
+
+        <p>Célébrer, en ce même jour, la fondation de notre Institut n'est pas un hasard. En 1821, dans un contexte de grande pauvreté et d'enfance délaissée, le Père André Coindre fondait, à Lyon, avec ses premiers compagnons, la Congrégation des Frères du Sacré-Cœur. Son intuition était à la fois simple et audacieuse : offrir aux enfants les plus pauvres, en particulier aux orphelins, une éducation qui les relève dans leur dignité et les ouvre à l'espérance. De ce petit groupe de premiers Frères est née une famille religieuse qui allait, au fil des générations, essaimer bien au-delà de Lyon et de la France.</p>
+
+        <p>Deux cent cinq années se sont écoulées depuis ce premier engagement. Deux cent cinq années durant lesquelles des générations de Frères et de collaborateurs laïcs, sur plusieurs continents, ont porté ce même charisme, l'ont adapté aux réalités de chaque époque et de chaque terre, sans jamais en trahir l'intuition première. C'est cette longue chaîne de fidélité qui nous rejoint aujourd'hui, ici, à Adjamé, en terre ivoirienne.</p>
+
+        <p>Car cette œuvre, commencée à Lyon, se poursuit aujourd'hui à l'ISCA, fidèle au même charisme : faire de l'éducation un acte d'amour avant d'être un métier, et faire de la confiance en chaque enfant le point de départ de toute pédagogie. Chaque professeur qui prépare son cours avec soin, chaque éducateur qui prend le temps d'écouter un élève en difficulté, chaque geste de service rendu dans notre établissement prolonge, silencieusement, ce que les premiers Frères ont initié voilà deux siècles.</p>
+
+        <p>Célébrer cet anniversaire n'est donc pas un simple regard vers le passé : c'est une manière de nous rappeler, à nous qui portons aujourd'hui cette mission, la responsabilité et la grâce qui nous sont confiées, celle de transmettre, intacte et vivante, une intuition vieille de deux siècles, mais toujours aussi actuelle pour les enfants et les jeunes que nous accueillons.</p>
+
+        <p>C'est ce même esprit qui inspire les orientations de notre année scolaire 2026-2027, placée sous trois thèmes qui appellent une seule exigence : l'intégrité, chemin de confiance. Le Ministère de l'Éducation nationale, de l'Alphabétisation et de l'Enseignement technique nous dit pourquoi : « Ensemble, restaurons la confiance pour transformer durablement l'école ». L'Éducation catholique de Côte d'Ivoire, à l'occasion de l'ouverture solennelle de l'année à Yamoussoukro, nous dit contre quoi nous devons lutter : « Non à la drogue et à la tricherie, pour restaurer la confiance en une école au service de la transformation durable de la Côte d'Ivoire ». Et l'ISCA nous dit comment : « Rigueur, engagement et excellence pour une éducation de qualité ».</p>
+
+        <p>Ces trois thèmes se rejoignent et s'éclairent l'un l'autre : on ne restaure la confiance qu'en la méritant chaque jour, par un travail rigoureux et honnête, un engagement sans faille, un refus net de la drogue et de la tricherie, et une recherche constante de l'excellence et c'est précisément ce que notre charisme nous invite à vivre, année après année.</p>
+
+        <p>En ce jour de double action de grâce pour la rentrée qui s'ouvre, et pour plus de deux siècles de fidélité à une même mission, je vous invite tous à confier cette nouvelle année au Sacré-Cœur de Jésus, source et modèle de notre charisme.</p>
+
+        <p>Que Dieu bénisse notre communauté éducative, la paroisse Saint Charles Lwanga, et chacune des familles ici présentes.</p>
+
+        <p>Encore une fois, merci à tous. Que le Seigneur vous garde.</p>
+
+        <p class="dir-modal-signature">Le Directeur,<br><b>Frère OUEDRAOGO Yabré Jean-Baptiste, sc</b><br>Directeur de l'Institut Sacré-Cœur d'Adjamé</p>
+      </div>
+    </div>
+  </div>
+
 <footer>
     <div class="footer-top">
       <div class="footer-brand">
@@ -273,7 +344,7 @@
     </div>
   </footer>
 
-<script src="assets/js/commun.js?v=20260926e"></script>
-<script src="assets/js/actualites.js?v=20260926e"></script>
+<script src="assets/js/commun.js?v=20261001"></script>
+<script src="assets/js/actualites.js?v=20261001"></script>
 </body>
 </html>

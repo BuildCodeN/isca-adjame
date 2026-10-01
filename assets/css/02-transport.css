@@ -454,7 +454,7 @@ padding:40px 40px 20px;
 display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:10px;
 }
 .news-list-grid .news-card .thumb{
-height:170px;
+height:230px;
 position:relative;
 }
 .news-list-grid .news-card .ncat{

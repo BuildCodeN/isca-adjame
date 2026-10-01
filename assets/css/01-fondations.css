@@ -262,7 +262,7 @@ display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:28px;
 border:1px solid var(--line);background:#fff;
 }
 .news-card .thumb{
-height:170px;
+height:230px;
     background:linear-gradient(135deg,var(--navy) 0%, var(--navy-light) 60%, var(--wine) 130%);
     position:relative;
 }
@@ -902,7 +902,10 @@ display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:40px;
 border:1px solid var(--line);background:#fff;
 }
 .infra-card .thumb{
-height:140px;position:relative;
+height:230px;position:relative;overflow:hidden;
+}
+.infra-card .thumb img{
+position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
 }
 .infra-card:nth-child(1) .thumb{
 background:linear-gradient(135deg,var(--navy),var(--navy-light));
