@@ -7,7 +7,7 @@
         cycles: ["6ème","5ème","4ème","3ème"],
         classes: {
           "6ème": ["1","2","3","4"],
-          "5ème": ["1","2","3","4"],
+          "5ème": ["1","2","3"],
           "4ème": ["1","2","3","4"],
           "3ème": ["1","2","3","4"]
         }
@@ -44,9 +44,11 @@
     // MATH, HG en HIST-GEO, MUS en MUSIQUE, ACT. PERS. en ACT. DU PERSONNEL…).
     // Deux graphies isolées sont rapprochées de leur matière : « INFO » (6ème 2)
     // devient TICE, et « ST » (4ème 3, lundi 4ème H., qui suit un SVT) devient
-    // SVT. Le document ne fournit aucune grille pour la 5ème 4 : la page
-    // l'annonce comme non communiquée plutôt que d'en inventer une. Il ne
-    // compte qu'une Terminale D, d'où la disparition des anciennes D1 et D2.
+    // SVT. Cette année il n'y a pas de 5ème 4, et les anciennes Terminales D1
+    // et D2 ont été fusionnées en une seule Terminale D : la liste des classes
+    // ci-dessus suit cette structure. Si une classe du sélecteur n'avait pas
+    // de grille, la page l'annoncerait comme non communiquée plutôt que d'en
+    // inventer une.
     var EDT_DATA = {
       "6ème 1": [
         ["EPS", "TICE", "", "PC", "FRAN"],

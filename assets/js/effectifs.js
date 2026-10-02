@@ -18,7 +18,7 @@
         cycles: ["6ème","5ème","4ème","3ème"],
         classes: {
           "6ème": ["1","2","3","4"],
-          "5ème": ["1","2","3","4"],
+          "5ème": ["1","2","3"],
           "4ème": ["1","2","3","4"],
           "3ème": ["1","2","3","4"]
         }
@@ -28,7 +28,7 @@
         classes: {
           "2nde": ["A","C1","C2"],
           "1ère": ["A","C","D"],
-          "Tle": ["A1","A2","C","D1","D2"]
+          "Tle": ["A1","A2","C","D"]
         }
       }
     };
@@ -166,42 +166,6 @@
         "YEO Katana Kheira Emmanuella",
         "YESUFU Khalidah Topey",
         "ZO BOTI Nan Ruth Leslie",
-      ],
-      "5ème 4": [
-        "ADAMOU Bulyaminou",
-        "ADEOYE Daaron Toluwani Adewumi",
-        "ASSOUMANE Abdourahamane",
-        "AWOGBILE Soburat Atinuke Adebukole",
-        "BAH Aïssatou Lamarana",
-        "BEDA Chidjè Grace Marie Alice",
-        "COULIBALY Guibessongui Aboudramane",
-        "DAHOUA Nienmiensran Jean-David Elisée",
-        "DIALLO Youssouf",
-        "DIANE Mohamed Tareck Imam",
-        "DIBI Kignelman Cheick",
-        "DIBY Djebi Ange Noël",
-        "EHOUMAN N'goran Wesley Georges Mason",
-        "EKIAN Marie Campbelle",
-        "KANTE Yeshoua Karl Yvan Curtis",
-        "KONAN Jakdiel",
-        "KONKOBO Salimata",
-        "LOUKOU Marie Grâce Ornella",
-        "MARIKO Aichata",
-        "MMADUEKWE Zani Somtochukwu",
-        "N'GUESSAN Dan Paul Adams",
-        "NOGBOU Akré Noah Emmanuel",
-        "OBODOZIE Chimaobi Israel",
-        "ONYEKWERE Chinonso Nore",
-        "OUEDRAOGO Alassane",
-        "POUYA Henry Christ Dylan",
-        "SANUSI Moliki Adeyemo",
-        "SEKONGO Tortcha Fatim",
-        "SOUMAHORO Cheick Hamalla",
-        "SOUMAHORO Chieckh Ismael Jean Claude",
-        "SOUMHORO Abdoul Aziz",
-        "SOW Rokiatou",
-        "TOGOLA Awa",
-        "ZAKEI Nassa Yvan",
       ],
       "4ème 1": [
         "ACHIO Noémie Mouna Maeva",
