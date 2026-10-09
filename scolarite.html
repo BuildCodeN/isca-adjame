@@ -12,14 +12,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/01-fondations.css?v=20261002b">
-<link rel="stylesheet" href="assets/css/02-transport.css?v=20261002b">
-<link rel="stylesheet" href="assets/css/03-cartes.css?v=20261002b">
-<link rel="stylesheet" href="assets/css/04-charpente.css?v=20261002b">
-<link rel="stylesheet" href="assets/css/05-bandeaux.css?v=20261002b">
-<link rel="stylesheet" href="assets/css/06-interactions.css?v=20261002b">
-<link rel="stylesheet" href="assets/css/07-matieres.css?v=20261002b">
-<link rel="stylesheet" href="assets/css/08-espaces.css?v=20261002b">
+<link rel="stylesheet" href="assets/css/01-fondations.css?v=20261009b">
+<link rel="stylesheet" href="assets/css/02-transport.css?v=20261009b">
+<link rel="stylesheet" href="assets/css/03-cartes.css?v=20261009b">
+<link rel="stylesheet" href="assets/css/04-charpente.css?v=20261009b">
+<link rel="stylesheet" href="assets/css/05-bandeaux.css?v=20261009b">
+<link rel="stylesheet" href="assets/css/06-interactions.css?v=20261009b">
+<link rel="stylesheet" href="assets/css/07-matieres.css?v=20261009b">
+<link rel="stylesheet" href="assets/css/08-espaces.css?v=20261009b">
 </head>
 <body>
 
@@ -135,12 +135,15 @@
       </div>
     </div>
 
-    <div class="edt-controls" style="margin-top:8px;">
-      <h3 class="edt-current" style="margin-bottom:0;">Emploi du temps — <span id="edtClassLabel">6ème 1</span></h3>
-      <div class="edt-updated">Dernière mise à jour : 2 octobre 2026</div>
+    <div class="edt-controls edt-controls-classe" style="margin-top:8px;">
+      <div>
+        <h3 class="edt-current" style="margin-bottom:0;">Emploi du temps — <span id="edtClassLabel">6ème 1</span></h3>
+        <p class="edt-pp" id="edtPP" hidden>Professeur principal <b id="edtPPNom"></b></p>
+      </div>
+      <div class="edt-updated">Dernière mise à jour : 9 octobre 2026</div>
     </div>
 
-    <div class="edt-frame">
+    <div class="edt-frame edt-frame-classe">
       <table class="edt-table" id="edtTable">
         <thead>
           <tr>
@@ -162,7 +165,7 @@
       <span class="lg vie"><i></i> Sport, arts et formation humaine</span>
       <span class="lg devoir"><i></i> Devoir surveillé</span>
     </div>
-    <p class="edt-note" id="edtNote">Emplois du temps 2026-2027, d'après le document officiel de l'ISCA.</p>
+    <p class="edt-note" id="edtNote">Emplois du temps 2026-2027, d'après le document officiel de l'ISCA édité le 4 octobre 2026. ESP / ALL : créneau de langue vivante 2, où l'espagnol et l'allemand ont lieu en même temps, chacun avec son professeur.</p>
   </section>
 
   <!-- ================= LISTE DES ÉLÈVES ================= -->
@@ -213,7 +216,7 @@
 
     <div class="eval-block">
       <h3>Planning des devoirs surveillés <span class="badge">Toutes classes</span></h3>
-      <p class="sub">Les devoirs surveillés se déroulent aux mêmes horaires pour l'ensemble des classes d'un même niveau. Les dates précises sont affichées à l'établissement et publiées ici dès validation.</p>
+      <p class="sub">Les devoirs surveillés se déroulent aux mêmes horaires pour l'ensemble des classes d'un même niveau. Le calendrier du 1er trimestre est publié ci-dessous ; ceux des 2ème et 3ème trimestres le seront dès validation.</p>
       <table class="eval-table">
         <tr>
           <th style="width:150px;">Période</th>
@@ -224,8 +227,8 @@
         <tr>
           <td class="per">1er trimestre</td>
           <td>6ème à Terminale</td>
-          <td class="todo">[dates à publier]</td>
-          <td>Devoirs de niveau, toutes matières</td>
+          <td>Du 6 octobre au 27 novembre 2026</td>
+          <td>Devoirs de niveau, toutes matières. <a href="#devoirs-t1">Calendrier détaillé ci-dessous</a></td>
         </tr>
         <tr>
           <td class="per">2ème trimestre</td>
@@ -240,6 +243,52 @@
           <td>Dernière série avant les examens</td>
         </tr>
       </table>
+
+      <!-- Calendrier détaillé du 1er trimestre : un niveau à la fois ou tous.
+           Les lignes du tableau sont écrites par outils/calendrier-devoirs-pdf.py
+           à partir du PDF officiel (Documents/Calendrier_Devoirs_1er_Trimestre_2026_2027.pdf). -->
+      <div class="dev-calendrier" id="devoirs-t1">
+        <h4>Calendrier du 1er trimestre <span>du 14 septembre au 4 décembre 2026</span></h4>
+        <div class="filter-chips dev-chips" role="group" aria-label="Afficher les devoirs d'un niveau">
+          <button type="button" class="filter-chip active" aria-pressed="true" data-niv="tous">Tous</button>
+          <button type="button" class="filter-chip" aria-pressed="false" data-niv="1">6ème</button>
+          <button type="button" class="filter-chip" aria-pressed="false" data-niv="2">5ème</button>
+          <button type="button" class="filter-chip" aria-pressed="false" data-niv="3">4ème</button>
+          <button type="button" class="filter-chip" aria-pressed="false" data-niv="4">3ème</button>
+          <button type="button" class="filter-chip" aria-pressed="false" data-niv="5">2nde</button>
+          <button type="button" class="filter-chip" aria-pressed="false" data-niv="6">1ère A</button>
+          <button type="button" class="filter-chip" aria-pressed="false" data-niv="7">1ère C/D</button>
+          <button type="button" class="filter-chip" aria-pressed="false" data-niv="8">Tle A</button>
+          <button type="button" class="filter-chip" aria-pressed="false" data-niv="9">Tle C/D</button>
+        </div>
+        <div class="table-wrap" data-hint="Faites glisser le tableau vers la gauche pour voir les autres niveaux.">
+          <table class="eval-table dev-table" data-niveau="tous">
+            <caption class="sr-only">Calendrier des devoirs surveillés du 1er trimestre 2026-2027, par niveau</caption>
+            <!-- >>> CALENDRIER DEVOIRS T1 (genere par outils/calendrier-devoirs-pdf.py : ne pas modifier a la main) -->
+          <thead><tr><th scope="col">Date</th><th scope="col" data-niv="1">6ème</th><th scope="col" data-niv="2">5ème</th><th scope="col" data-niv="3">4ème</th><th scope="col" data-niv="4">3ème</th><th scope="col" data-niv="5">2nde</th><th scope="col" data-niv="6">1ère A</th><th scope="col" data-niv="7">1ère C/D</th><th scope="col" data-niv="8">Tle A</th><th scope="col" data-niv="9">Tle C/D</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Mardi 6 octobre 2026</th><td data-niv="1">Français</td><td data-niv="2">Français</td><td data-niv="3">Français</td><td data-niv="4">Français</td><td data-niv="5">Français</td><td data-niv="6">Français</td><td data-niv="7">Français</td><td data-niv="8">Français</td><td data-niv="9">Français</td></tr>
+            <tr><th scope="row">Vendredi 9 octobre 2026</th><td data-niv="1">Anglais</td><td data-niv="2">Anglais</td><td data-niv="3">Anglais</td><td data-niv="4">Anglais</td><td data-niv="5">Anglais</td><td data-niv="6">Anglais</td><td data-niv="7">Anglais</td><td data-niv="8">Anglais</td><td data-niv="9">Maths</td></tr>
+            <tr><th scope="row">Mardi 13 octobre 2026</th><td data-niv="1">EDHC</td><td data-niv="2">EDHC</td><td data-niv="3">EDHC</td><td data-niv="4">EDHC</td><td data-niv="5">PC</td><td data-niv="6">Hist-Géo</td><td data-niv="7">PC</td><td data-niv="8">Hist-Géo</td><td data-niv="9">PC</td></tr>
+            <tr><th scope="row">Vendredi 16 octobre 2026</th><td data-niv="1">Maths</td><td data-niv="2">Maths</td><td data-niv="3">Maths</td><td data-niv="4">Maths</td><td data-niv="5">Maths</td><td data-niv="6">Philosophie</td><td data-niv="7">Maths</td><td data-niv="8">Philosophie</td><td data-niv="9">Philosophie</td></tr>
+            <tr><th scope="row">Mardi 20 octobre 2026</th><td data-niv="1">SVT</td><td data-niv="2">SVT</td><td data-niv="3">PC</td><td data-niv="4">PC</td><td data-niv="5">SVT</td><td data-niv="6">Allemand / Espagnol</td><td data-niv="7">SVT</td><td data-niv="8">Allemand / Espagnol</td><td data-niv="9">SVT</td></tr>
+            <tr class="dev-pause"><td colspan="10">Du 23 octobre au 1er novembre 2026 : congés de la Toussaint</td></tr>
+            <tr><th scope="row">Mardi 3 novembre 2026</th><td data-niv="1">Hist-Géo</td><td data-niv="2">Hist-Géo</td><td data-niv="3">Hist-Géo</td><td data-niv="4">Hist-Géo</td><td data-niv="5">Hist-Géo</td><td data-niv="6">Hist-Géo</td><td data-niv="7">Hist-Géo</td><td data-niv="8">Hist-Géo</td><td data-niv="9">Hist-Géo</td></tr>
+            <tr><th scope="row">Vendredi 6 novembre 2026</th><td data-niv="1">Maths</td><td data-niv="2">Maths</td><td data-niv="3">Maths</td><td data-niv="4">Maths</td><td data-niv="5">Maths</td><td data-niv="6">Français</td><td data-niv="7">Maths</td><td data-niv="8">Anglais</td><td data-niv="9">Philosophie</td></tr>
+            <tr><th scope="row">Mardi 10 novembre 2026</th><td data-niv="1">SVT</td><td data-niv="2">SVT</td><td data-niv="3">SVT</td><td data-niv="4">SVT</td><td data-niv="5">PC</td><td data-niv="6">Anglais</td><td data-niv="7">PC</td><td data-niv="8">Anglais</td><td data-niv="9">Maths</td></tr>
+            <tr><th scope="row">Vendredi 13 novembre 2026</th><td data-niv="1">Anglais</td><td data-niv="2">Anglais</td><td data-niv="3">Allemand / Espagnol</td><td data-niv="4">Allemand / Espagnol</td><td data-niv="5">Allemand / Espagnol</td><td data-niv="6">Allemand / Espagnol</td><td data-niv="7">Allemand / Espagnol</td><td data-niv="8">Allemand / Espagnol</td><td data-niv="9">PC</td></tr>
+            <tr><th scope="row">Mardi 17 novembre 2026</th><td data-niv="1">EDHC</td><td data-niv="2">EDHC</td><td data-niv="3">EDHC</td><td data-niv="4">EDHC</td><td data-niv="5">SVT</td><td data-niv="6">SVT</td><td data-niv="7">SVT</td><td data-niv="8">SVT</td><td data-niv="9">Hist-Géo</td></tr>
+            <tr><th scope="row">Vendredi 20 novembre 2026</th><td data-niv="1">Français</td><td data-niv="2">Français</td><td data-niv="3">Français</td><td data-niv="4">Français</td><td data-niv="5">Français</td><td data-niv="6">Philosophie</td><td data-niv="7">Philosophie</td><td data-niv="8">Philosophie</td><td data-niv="9">Philosophie</td></tr>
+            <tr><th scope="row">Mardi 24 novembre 2026</th><td data-niv="1">PC / SVT</td><td data-niv="2">PC / SVT</td><td data-niv="3">PC</td><td data-niv="4">PC</td><td data-niv="5">PC</td><td data-niv="6">Maths</td><td data-niv="7">PC</td><td data-niv="8">Français</td><td data-niv="9">Français</td></tr>
+            <tr><th scope="row">Vendredi 27 novembre 2026</th><td data-niv="1">Hist-Géo</td><td data-niv="2">Hist-Géo</td><td data-niv="3">Hist-Géo</td><td data-niv="4">Hist-Géo</td><td data-niv="5">Hist-Géo</td><td data-niv="6">Anglais</td><td data-niv="7">Anglais</td><td data-niv="8">Maths</td><td data-niv="9">SVT</td></tr>
+            <tr class="dev-fin"><td colspan="10">Du mardi 1er au vendredi 4 décembre 2026 : arrêt des notes, correction des copies, tenue des conseils de classe et clôture du 1er trimestre</td></tr>
+          </tbody>
+            <!-- >>> FIN CALENDRIER DEVOIRS T1 -->
+          </table>
+        </div>
+        <p class="dev-pdf"><a href="Documents/Calendrier_Devoirs_1er_Trimestre_2026_2027.pdf" target="_blank" rel="noopener" class="dl-link">Télécharger le calendrier officiel (PDF) ↓</a></p>
+      </div>
+
       <p class="eval-note">Toute absence à un devoir surveillé doit être justifiée auprès du secrétariat. Les élèves des classes d'examen suivent en plus le programme des examens blancs ci-dessous.</p>
     </div>
 
@@ -444,8 +493,8 @@
     </div>
   </footer>
 
-<script src="assets/js/commun.js?v=20261002b"></script>
-<script src="assets/js/scolarite.js?v=20261002b"></script>
-<script src="assets/js/effectifs.js?v=20261002b"></script>
+<script src="assets/js/commun.js?v=20261009b"></script>
+<script src="assets/js/scolarite.js?v=20261009b"></script>
+<script src="assets/js/effectifs.js?v=20261009b"></script>
 </body>
 </html>

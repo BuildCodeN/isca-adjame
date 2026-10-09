@@ -429,7 +429,7 @@
 
     /* --- Palier 2 : informations secondaires (13,5px) ---
        Dates, mentions, notes, méta. On les lit, on ne les survole pas. */
-    .news-date, .cs-date, .edt-updated, .edt-note, .privacy-note,
+    .news-date, .cs-date, .edt-updated, .edt-note, .edt-pp, .privacy-note,
     .hero-attrib, .ee-meta, .th-meta, .p-note,
     .breadcrumb, .sep, .current, .pm-sub, .demo-hint, .login-foot,
     .footer-brand p, .footer-bottom{
@@ -448,6 +448,9 @@
     /* Le tableau d'emploi du temps reste dense par nature : 13,5px y est
        un compromis assumé, le cadre défile pour compenser. */
     .edt-table td, .edt-table .subj, .edt-table .cl{font-size:13.5px !important;}
+    /* Le nom du professeur principal est l'information de la ligne : il se
+       lit à la taille des éléments de lecture continue. */
+    .edt-pp b{font-size:15px !important;}
 
     /* --- Le hero dépassait la hauteur de l'écran ---
        873px sur un écran de 812 : la carte des résultats était coupée.
@@ -678,6 +681,11 @@
   /* « [dates à publier] » se brisait mot par mot dans une colonne
      de 40px : on lui laisse de quoi tenir sur une ligne. */
   .eval-block td em, .eval-block td i{white-space:nowrap;}
+  /* Calendrier des devoirs : dix colonnes, donc un tableau large qui défile,
+     la date restant collée à gauche ; réduit à un niveau, il tient dans l'écran. */
+  .eval-block .dev-table{min-width:780px;}
+  .eval-block .dev-table:not([data-niveau="tous"]){min-width:0;}
+  .dev-chips .filter-chip{padding-left:14px;padding-right:14px;}
   }
 
 

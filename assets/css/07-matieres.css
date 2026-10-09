@@ -949,6 +949,9 @@
       -webkit-mask-image:none;mask-image:none;
     }
     .edt-table{min-width:620px !important;font-size:12px;}
+    /* La grille d'une classe nomme le professeur sous chaque matière : des
+       colonnes plus larges évitent que chaque nom se casse sur trois lignes. */
+    #edtTable{min-width:720px !important;}
     .ech-table, .mentions-table{min-width:520px;font-size:12px;}
     .edt-table th, .edt-table td{padding:8px 6px !important;}
     .edt-hint{

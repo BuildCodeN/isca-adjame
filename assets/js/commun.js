@@ -744,7 +744,14 @@ var API_BASE = (function(){
       if(deborde && !existe){
         var p = document.createElement('p');
         p.className = 'table-hint';
-        p.innerHTML = FLECHE + ' Faites glisser le tableau vers la gauche pour voir la fin de la semaine.';
+        /* Le texte dit ce qu'on découvre en faisant glisser : la fin de la
+           semaine pour un emploi du temps, autre chose pour les autres
+           tableaux (data-hint sur le cadre, sinon « la suite »). */
+        var texte = cadre.getAttribute('data-hint') ||
+          (cadre.classList.contains('edt-frame')
+            ? 'Faites glisser le tableau vers la gauche pour voir la fin de la semaine.'
+            : 'Faites glisser le tableau vers la gauche pour voir la suite.');
+        p.innerHTML = FLECHE + ' ' + texte;
         cadre.parentNode.insertBefore(p, cadre);
       } else if(!deborde && existe){
         m.remove();

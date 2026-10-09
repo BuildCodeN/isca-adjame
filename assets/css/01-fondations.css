@@ -1038,6 +1038,20 @@ font-size:12px;color:var(--ink-soft);margin-top:16px;font-style:italic;
 .edt-updated{
 font-size:12px;color:var(--ink-soft);
 }
+.edt-controls-classe{
+align-items:flex-start;
+}
+.edt-pp{
+display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;
+    margin:10px 0 0;padding-left:10px;border-left:2px solid var(--gold);
+    font-size:13px;color:var(--ink-soft);
+}
+.edt-pp[hidden]{
+display:none;
+}
+.edt-pp b{
+color:var(--navy);font-weight:600;font-size:14.5px;
+}
 .edt-picker{
 background:#fff;border:1px solid var(--line);border-radius:14px;
     box-shadow:0 14px 34px -26px rgba(21,34,56,.45);
@@ -1150,12 +1164,24 @@ color:var(--ink-soft);font-variant-numeric:tabular-nums;
 padding:5px;
 }
 .edt-table td.edt-slot .subj{
-display:flex;align-items:center;justify-content:center;height:100%;min-height:34px;
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:100%;min-height:34px;
     padding:7px 8px;border-radius:3px;border-left:3px solid var(--navy);
     background:var(--cream-deep);color:var(--navy);
     font-weight:600;font-size:11.5px;letter-spacing:.02em;text-align:center;line-height:1.25;
     overflow-wrap:break-word;word-break:break-word;
     transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
+}
+/* Professeur du cours, sous la matière (un deuxième sur les créneaux de langue
+   vivante 2). Le cadre de la grille s'allonge avec son contenu au lieu de
+   garder les 13 cm qui suffisaient aux seules matières. */
+.edt-table td.edt-slot .subj .mat{
+font-weight:600;
+}
+.edt-table td.edt-slot .subj .prof{
+display:block;font-size:10.5px;font-weight:500;letter-spacing:0;line-height:1.2;opacity:.85;
+}
+.edt-frame.edt-frame-classe{
+height:auto;
 }
 .edt-table td.edt-slot[data-fam="sciences"] .subj{
 background:#E8EDF6;border-left-color:#2C4577;color:#1B2C4E;
@@ -1412,6 +1438,58 @@ color:var(--ink-soft);font-style:italic;
 .eval-note{
 margin-top:20px;font-size:12.5px;color:var(--ink-soft);line-height:1.7;
     border-left:2px solid var(--gold);padding-left:14px;max-width:720px;
+}
+/* Calendrier des devoirs surveillés : une ligne par date, une colonne par niveau.
+   Un bouton de niveau (data-niveau sur le tableau) ne garde que sa colonne. */
+.dev-calendrier{
+margin-top:34px;
+}
+.dev-calendrier h4{
+font-size:15px;color:var(--navy);margin-bottom:14px;
+}
+.dev-calendrier h4 span{
+font-family:'Work Sans',sans-serif;font-size:12.5px;font-weight:400;color:var(--ink-soft);margin-left:10px;
+}
+.dev-chips{
+margin-bottom:16px;
+}
+.dev-table th, .dev-table td{
+text-align:center;padding:10px 8px;
+}
+.dev-table td{
+border-left:1px solid var(--line);
+}
+.dev-table thead th:first-child{
+text-align:left;position:sticky;left:0;z-index:2;
+}
+.dev-table th[scope="row"]{
+text-align:left;min-width:96px;position:sticky;left:0;
+    background:var(--cream-deep);color:var(--navy);
+    font-size:13px;font-weight:600;letter-spacing:0;text-transform:none;
+    border-bottom:1px solid var(--line);
+}
+.dev-table tr.dev-pause td, .dev-table tr.dev-fin td{
+text-align:center;font-weight:600;border-left:none;padding:11px 14px;
+}
+.dev-table tr.dev-pause td{
+background:#FBF0D3;color:var(--wine);
+}
+.dev-table tr.dev-fin td{
+background:#E7F0E9;color:#265139;
+}
+.dev-table[data-niveau="1"] [data-niv]:not([data-niv="1"]),
+.dev-table[data-niveau="2"] [data-niv]:not([data-niv="2"]),
+.dev-table[data-niveau="3"] [data-niv]:not([data-niv="3"]),
+.dev-table[data-niveau="4"] [data-niv]:not([data-niv="4"]),
+.dev-table[data-niveau="5"] [data-niv]:not([data-niv="5"]),
+.dev-table[data-niveau="6"] [data-niv]:not([data-niv="6"]),
+.dev-table[data-niveau="7"] [data-niv]:not([data-niv="7"]),
+.dev-table[data-niveau="8"] [data-niv]:not([data-niv="8"]),
+.dev-table[data-niveau="9"] [data-niv]:not([data-niv="9"]){
+display:none;
+}
+.dev-pdf{
+margin-top:16px;
 }
 .prep-callout{
 margin-top:44px;background:var(--navy);color:var(--cream);padding:34px 32px;

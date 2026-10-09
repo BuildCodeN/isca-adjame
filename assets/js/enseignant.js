@@ -22,17 +22,22 @@
       {type:"break", text:"Récréation"},
       {label:"4ème H.", time:"10 h 30 – 11 h 20", idx:3},
       {label:"5ème H.", time:"11 h 25 – 12 h 15", idx:4},
-      {type:"break", text:"Interclasse"},
-      {label:"6ème H.", time:"13 h 30 – 14 h 20", idx:5},
-      {label:"7ème H.", time:"14 h 25 – 15 h 15", idx:6},
-      {label:"8ème H.", time:"15 h 20 – 16 h 10", idx:7}
+      {type:"break", text:"Pause déjeuner"},
+      /* Numérotation des documents 2026-2027 : la 6ème heure n'existe pas,
+         la numérotation reprend à 7 (comme dans les emplois du temps de
+         classe de scolarite.js). */
+      {label:"7ème H.", time:"13 h 30 – 14 h 20", idx:5},
+      {label:"8ème H.", time:"14 h 25 – 15 h 15", idx:6},
+      {label:"9ème H.", time:"15 h 20 – 16 h 10", idx:7}
     ];
 
     /* ==================================================================
        CORPS ENSEIGNANT — 43 professeurs
-       Source : Documents/EDT_APFC_2025-2026.pdf, une fiche par page.
+       Source 2026-2027 : Documents/EDT_Enseignants_OK.pdf, une fiche par
+       enseignant (la liste de 2025-2026 venait de EDT_APFC_2025-2026.pdf).
        Les huit créneaux vont de 07h30 à 16h10 ; les lignes de récréation
-       et d'interclasse du document ne sont pas reprises.
+       et de pause déjeuner du document ne sont pas reprises. Le matricule
+       que porte l'en-tête de certains enseignants n'est pas repris non plus.
 
        Le code d'accès est un numéro d'ordre — deux chiffres de discipline,
        deux chiffres de rang, une lettre :
@@ -138,7 +143,7 @@
 
       var meta = [];
       if(p.matiere) meta.push(p.matiere);
-      meta.push('Année scolaire 2025–2026');
+      meta.push('Année scolaire 2026–2027');
       document.getElementById('th-meta').textContent = meta.join(' · ');
 
       var note = document.getElementById('prof-note');
@@ -164,7 +169,8 @@
           if(!v) return;
           if(v === 'DEVOIR' || v.indexOf('Act.') === 0) return;
           heures++;
-          v.split(' / ').forEach(function(c){ classes[c.trim()] = 1; });
+          /* « 6ème 1 - FHR » : la classe est 6ème 1, FHR dit seulement ce qu'on y enseigne */
+          v.split(' / ').forEach(function(c){ classes[c.replace(/ - (FHR|EDHC)$/, '').trim()] = 1; });
           jours[ji] = 1;
         });
       });
@@ -210,7 +216,8 @@
     function familleDeCase(v, principale){
       if(v === 'DEVOIR') return 'c-devoir';
       if(v.indexOf('Act.') === 0) return 'c-perso';
-      if(principale && v.split(' / ').some(function(c){ return c.trim() === principale; }))
+      if(principale && v.split(' / ').some(function(c){
+           return c.replace(/ - (FHR|EDHC)$/, '').trim() === principale; }))
         return 'c-principal';
       /* 6ème à 3ème : collège. 2nde, 1ère, Tle et TC : lycée. */
       return /^[3-6]\s*ème/.test(v) ? 'c-college' : 'c-lycee';
