@@ -31,11 +31,12 @@
       {label:"4ème H.", time:"10 h 30 – 11 h 20", idx:3},
       {label:"5ème H.", time:"11 h 25 – 12 h 15", idx:4},
       {type:"break", text:"Pause déjeuner"},
-      // Numérotation reprise telle quelle du document 2026-2027 : la
-      // 6ème heure n'y figure pas, la numérotation reprend à 7.
-      {label:"7ème H.", time:"13 h 30 – 14 h 20", idx:5},
-      {label:"8ème H.", time:"14 h 25 – 15 h 15", idx:6},
-      {label:"9ème H.", time:"15 h 20 – 16 h 10", idx:7},
+      // Huit heures de cours consécutives : la pause déjeuner n'est pas une
+      // heure. (L'application qui édite les PDF 2026-2027 la compte comme
+      // 6ème heure et imprime 7, 8, 9 ; le site, lui, numérote de 1 à 8.)
+      {label:"6ème H.", time:"13 h 30 – 14 h 20", idx:5},
+      {label:"7ème H.", time:"14 h 25 – 15 h 15", idx:6},
+      {label:"8ème H.", time:"15 h 20 – 16 h 10", idx:7},
     ];
 
     // Emplois du temps et professeurs principaux 2026-2027, tirés des deux

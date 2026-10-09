@@ -91,7 +91,7 @@
 #  réunion pédagogique et les états d'élèves resteraient inaccessibles.
 # ------------------------------------------------------------------
 <IfModule mod_authz_core.c>
-  <FilesMatch "\.(docx|doc|xlsx|xls|mp3|mp4|wav|env|db|sqlite|log|bak)$">
+  <FilesMatch "\.(docx|doc|xlsx|xls|mp3|mp4|wav|env|db|sqlite|log|bak|sql)$">
     Require all denied
   </FilesMatch>
 </IfModule>

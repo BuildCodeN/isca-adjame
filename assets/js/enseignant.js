@@ -5,13 +5,14 @@
        ------------------------------------------------------------------
        COMMENT AJOUTER OU MODIFIER UN ENSEIGNANT
        ------------------------------------------------------------------
-       Depuis le passage au back-end (ISCA_2027-backend), les noms,
-       mots de passe et emplois du temps ne sont plus dans ce fichier :
-       ils vivent dans la base de données, jamais envoyés au navigateur
-       d'un visiteur non authentifié. Pour ajouter/modifier un
-       enseignant : ouvrir `npm run prisma:studio` dans
-       ISCA_2027-backend (interface web locale de la base), ou passer
-       par une future page d'administration.
+       Les noms, mots de passe et emplois du temps ne sont pas dans ce
+       fichier : ils vivent dans la base MySQL de l'hébergement, jamais
+       envoyés au navigateur d'un visiteur non connecté. Pour les mettre
+       à jour : python outils/preparer-acces-enseignants.py --edt (nouveaux
+       emplois du temps, nouveaux enseignants) ou --reinitialiser ISCA-012
+       (mot de passe oublié) ; l'outil écrit un fichier SQL à importer dans
+       phpMyAdmin (hPanel > Bases de données). Le détail est dans
+       backend/LISEZ-MOI-ESPACE-ENSEIGNANT.md.
        ------------------------------------------------------------------ */
 
     /* Horaires communs aux emplois du temps des classes et des professeurs. */
@@ -23,12 +24,13 @@
       {label:"4ème H.", time:"10 h 30 – 11 h 20", idx:3},
       {label:"5ème H.", time:"11 h 25 – 12 h 15", idx:4},
       {type:"break", text:"Pause déjeuner"},
-      /* Numérotation des documents 2026-2027 : la 6ème heure n'existe pas,
-         la numérotation reprend à 7 (comme dans les emplois du temps de
-         classe de scolarite.js). */
-      {label:"7ème H.", time:"13 h 30 – 14 h 20", idx:5},
-      {label:"8ème H.", time:"14 h 25 – 15 h 15", idx:6},
-      {label:"9ème H.", time:"15 h 20 – 16 h 10", idx:7}
+      /* Huit heures de cours consécutives (1ère à 8ème), comme dans les
+         emplois du temps de classe de scolarite.js : la pause déjeuner n'est
+         pas une heure. L'application qui édite les PDF compte cette pause
+         comme 6ème heure et imprime 7, 8, 9 ; le site ne reprend pas ce saut. */
+      {label:"6ème H.", time:"13 h 30 – 14 h 20", idx:5},
+      {label:"7ème H.", time:"14 h 25 – 15 h 15", idx:6},
+      {label:"8ème H.", time:"15 h 20 – 16 h 10", idx:7}
     ];
 
     /* ==================================================================
@@ -39,94 +41,198 @@
        et de pause déjeuner du document ne sont pas reprises. Le matricule
        que porte l'en-tête de certains enseignants n'est pas repris non plus.
 
-       Le code d'accès est un numéro d'ordre — deux chiffres de discipline,
-       deux chiffres de rang, une lettre :
-         Français 10 F · Mathématiques 20 M · Physique-Chimie 30 P
-         SVT 40 S · Histoire-Géographie 50 H · Philosophie 55 L
-         Anglais 60 A · Espagnol 65 E · Allemand 70 D
-         EPS 75 Q · Musique 80 U · Informatique 85 I
+       Identifiant : « ISCA » suivi du numéro d'ordre à trois chiffres
+       (ISCA-001 à ISCA-043, dans l'ordre du document), attribué une fois
+       pour toutes. Code provisoire remis sur une fiche imprimée, remplacé
+       par un mot de passe personnel à la première connexion.
 
-       Les coordonnées personnelles présentes dans le PDF (téléphones et
-       adresses électroniques) ont été délibérément écartées : elles n'ont
-       pas leur place dans une page consultable publiquement.
+       Les coordonnées personnelles présentes dans les PDF (téléphones,
+       adresses électroniques, matricules) ont été délibérément écartées :
+       elles n'ont pas leur place dans une page consultable publiquement.
        ================================================================== */
-    /* Les 43 enseignants (nom, mot de passe, matiere, emploi du temps)
-     vivent desormais dans la base de donnees du back-end
-     (ISCA_2027-backend), jamais dans ce fichier : teacherLogin()
-     interroge /api/teacher/login, qui ne renvoie que la fiche de
-     l'enseignant authentifie. */
 
-    /* Adresse du back-end (Node/Express + base de données) qui a
-       remplacé la vérification en clair dans le navigateur : le nom,
-       le mot de passe et l'emploi du temps de chaque enseignant ne
-       sont plus jamais envoyés au navigateur d'un visiteur non
-       authentifié — seul celui qui vient de se connecter reçoit sa
-       propre fiche, via l'API. */
+    /* L'API de l'Espace Enseignant, ce sont les scripts PHP du dossier
+       /api du site (hébergement Hostinger Business), qui interrogent la
+       base MySQL de l'hébergement. Aucune adresse à régler : où que la
+       page soit servie, l'API est à côté d'elle. Seul l'enseignant qui
+       vient de se connecter reçoit sa propre fiche ; jamais la liste du
+       personnel, jamais un mot de passe. */
+    var API_ENSEIGNANT = window.location.origin + '/api';
+    var MSG_INDISPONIBLE = 'Le service de connexion n’est pas disponible pour le moment. Réessayez plus tard.';
 
-    var profConnecte = null;
-    var teacherToken = null;
+    var profConnecte = null;      /* la fiche de l'enseignant connecté */
+    var teacherToken = null;      /* jeton de connexion : en mémoire seulement, jamais enregistré dans le navigateur */
+    var codeSaisi = '';           /* le code provisoire tapé, le temps de choisir le mot de passe */
+    var changementObligatoire = false;
 
-    /* --- Complétion du champ « nom » et rappel de démonstration --- */
     (function initEspaceEnseignant(){
-      /* La liste de complétion déroulait les 43 noms du corps enseignant
-         à qui ouvrait la page. Un annuaire du personnel n'a pas à être
-         offert par un formulaire de connexion : on la laisse vide. */
-      /* Le rappel affichait un nom d'enseignant et son code en clair,
-         sur une page consultable par n'importe qui. C'était donner la
-         clé avec la serrure. Il ne reste qu'une consigne, sans identifiant. */
+      /* Aucune liste de noms, aucun exemple de mot de passe sur une page
+         consultable par n'importe qui : seulement la consigne. */
       var hint = document.getElementById('demo-hint');
       if(hint){
-        hint.innerHTML = 'Votre numéro d’ordre vous a été remis par l’administration. ' +
-          'En cas d’oubli, adressez-vous au secrétariat.';
+        hint.innerHTML = 'Votre identifiant est <b>ISCA</b> suivi de votre numéro d’ordre (par exemple ISCA-012). ' +
+          'À la première connexion, tapez le code provisoire remis par l’administration : vous choisirez ensuite votre mot de passe personnel.';
       }
     })();
 
+    /* Texte venu du serveur, inséré dans du HTML : on neutralise les balises. */
+    function esc(s){
+      return String(s).replace(/[&<>"']/g, function(c){
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+
+    function montrerErreur(id, texte){
+      var e = document.getElementById(id);
+      e.textContent = texte;
+      e.classList.add('show');
+    }
+    function masquerErreur(id){
+      document.getElementById(id).classList.remove('show');
+    }
+
+    /* Appel de l'API : renvoie { ok, statut, donnees } sans jamais lever d'erreur
+       sur une réponse qui n'est pas du JSON (page d'erreur de l'hébergeur). */
+    async function appelerApi(chemin, options){
+      var r = await fetch(API_ENSEIGNANT + '/' + chemin, options);
+      var donnees = null;
+      try { donnees = await r.json(); } catch(e){ donnees = null; }
+      return { ok: r.ok, statut: r.status, donnees: donnees || {} };
+    }
+    function enJson(corps, jeton){
+      var h = { 'Content-Type': 'application/json' };
+      if(jeton) h['X-Jeton'] = jeton;
+      return { method: 'POST', headers: h, body: JSON.stringify(corps) };
+    }
+
     /* --- Connexion --- */
-    /* La vérification (nom + mot de passe insensibles à la casse et
-       aux accents) a lieu côté serveur — voir ISCA_2027-backend. Le
-       navigateur ne reçoit jamais que la fiche de l'enseignant qui
-       vient de s'authentifier, jamais celle des 42 autres. */
+    /* L'identifiant (« ISCA-012 », toléré tapé « isca 12 ») et le mot de
+       passe sont vérifiés côté serveur, qui bloque l'identifiant après
+       cinq échecs en quinze minutes. Le navigateur reçoit un jeton, puis
+       la seule fiche de l'enseignant connecté. */
     async function teacherLogin(){
-      var nom = (document.getElementById('matricule').value || '').trim();
-      var mdp = document.getElementById('password').value || '';
-      var err = document.getElementById('login-error');
+      var identifiant = (document.getElementById('identifiant').value || '').trim();
+      var code = document.getElementById('password').value || '';
       var btn = document.querySelector('#login-shell .submit-login');
 
-      err.classList.remove('show');
+      masquerErreur('login-error');
+      if(!identifiant || !code){
+        montrerErreur('login-error', 'Saisissez votre identifiant et votre mot de passe.');
+        return;
+      }
       if(btn) btn.disabled = true;
       try{
-        var r = await fetch(API_BASE + '/api/teacher/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nom: nom, motDePasse: mdp })
-        });
-        var data = await r.json();
-        if(!r.ok){
-          err.textContent = data.error || "Nom ou mot de passe incorrect.";
-          err.classList.add('show');
+        var c = await appelerApi('enseignant-connexion.php', enJson({ identifiant: identifiant, code: code }));
+        if(!c.ok){
+          montrerErreur('login-error', c.donnees.erreur || MSG_INDISPONIBLE);
           return;
         }
-
-        teacherToken = data.token;
-        var rMe = await fetch(API_BASE + '/api/teacher/me', {
-          headers: { Authorization: 'Bearer ' + teacherToken }
-        });
-        var moi = await rMe.json();
-        if(!rMe.ok){
-          err.textContent = "Session expirée, réessayez.";
-          err.classList.add('show');
+        teacherToken = c.donnees.jeton;
+        var m = await appelerApi('enseignant-moi.php', { headers: { 'X-Jeton': teacherToken } });
+        if(!m.ok){
+          teacherToken = null;
+          montrerErreur('login-error', m.donnees.erreur || MSG_INDISPONIBLE);
           return;
         }
-
-        profConnecte = moi.nom;
-        afficherEspace(moi);
+        profConnecte = m.donnees;
+        document.getElementById('password').value = '';
+        if(m.donnees.doitChangerCode){
+          codeSaisi = code;            /* gardé en mémoire le temps de choisir le mot de passe */
+          afficherChangement(true);
+        } else {
+          codeSaisi = '';
+          afficherEspace(m.donnees);
+        }
       } catch(e){
-        err.textContent = "Connexion au serveur impossible. Réessayez.";
-        err.classList.add('show');
+        montrerErreur('login-error', 'Connexion au serveur impossible. Réessayez.');
       } finally {
         if(btn) btn.disabled = false;
       }
     }
+
+    function afficherConnexion(message){
+      document.getElementById('teacher-dashboard').style.display = 'none';
+      document.getElementById('change-shell').style.display = 'none';
+      document.getElementById('login-shell').style.display = 'flex';
+      document.getElementById('password').value = '';
+      masquerErreur('login-error');
+      if(message) montrerErreur('login-error', message);
+    }
+
+    /* Session fermée par le serveur (huit heures écoulées, ou mot de passe
+       changé depuis un autre appareil) : retour à l'écran de connexion. */
+    function sessionExpiree(){
+      teacherToken = null; profConnecte = null; codeSaisi = '';
+      afficherConnexion('Votre session a expiré. Reconnectez-vous.');
+    }
+
+    /* --- Choix (ou changement) du mot de passe ---
+       Obligatoire à la première connexion : le code provisoire ne sert
+       qu'une fois. Volontaire ensuite, avec le mot de passe actuel. */
+    function afficherChangement(obligatoire){
+      changementObligatoire = !!obligatoire;
+      document.getElementById('login-shell').style.display = 'none';
+      document.getElementById('teacher-dashboard').style.display = 'none';
+      document.getElementById('change-shell').style.display = 'flex';
+      ['old-password', 'new-password', 'new-password2'].forEach(function(i){
+        document.getElementById(i).value = '';
+      });
+      document.getElementById('old-field').style.display = obligatoire ? 'none' : '';
+      document.getElementById('change-cancel').style.display = obligatoire ? 'none' : '';
+      document.getElementById('change-eyebrow').textContent = obligatoire ? 'Première connexion' : 'Sécurité du compte';
+      document.getElementById('change-titre').textContent = obligatoire ? 'Choisissez votre mot de passe' : 'Changer mon mot de passe';
+      document.getElementById('change-intro').textContent = obligatoire
+        ? 'Le code provisoire que l’administration vous a remis ne sert qu’une fois. Choisissez un mot de passe personnel : 8 caractères au moins, avec des lettres et des chiffres.'
+        : 'Choisissez un nouveau mot de passe : 8 caractères au moins, avec des lettres et des chiffres.';
+      masquerErreur('change-error');
+    }
+
+    function annulerChangement(){
+      document.getElementById('change-shell').style.display = 'none';
+      if(profConnecte) afficherEspace(profConnecte); else afficherConnexion();
+    }
+
+    async function teacherChangeCode(){
+      var ancien = changementObligatoire ? codeSaisi : (document.getElementById('old-password').value || '');
+      var nouveau = document.getElementById('new-password').value || '';
+      var confirmation = document.getElementById('new-password2').value || '';
+      var btn = document.querySelector('#change-shell .submit-login');
+
+      masquerErreur('change-error');
+      if(!ancien){ montrerErreur('change-error', 'Saisissez votre mot de passe actuel.'); return; }
+      if(!nouveau){ montrerErreur('change-error', 'Choisissez un nouveau mot de passe.'); return; }
+      if(nouveau !== confirmation){ montrerErreur('change-error', 'Les deux mots de passe ne sont pas identiques.'); return; }
+      if(btn) btn.disabled = true;
+      try{
+        var c = await appelerApi('enseignant-changer-code.php', enJson({ ancien: ancien, nouveau: nouveau }, teacherToken));
+        if(c.statut === 401){ sessionExpiree(); return; }
+        if(!c.ok){
+          montrerErreur('change-error', c.donnees.erreur || MSG_INDISPONIBLE);
+          return;
+        }
+        codeSaisi = '';
+        profConnecte.doitChangerCode = false;
+        document.getElementById('change-shell').style.display = 'none';
+        afficherEspace(profConnecte);
+        var ok = document.getElementById('change-ok');
+        if(ok){
+          ok.style.display = 'flex';
+          setTimeout(function(){ ok.style.display = 'none'; }, 12000);
+        }
+      } catch(e){
+        montrerErreur('change-error', 'Connexion au serveur impossible. Réessayez.');
+      } finally {
+        if(btn) btn.disabled = false;
+      }
+    }
+
+    /* Entrée valide le formulaire affiché */
+    document.addEventListener('keydown', function(e){
+      if(e.key !== 'Enter') return;
+      var id = e.target && e.target.id;
+      if(id === 'identifiant' || id === 'password') teacherLogin();
+      else if(id === 'old-password' || id === 'new-password' || id === 'new-password2') teacherChangeCode();
+    });
 
     function initiales(nom){
       var m = nom.trim().split(/\s+/);
@@ -135,15 +241,17 @@
 
     function afficherEspace(p){
       var nom = p.nom;
+      var affiche = (p.civilite ? p.civilite + ' ' : '') + nom;
       document.getElementById('login-shell').style.display    = 'none';
+      document.getElementById('change-shell').style.display   = 'none';
       document.getElementById('teacher-dashboard').style.display = 'block';
-      document.getElementById('as-nom').textContent      = nom;
-      document.getElementById('th-nom').textContent      = nom;
+      document.getElementById('as-nom').textContent      = affiche;
+      document.getElementById('th-nom').textContent      = affiche;
       document.getElementById('th-initiales').textContent = initiales(nom).toUpperCase();
 
       var meta = [];
       if(p.matiere) meta.push(p.matiere);
-      meta.push('Année scolaire 2026–2027');
+      meta.push('Année scolaire ' + (p.annee ? String(p.annee).replace('-', '–') : '2026–2027'));
       document.getElementById('th-meta').textContent = meta.join(' · ');
 
       var note = document.getElementById('prof-note');
@@ -178,8 +286,8 @@
       var nbJours   = Object.keys(jours).length;
 
       var cases = [
-        { lbl:'Discipline',   val:p.matiere || '—' },
-        { lbl:'Professeur principal', val:p.principalDe || 'Non désigné',
+        { lbl:'Discipline',   val:esc(p.matiere || '—') },
+        { lbl:'Professeur principal', val:esc(p.principalDe || 'Non désigné'),
           principal: !!p.principalDe },
         { lbl:'Heures par semaine', val:heures + '<small>&nbsp;h</small>' },
         { lbl:'Classes suivies', val:nbClasses + '<small>&nbsp;sur ' + nbJours + ' jour' +
@@ -200,12 +308,17 @@
     }
 
     function teacherLogout(){
+      var jeton = teacherToken;
       profConnecte = null;
       teacherToken = null;
-      document.getElementById('teacher-dashboard').style.display = 'none';
-      document.getElementById('login-shell').style.display = 'flex';
-      document.getElementById('matricule').value = '';
-      document.getElementById('password').value = '';
+      codeSaisi = '';
+      /* le serveur ferme la connexion ; qu'il réponde ou non, on repart de zéro */
+      if(jeton){
+        fetch(API_ENSEIGNANT + '/enseignant-deconnexion.php', { method: 'POST', headers: { 'X-Jeton': jeton } })
+          .catch(function(){});
+      }
+      document.getElementById('identifiant').value = '';
+      afficherConnexion();
     }
 
     /* --- Lecture de la grille -----------------------------------------
@@ -266,7 +379,10 @@
             if(i === jourAujourdhui()) td.classList.add('jour-actuel');
             if(v){
               td.className += ' edt-slot ' + familleDeCase(v, classePrincipale);
-              td.innerHTML = '<span class="cl">' + v + '</span>';
+              var sp = document.createElement('span');
+              sp.className = 'cl';
+              sp.textContent = v;
+              td.appendChild(sp);
             } else {
               td.className += ' edt-empty c-vide';
             }
