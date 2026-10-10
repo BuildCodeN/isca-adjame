@@ -61,7 +61,7 @@
     var PROF_PRINCIPAUX = {
       "6ème 1": "M. TOA BI Emmanuel",
       "6ème 2": "M. ISSA Badine",
-      "6ème 3": "M. KOUASSI N’GUESSAN Ezéchiel",
+      "6ème 3": "M. KOUASSI N’Guessan Ezéchiel",
       "6ème 4": "M. KPA Maka Francis",
       "5ème 1": "Mme YAO Amoin R., épouse ZOKOU",
       "5ème 2": "M. GNAGO Parfait",
