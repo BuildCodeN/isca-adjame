@@ -113,13 +113,45 @@ function lancer(callable $programme): void
 
 // -------------------------------------------------- configuration et base
 /**
+ * « isca-config.php » absent, illisible ou incomplet. Une classe à part : une
+ * panne de la base elle-même (PDOException, qui hérite de RuntimeException)
+ * ne doit pas être prise pour un problème de configuration.
+ */
+final class ConfigurationIncomplete extends RuntimeException
+{
+}
+
+/**
+ * Où en est la configuration ? « introuvable » (aucun fichier isca-config.php
+ * aux endroits prévus), « illisible » (un fichier existe mais ce n'est pas du
+ * PHP valide qui renvoie une liste : souvent la première ligne « <?php »
+ * manque), « incomplet » (une des trois valeurs manque), « ok ». Sert
+ * seulement à sante.php pour dire à l'administrateur ce qui bloque, sans rien
+ * révéler : ni chemin, ni valeur.
+ */
+function etat_config(?string $etat = null): string
+{
+    static $courant = 'introuvable';
+    if ($etat !== null) {
+        $courant = $etat;
+    }
+    return $courant;
+}
+
+/**
  * Cherche « isca-config.php » dans cet ordre :
  *   1. la variable d'environnement ISCA_CONFIG (tests, autre hébergement) ;
  *   2. À CÔTÉ du dossier public_html — sur Hostinger :
  *      /home/uXXXX/domains/isca-adjame.com/isca-config.php ;
- *   3. un cran plus haut, puis le dossier personnel du compte.
+ *   3. un cran plus haut (…/domains/), puis le dossier personnel du compte
+ *      (/home/uXXXX/) : on a vite fait de déposer le fichier au « mauvais »
+ *      niveau, tous restent HORS du site.
  * Hors du dossier servi, le fichier ne peut être ni téléchargé ni écrasé
  * par un déploiement depuis GitHub.
+ *
+ * Le fichier est lu sans jamais rien laisser sortir : s'il manque « <?php »
+ * en première ligne, PHP afficherait son texte (mot de passe de la base
+ * compris) dans la réponse. Une sortie parasite est donc avalée.
  */
 function charger_config(): array
 {
@@ -133,14 +165,26 @@ function charger_config(): array
         $racine !== '' ? dirname($racine) . DIRECTORY_SEPARATOR . 'isca-config.php' : null,
         dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'isca-config.php',
         dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'isca-config.php',
+        dirname(__DIR__, 4) . DIRECTORY_SEPARATOR . 'isca-config.php',
     ]);
-    foreach ($candidats as $fichier) {
-        if (is_file($fichier)) {
-            $contenu = require $fichier;
-            if (is_array($contenu)) {
-                return $config = $contenu;
-            }
+    foreach (array_unique($candidats) as $fichier) {
+        if (!@is_file($fichier)) {
+            continue;
         }
+        $contenu = null;
+        ob_start();
+        try {
+            $contenu = require $fichier;
+        } catch (Throwable $e) {
+            error_log('[ISCA API] isca-config.php illisible : ' . get_class($e) . ' : ' . $e->getMessage());
+        } finally {
+            ob_end_clean();
+        }
+        if (is_array($contenu)) {
+            etat_config('ok');
+            return $config = $contenu;
+        }
+        etat_config('illisible');
     }
     return $config = [];
 }
@@ -154,7 +198,10 @@ function bdd(): PDO
     $c = charger_config();
     foreach (['bd_nom', 'bd_utilisateur', 'bd_mot_de_passe'] as $cle) {
         if (!isset($c[$cle]) || $c[$cle] === '') {
-            throw new RuntimeException('configuration absente ou incomplète');
+            if ($c !== []) {
+                etat_config('incomplet');
+            }
+            throw new ConfigurationIncomplete('configuration absente ou incomplète');
         }
     }
     $dsn = sprintf(

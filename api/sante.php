@@ -6,7 +6,14 @@
  * https://isca-adjame.com/api/sante.php doit afficher
  *   {"ok":true,"enseignants":43,"annee":"2026-2027"}
  * Sinon, « probleme » dit dans quelle étape ça bloque :
- *   configuration : isca-config.php introuvable ou incomplet
+ *   configuration : isca-config.php ne convient pas ; « detail » précise
+ *                     introuvable : aucun fichier isca-config.php aux endroits prévus
+ *                                   (à côté du dossier public_html, ou un ou deux
+ *                                   dossiers plus haut, jamais dedans)
+ *                     illisible   : le fichier existe mais n'est pas du PHP valide
+ *                                   (la première ligne doit être « <?php »)
+ *                     incomplet   : une des trois valeurs (base, utilisateur,
+ *                                   mot de passe) manque ou est vide
  *   connexion     : la base refuse le nom, l'utilisateur ou le mot de passe
  *   tables        : la base est vide (installation-base-enseignants.sql pas encore importé)
  * Rien d'autre n'est révélé : ni chemins, ni noms, ni mots de passe.
@@ -18,8 +25,8 @@ exiger_methode('GET');
 
 try {
     $db = bdd();
-} catch (RuntimeException $e) {
-    repondre(503, ['ok' => false, 'probleme' => 'configuration']);
+} catch (ConfigurationIncomplete $e) {
+    repondre(503, ['ok' => false, 'probleme' => 'configuration', 'detail' => etat_config()]);
 } catch (Throwable $e) {
     error_log('[ISCA API] sante : ' . $e->getMessage());
     repondre(503, ['ok' => false, 'probleme' => 'connexion']);
