@@ -288,7 +288,7 @@ display:none;
 padding:0 40px 60px;font-size:11.5px;color:var(--ink-soft);text-align:right;margin-top:-30px;
 }
 @media print{
-.topbar, nav, #login-shell, #change-shell, .teacher-actions, .security-note, .register-tabs, .print-hint, footer{display:none !important;}
+.topbar, nav, #login-shell, .teacher-actions, .security-note, .register-tabs, .print-hint, footer{display:none !important;}
     body{background:#fff;}
     .register-body{display:none;}
     #all-days-print{display:block;padding:0 40px;}

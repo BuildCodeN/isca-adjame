@@ -12,14 +12,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/01-fondations.css?v=20261010a">
-<link rel="stylesheet" href="assets/css/02-transport.css?v=20261010a">
-<link rel="stylesheet" href="assets/css/03-cartes.css?v=20261010a">
-<link rel="stylesheet" href="assets/css/04-charpente.css?v=20261010a">
-<link rel="stylesheet" href="assets/css/05-bandeaux.css?v=20261010a">
-<link rel="stylesheet" href="assets/css/06-interactions.css?v=20261010a">
-<link rel="stylesheet" href="assets/css/07-matieres.css?v=20261010a">
-<link rel="stylesheet" href="assets/css/08-espaces.css?v=20261010a">
+<link rel="stylesheet" href="assets/css/01-fondations.css?v=20261010b">
+<link rel="stylesheet" href="assets/css/02-transport.css?v=20261010b">
+<link rel="stylesheet" href="assets/css/03-cartes.css?v=20261010b">
+<link rel="stylesheet" href="assets/css/04-charpente.css?v=20261010b">
+<link rel="stylesheet" href="assets/css/05-bandeaux.css?v=20261010b">
+<link rel="stylesheet" href="assets/css/06-interactions.css?v=20261010b">
+<link rel="stylesheet" href="assets/css/07-matieres.css?v=20261010b">
+<link rel="stylesheet" href="assets/css/08-espaces.css?v=20261010b">
 </head>
 <body>
 
@@ -70,53 +70,20 @@
       <div class="seal"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="11" width="16" height="9" rx="1"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></div>
       <div class="eyebrow">Accès réservé au corps enseignant</div>
       <h2>Connexion</h2>
-      <p class="lead2">Chaque enseignant ne peut consulter que son propre emploi du temps. Les emplois du temps des autres enseignants ne sont pas accessibles depuis ce compte.</p>
+      <p class="lead2">Tapez le mot de passe de votre fiche personnelle pour ouvrir votre emploi du temps : aucun identifiant n'est nécessaire. Chaque enseignant ne peut consulter que le sien.</p>
 
-      <div class="login-error" id="login-error" role="alert">Identifiant ou mot de passe incorrect.</div>
+      <div class="login-error" id="login-error" role="alert">Mot de passe incorrect.</div>
 
-      <div class="login-field">
-        <label for="identifiant">Identifiant</label>
-        <input type="text" id="identifiant" placeholder="ISCA-012" autocomplete="username" autocapitalize="characters" spellcheck="false" maxlength="20">
-      </div>
       <div class="login-field">
         <label for="password">Mot de passe</label>
-        <input type="password" id="password" autocomplete="current-password" maxlength="64">
+        <input type="password" id="password" placeholder="XXXX-XXXX" autocomplete="current-password" autocapitalize="characters" autocorrect="off" spellcheck="false" maxlength="64">
       </div>
+      <label class="show-pw"><input type="checkbox" id="show-pw"> Afficher le mot de passe</label>
       <button class="submit-login" onclick="teacherLogin()">Se connecter</button>
 
-      <div class="login-foot">Mot de passe oublié ? <a href="contact.html">Contactez l'administration</a></div>
+      <div class="login-foot">Fiche perdue ou mot de passe oublié ? <a href="contact.html">Contactez l'administration</a></div>
 
       <div class="demo-hint" id="demo-hint"></div>
-    </div>
-  </div>
-
-  <!-- ================= PREMIÈRE CONNEXION : CHOIX DU MOT DE PASSE ================= -->
-  <!-- Le code provisoire remis par l'administration ne sert qu'une fois : à la
-       première connexion l'enseignant choisit un mot de passe que lui seul
-       connaît. Le même écran sert, plus tard, à le changer (champ « actuel »). -->
-  <div id="change-shell" class="login-shell" style="display:none;">
-    <div class="login-card">
-      <div class="seal"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-      <div class="eyebrow" id="change-eyebrow">Première connexion</div>
-      <h2 id="change-titre">Choisissez votre mot de passe</h2>
-      <p class="lead2" id="change-intro"></p>
-
-      <div class="login-error" id="change-error" role="alert"></div>
-
-      <div class="login-field" id="old-field" style="display:none;">
-        <label for="old-password">Mot de passe actuel</label>
-        <input type="password" id="old-password" autocomplete="current-password" maxlength="64">
-      </div>
-      <div class="login-field">
-        <label for="new-password">Nouveau mot de passe</label>
-        <input type="password" id="new-password" autocomplete="new-password" maxlength="64">
-      </div>
-      <div class="login-field">
-        <label for="new-password2">Confirmez le mot de passe</label>
-        <input type="password" id="new-password2" autocomplete="new-password" maxlength="64">
-      </div>
-      <button class="submit-login" onclick="teacherChangeCode()">Enregistrer</button>
-      <div class="login-foot" id="change-cancel" style="display:none;"><a href="#" onclick="annulerChangement();return false;">Annuler</a></div>
     </div>
   </div>
 
@@ -128,13 +95,8 @@
         Espace connecté — <b id="as-nom">—</b>, enseignant
       </div>
       <div class="as-actions">
-        <button class="as-logout" onclick="afficherChangement(false)">Changer mon mot de passe</button>
         <button class="as-logout" onclick="teacherLogout()">Se déconnecter</button>
       </div>
-    </div>
-    <div class="security-note" id="change-ok" role="status" style="display:none;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12l5 5 9-10"/></svg>
-      Votre mot de passe a été enregistré. Conservez-le : l'administration ne peut pas le retrouver, seulement en remettre un provisoire.
     </div>
 
     <div class="security-note">
@@ -180,7 +142,6 @@
     <div class="print-hint">Le bouton « Télécharger en PDF » ouvre l'impression du navigateur — choisissez « Enregistrer au format PDF » comme destination.</div>
   </div>
 
-  <!-- ================= CHANGEMENT DE MOT DE PASSE ================= -->
   </div>
 
   </section>
@@ -220,7 +181,7 @@
     </div>
   </footer>
 
-<script src="assets/js/commun.js?v=20261010a"></script>
-<script src="assets/js/enseignant.js?v=20261010a"></script>
+<script src="assets/js/commun.js?v=20261010b"></script>
+<script src="assets/js/enseignant.js?v=20261010b"></script>
 </body>
 </html>

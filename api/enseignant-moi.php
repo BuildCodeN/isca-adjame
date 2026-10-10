@@ -4,7 +4,7 @@
  * Renvoie la fiche de l'enseignant CONNECTÉ, et d'elle seule : jamais celle
  * d'un autre, jamais la liste du personnel.
  *
- * { "civilite", "nom", "matiere", "principalDe", "annee", "doitChangerCode",
+ * { "civilite", "nom", "matiere", "principalDe", "annee",
  *   "edt": [8 lignes][5 jours] }   — une ligne par heure de cours, de la 1ère
  * à la 8ème H. (la pause déjeuner n'est pas une heure ; la table creneaux
  * numérote ses heures de 1 à 8).
@@ -35,7 +35,6 @@ lancer(function () {
         'matiere'         => $ens['discipline'],
         'principalDe'     => $ens['classe_principale'],
         'annee'           => $annee ?: '',
-        'doitChangerCode' => (int) $ens['code_provisoire'] === 1,
         'edt'             => $edt,
     ]);
 });

@@ -10,9 +10,9 @@
        envoyés au navigateur d'un visiteur non connecté. Pour les mettre
        à jour : python outils/preparer-acces-enseignants.py --edt (nouveaux
        emplois du temps, nouveaux enseignants) ou --reinitialiser ISCA-012
-       (mot de passe oublié) ; l'outil écrit un fichier SQL à importer dans
-       phpMyAdmin (hPanel > Bases de données). Le détail est dans
-       backend/LISEZ-MOI-ESPACE-ENSEIGNANT.md.
+       (mot de passe perdu ou divulgué) ; l'outil écrit un fichier SQL à
+       importer dans phpMyAdmin (hPanel > Bases de données). Le détail est
+       dans backend/LISEZ-MOI-ESPACE-ENSEIGNANT.md.
        ------------------------------------------------------------------ */
 
     /* Horaires communs aux emplois du temps des classes et des professeurs. */
@@ -41,10 +41,11 @@
        et de pause déjeuner du document ne sont pas reprises. Le matricule
        que porte l'en-tête de certains enseignants n'est pas repris non plus.
 
-       Identifiant : « ISCA » suivi du numéro d'ordre à trois chiffres
-       (ISCA-001 à ISCA-043, dans l'ordre du document), attribué une fois
-       pour toutes. Code provisoire remis sur une fiche imprimée, remplacé
-       par un mot de passe personnel à la première connexion.
+       Connexion par mot de passe seul : l'enseignant tape le code de 8
+       caractères imprimé sur sa fiche, sans identifiant ; valable toute
+       l'année, jamais deux fois le même (le serveur retrouve le compte à
+       partir du mot de passe). « ISCA-001 » à « ISCA-043 » ne sont que des
+       repères de l'administration.
 
        Les coordonnées personnelles présentes dans les PDF (téléphones,
        adresses électroniques, matricules) ont été délibérément écartées :
@@ -62,16 +63,20 @@
 
     var profConnecte = null;      /* la fiche de l'enseignant connecté */
     var teacherToken = null;      /* jeton de connexion : en mémoire seulement, jamais enregistré dans le navigateur */
-    var codeSaisi = '';           /* le code provisoire tapé, le temps de choisir le mot de passe */
-    var changementObligatoire = false;
 
     (function initEspaceEnseignant(){
       /* Aucune liste de noms, aucun exemple de mot de passe sur une page
          consultable par n'importe qui : seulement la consigne. */
       var hint = document.getElementById('demo-hint');
       if(hint){
-        hint.innerHTML = 'Votre identifiant est <b>ISCA</b> suivi de votre numéro d’ordre (par exemple ISCA-012). ' +
-          'À la première connexion, tapez le code provisoire remis par l’administration : vous choisirez ensuite votre mot de passe personnel.';
+        hint.innerHTML = 'Votre mot de passe est <b>le code de la fiche personnelle</b> remise par l’administration. ' +
+          'Majuscules ou minuscules, avec ou sans tiret : peu importe.';
+      }
+      /* Case « Afficher le mot de passe » : on tape un code de 8 caractères lu sur du papier, une faute est vite faite. */
+      var voir = document.getElementById('show-pw');
+      var champ = document.getElementById('password');
+      if(voir && champ){
+        voir.addEventListener('change', function(){ champ.type = voir.checked ? 'text' : 'password'; });
       }
     })();
 
@@ -106,23 +111,25 @@
     }
 
     /* --- Connexion --- */
-    /* L'identifiant (« ISCA-012 », toléré tapé « isca 12 ») et le mot de
-       passe sont vérifiés côté serveur, qui bloque l'identifiant après
-       cinq échecs en quinze minutes. Le navigateur reçoit un jeton, puis
-       la seule fiche de l'enseignant connecté. */
+    /* Le mot de passe de la fiche (toléré en minuscules, avec ou sans tiret)
+       est tout ce que l'enseignant tape : le serveur retrouve son compte à
+       partir de lui, refuse après trente essais ratés depuis la même adresse
+       en quinze minutes, et répond toujours le même message à un mot de passe
+       faux. Le navigateur reçoit un jeton, puis la seule fiche de l'enseignant
+       connecté. */
     async function teacherLogin(){
-      var identifiant = (document.getElementById('identifiant').value || '').trim();
-      var code = document.getElementById('password').value || '';
+      var champ = document.getElementById('password');
+      var motDePasse = (champ.value || '').trim();
       var btn = document.querySelector('#login-shell .submit-login');
 
       masquerErreur('login-error');
-      if(!identifiant || !code){
-        montrerErreur('login-error', 'Saisissez votre identifiant et votre mot de passe.');
+      if(!motDePasse){
+        montrerErreur('login-error', 'Saisissez votre mot de passe.');
         return;
       }
       if(btn) btn.disabled = true;
       try{
-        var c = await appelerApi('enseignant-connexion.php', enJson({ identifiant: identifiant, code: code }));
+        var c = await appelerApi('enseignant-connexion.php', enJson({ motDePasse: motDePasse }));
         if(!c.ok){
           montrerErreur('login-error', c.donnees.erreur || MSG_INDISPONIBLE);
           return;
@@ -135,14 +142,8 @@
           return;
         }
         profConnecte = m.donnees;
-        document.getElementById('password').value = '';
-        if(m.donnees.doitChangerCode){
-          codeSaisi = code;            /* gardé en mémoire le temps de choisir le mot de passe */
-          afficherChangement(true);
-        } else {
-          codeSaisi = '';
-          afficherEspace(m.donnees);
-        }
+        champ.value = '';
+        afficherEspace(m.donnees);
       } catch(e){
         montrerErreur('login-error', 'Connexion au serveur impossible. Réessayez.');
       } finally {
@@ -151,87 +152,28 @@
     }
 
     function afficherConnexion(message){
+      var voir = document.getElementById('show-pw');
+      var champ = document.getElementById('password');
       document.getElementById('teacher-dashboard').style.display = 'none';
-      document.getElementById('change-shell').style.display = 'none';
       document.getElementById('login-shell').style.display = 'flex';
-      document.getElementById('password').value = '';
+      champ.value = '';
+      champ.type = 'password';              /* le mot de passe ne reste jamais affiché d'une connexion à l'autre */
+      if(voir) voir.checked = false;
       masquerErreur('login-error');
       if(message) montrerErreur('login-error', message);
     }
 
-    /* Session fermée par le serveur (huit heures écoulées, ou mot de passe
-       changé depuis un autre appareil) : retour à l'écran de connexion. */
+    /* Session fermée par le serveur (huit heures écoulées) : retour à
+       l'écran de connexion. */
     function sessionExpiree(){
-      teacherToken = null; profConnecte = null; codeSaisi = '';
+      teacherToken = null; profConnecte = null;
       afficherConnexion('Votre session a expiré. Reconnectez-vous.');
     }
 
-    /* --- Choix (ou changement) du mot de passe ---
-       Obligatoire à la première connexion : le code provisoire ne sert
-       qu'une fois. Volontaire ensuite, avec le mot de passe actuel. */
-    function afficherChangement(obligatoire){
-      changementObligatoire = !!obligatoire;
-      document.getElementById('login-shell').style.display = 'none';
-      document.getElementById('teacher-dashboard').style.display = 'none';
-      document.getElementById('change-shell').style.display = 'flex';
-      ['old-password', 'new-password', 'new-password2'].forEach(function(i){
-        document.getElementById(i).value = '';
-      });
-      document.getElementById('old-field').style.display = obligatoire ? 'none' : '';
-      document.getElementById('change-cancel').style.display = obligatoire ? 'none' : '';
-      document.getElementById('change-eyebrow').textContent = obligatoire ? 'Première connexion' : 'Sécurité du compte';
-      document.getElementById('change-titre').textContent = obligatoire ? 'Choisissez votre mot de passe' : 'Changer mon mot de passe';
-      document.getElementById('change-intro').textContent = obligatoire
-        ? 'Le code provisoire que l’administration vous a remis ne sert qu’une fois. Choisissez un mot de passe personnel : 8 caractères au moins, avec des lettres et des chiffres.'
-        : 'Choisissez un nouveau mot de passe : 8 caractères au moins, avec des lettres et des chiffres.';
-      masquerErreur('change-error');
-    }
-
-    function annulerChangement(){
-      document.getElementById('change-shell').style.display = 'none';
-      if(profConnecte) afficherEspace(profConnecte); else afficherConnexion();
-    }
-
-    async function teacherChangeCode(){
-      var ancien = changementObligatoire ? codeSaisi : (document.getElementById('old-password').value || '');
-      var nouveau = document.getElementById('new-password').value || '';
-      var confirmation = document.getElementById('new-password2').value || '';
-      var btn = document.querySelector('#change-shell .submit-login');
-
-      masquerErreur('change-error');
-      if(!ancien){ montrerErreur('change-error', 'Saisissez votre mot de passe actuel.'); return; }
-      if(!nouveau){ montrerErreur('change-error', 'Choisissez un nouveau mot de passe.'); return; }
-      if(nouveau !== confirmation){ montrerErreur('change-error', 'Les deux mots de passe ne sont pas identiques.'); return; }
-      if(btn) btn.disabled = true;
-      try{
-        var c = await appelerApi('enseignant-changer-code.php', enJson({ ancien: ancien, nouveau: nouveau }, teacherToken));
-        if(c.statut === 401){ sessionExpiree(); return; }
-        if(!c.ok){
-          montrerErreur('change-error', c.donnees.erreur || MSG_INDISPONIBLE);
-          return;
-        }
-        codeSaisi = '';
-        profConnecte.doitChangerCode = false;
-        document.getElementById('change-shell').style.display = 'none';
-        afficherEspace(profConnecte);
-        var ok = document.getElementById('change-ok');
-        if(ok){
-          ok.style.display = 'flex';
-          setTimeout(function(){ ok.style.display = 'none'; }, 12000);
-        }
-      } catch(e){
-        montrerErreur('change-error', 'Connexion au serveur impossible. Réessayez.');
-      } finally {
-        if(btn) btn.disabled = false;
-      }
-    }
-
-    /* Entrée valide le formulaire affiché */
+    /* Entrée valide le formulaire */
     document.addEventListener('keydown', function(e){
       if(e.key !== 'Enter') return;
-      var id = e.target && e.target.id;
-      if(id === 'identifiant' || id === 'password') teacherLogin();
-      else if(id === 'old-password' || id === 'new-password' || id === 'new-password2') teacherChangeCode();
+      if(e.target && e.target.id === 'password') teacherLogin();
     });
 
     function initiales(nom){
@@ -243,7 +185,6 @@
       var nom = p.nom;
       var affiche = (p.civilite ? p.civilite + ' ' : '') + nom;
       document.getElementById('login-shell').style.display    = 'none';
-      document.getElementById('change-shell').style.display   = 'none';
       document.getElementById('teacher-dashboard').style.display = 'block';
       document.getElementById('as-nom').textContent      = affiche;
       document.getElementById('th-nom').textContent      = affiche;
@@ -311,13 +252,11 @@
       var jeton = teacherToken;
       profConnecte = null;
       teacherToken = null;
-      codeSaisi = '';
       /* le serveur ferme la connexion ; qu'il réponde ou non, on repart de zéro */
       if(jeton){
         fetch(API_ENSEIGNANT + '/enseignant-deconnexion.php', { method: 'POST', headers: { 'X-Jeton': jeton } })
           .catch(function(){});
       }
-      document.getElementById('identifiant').value = '';
       afficherConnexion();
     }
 

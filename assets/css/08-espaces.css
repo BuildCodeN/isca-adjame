@@ -181,6 +181,12 @@
     outline:none;
   }
   .login-field input::placeholder{color:#A9B0BC;}
+  /* « Afficher le mot de passe » : zone de toucher d'au moins 40 px de haut, pour le doigt */
+  .show-pw{
+    display:flex;align-items:center;gap:10px;margin:-8px 0 8px;padding:10px 0;
+    font-size:13.5px;color:var(--ink-soft);cursor:pointer;width:fit-content;
+  }
+  .show-pw input{width:20px;height:20px;margin:0;accent-color:var(--wine);cursor:pointer;}
   .demo-hint{
     margin-top:18px;padding:13px 15px;
     background:var(--cream-deep);border-left:2px solid var(--gold);

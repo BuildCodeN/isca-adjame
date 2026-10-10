@@ -13,6 +13,13 @@
  * Aucun secret ici. Les accès à la base de données vivent dans un fichier
  * « isca-config.php » placé À CÔTÉ du dossier public_html (jamais dedans,
  * jamais sur GitHub) — voir charger_config().
+ *
+ * CONNEXION PAR MOT DE PASSE SEUL. L'enseignant ne tape ni identifiant ni
+ * nom : seulement le mot de passe de sa fiche. Le serveur retrouve le compte
+ * à partir du mot de passe, ce qui suppose que deux enseignants n'aient
+ * JAMAIS le même : c'est pourquoi les mots de passe sont des codes de
+ * 8 caractères tirés au hasard par l'administration (jamais choisis par
+ * l'enseignant), uniques par construction et par la base (clé unique).
  */
 declare(strict_types=1);
 
@@ -28,17 +35,26 @@ error_reporting(E_ALL);
 
 // ----------------------------------------------------------------- réglages
 const SESSION_DUREE     = 28800;   // une connexion dure 8 heures
-const ECHECS_PAR_COMPTE = 5;       // échecs tolérés pour un identifiant…
-const ECHECS_PAR_IP     = 60;      // …et, très large, pour une adresse
-const FENETRE_ECHECS    = 900;     // …sur 15 minutes
-const MOT_DE_PASSE_MIN  = 8;
-const MOT_DE_PASSE_MAX  = 64;      // bcrypt ne lit que les 72 premiers octets
+const ECHECS_PAR_IP     = 30;      // échecs tolérés depuis une même adresse…
+const FENETRE_ECHECS    = 900;     // …sur 15 minutes (très au-dessus des fautes de frappe
+                                   // de 43 enseignants derrière la même box, très en dessous
+                                   // de ce qu'il faut pour deviner un code)
+const MOT_DE_PASSE_MIN  = 6;       // en dessous, ce n'est pas un code de fiche : refus sans calcul
+const MOT_DE_PASSE_MAX  = 64;
 const CORPS_MAX         = 4096;    // taille maximale d'une requête (octets)
 
-// Hash bcrypt valide d'un mot sans importance : sert à dépenser le même
-// temps de calcul quand l'identifiant n'existe pas, pour qu'une réponse
-// rapide ne révèle pas qu'un compte n'existe pas.
-const HASH_FACTICE = '$2y$10$3.3anqyR9jAxvjqiWeccFOpuQJV4oI2T.10srs7GJOZI6CyMc2x9i';
+// Le mot de passe n'est jamais enregistré : la base garde sa « clé d'accès »,
+// PBKDF2-HMAC-SHA256 du mot de passe (sel fixe de l'application, 100 000 tours,
+// ~0,1 s). Elle sert à la fois de brouillage (impossible à relire) et de
+// recherche (clé unique : le même mot de passe donne toujours la même clé, ce
+// qui permet de retrouver le compte sans identifiant). Le mot de passe est un
+// code de 8 caractères tirés au hasard parmi 31 : plus de 800 milliards de
+// possibilités, que ni la limite d'essais ni le coût du calcul ne laissent
+// parcourir. Le sel est public (ce fichier l'est) : il n'a pas à être secret,
+// il sert seulement à ce que cette base ne se devine pas avec une table
+// précalculée faite pour un autre site.
+const SEL_ACCES        = 'isca-adjame.com/espace-enseignant/acces/v1';
+const ITERATIONS_ACCES = 100000;
 
 // ----------------------------------------------------------------- réponses
 function entetes_api(): void
@@ -163,71 +179,47 @@ function heure(int $secondes = 0): string
 }
 
 /**
- * Adresse du visiteur. Derrière le CDN de l'hébergeur, REMOTE_ADDR peut être
- * celle du CDN : on lit d'abord l'en-tête transmis. Il peut être falsifié,
- * c'est pourquoi la limite par adresse est très large : le vrai garde-fou
- * est la limite par identifiant.
+ * Adresse du visiteur, pour la limite d'essais. Derrière le CDN de
+ * l'hébergeur, REMOTE_ADDR peut être celle du CDN : on lit alors l'en-tête
+ * X-Forwarded-For, mais par la FIN. Chaque relais y ajoute à droite l'adresse
+ * de celui qui l'a appelé ; ce qui se trouve à gauche a pu être écrit par le
+ * visiteur lui-même, donc ne prouve rien. (Un visiteur qui falsifie l'en-tête
+ * peut seulement contourner la limite par adresse, pas deviner un code.)
  */
 function ip_client(): string
 {
     $ip = (string) ($_SERVER['REMOTE_ADDR'] ?? '');
-    foreach (['HTTP_CF_CONNECTING_IP', 'HTTP_X_FORWARDED_FOR'] as $entete) {
-        if (!empty($_SERVER[$entete])) {
-            $premier = trim(explode(',', (string) $_SERVER[$entete])[0]);
-            if (filter_var($premier, FILTER_VALIDATE_IP)) {
-                $ip = $premier;
-                break;
-            }
+    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $relais = array_map('trim', explode(',', (string) $_SERVER['HTTP_X_FORWARDED_FOR']));
+        $dernier = end($relais);
+        if (is_string($dernier) && filter_var($dernier, FILTER_VALIDATE_IP)) {
+            $ip = $dernier;
         }
     }
     return substr($ip, 0, 45);
 }
 
-/** « isca 5 », « ISCA-005 », « isca005 » → « ISCA-005 » ; null si ce n'est pas un identifiant. */
-function normaliser_identifiant(string $saisi): ?string
-{
-    $s = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $saisi) ?? '');
-    if (!preg_match('/^ISCA(\d{1,4})$/', $s, $m)) {
-        return null;
-    }
-    return sprintf('ISCA-%03d', (int) $m[1]);
-}
-
-/** Un code provisoire se tape souvent de travers : majuscules, espaces, tiret. */
-function normaliser_code_provisoire(string $saisi): string
-{
-    return strtoupper(preg_replace('/[\s\-]+/', '', $saisi) ?? '');
-}
-
 // ------------------------------------------------------ limite des essais
-/** Nombre d'échecs récents pour un identifiant ; et, s'il y a blocage, les secondes restantes. */
-function etat_blocage(PDO $db, ?string $identifiant, string $ip): array
+/** [bloqué ?, secondes avant la fin du blocage] pour cette adresse. */
+function etat_blocage(PDO $db, string $ip): array
 {
-    $depuis = heure(-FENETRE_ECHECS);
-    if ($identifiant !== null) {
-        $q = $db->prepare('SELECT le FROM tentatives WHERE identifiant = ? AND reussie = 0 AND le >= ? ORDER BY le DESC LIMIT ?');
-        $q->bindValue(1, $identifiant);
-        $q->bindValue(2, $depuis);
-        $q->bindValue(3, ECHECS_PAR_COMPTE, PDO::PARAM_INT);
-        $q->execute();
-        $echecs = $q->fetchAll(PDO::FETCH_COLUMN);
-        if (count($echecs) >= ECHECS_PAR_COMPTE) {
-            // le blocage se lève 15 minutes après le plus ancien des derniers échecs
-            $debloque = strtotime($echecs[ECHECS_PAR_COMPTE - 1] . ' UTC') + FENETRE_ECHECS;
-            return [true, max(1, $debloque - time())];
-        }
-    }
-    $q = $db->prepare('SELECT COUNT(*) FROM tentatives WHERE ip = ? AND reussie = 0 AND le >= ?');
-    $q->execute([$ip, $depuis]);
-    if ((int) $q->fetchColumn() >= ECHECS_PAR_IP) {
-        return [true, FENETRE_ECHECS];
+    $q = $db->prepare('SELECT le FROM tentatives WHERE ip = ? AND reussie = 0 AND le >= ? ORDER BY le DESC LIMIT ?');
+    $q->bindValue(1, $ip);
+    $q->bindValue(2, heure(-FENETRE_ECHECS));
+    $q->bindValue(3, ECHECS_PAR_IP, PDO::PARAM_INT);
+    $q->execute();
+    $echecs = $q->fetchAll(PDO::FETCH_COLUMN);
+    if (count($echecs) >= ECHECS_PAR_IP) {
+        // le blocage se lève quand le plus ancien des derniers échecs sort de la fenêtre
+        $debloque = strtotime($echecs[ECHECS_PAR_IP - 1] . ' UTC') + FENETRE_ECHECS;
+        return [true, max(1, $debloque - time())];
     }
     return [false, 0];
 }
 
-function bloquer_si_necessaire(PDO $db, ?string $identifiant, string $ip): void
+function bloquer_si_necessaire(PDO $db, string $ip): void
 {
-    [$bloque, $secondes] = etat_blocage($db, $identifiant, $ip);
+    [$bloque, $secondes] = etat_blocage($db, $ip);
     if ($bloque) {
         $minutes = (int) ceil($secondes / 60);
         header('Retry-After: ' . $secondes);
@@ -236,14 +228,15 @@ function bloquer_si_necessaire(PDO $db, ?string $identifiant, string $ip): void
     }
 }
 
-function noter_tentative(PDO $db, ?string $identifiant, string $ip, bool $reussie): void
+/**
+ * Une réussite NE remet PAS le compteur à zéro : quelqu'un qui possède un
+ * mot de passe valable ne doit pas pouvoir s'en servir pour effacer ses
+ * échecs et deviner ceux des autres sans limite.
+ */
+function noter_tentative(PDO $db, string $ip, bool $reussie): void
 {
-    $q = $db->prepare('INSERT INTO tentatives (identifiant, ip, reussie, le) VALUES (?, ?, ?, ?)');
-    $q->execute([$identifiant, $ip, $reussie ? 1 : 0, heure()]);
-    if ($reussie && $identifiant !== null) {
-        // la réussite remet le compteur à zéro
-        $db->prepare('DELETE FROM tentatives WHERE identifiant = ? AND reussie = 0')->execute([$identifiant]);
-    }
+    $q = $db->prepare('INSERT INTO tentatives (ip, reussie, le) VALUES (?, ?, ?)');
+    $q->execute([$ip, $reussie ? 1 : 0, heure()]);
     if (random_int(1, 40) === 1) {            // ménage : rien ne s'accumule
         $db->prepare('DELETE FROM tentatives WHERE le < ?')->execute([heure(-30 * 86400)]);
         $db->prepare('DELETE FROM sessions WHERE expire_le < ?')->execute([heure()]);
@@ -252,47 +245,25 @@ function noter_tentative(PDO $db, ?string $identifiant, string $ip, bool $reussi
 
 // ------------------------------------------------- mots de passe, sessions
 /**
- * Vrai si $saisi est le mot de passe (ou le code provisoire) de $enseignant.
- * Le temps de calcul est le même que le compte existe ou non.
+ * Un mot de passe se tape souvent de travers : minuscules, espaces, tiret
+ * (« k7m4 x9pq », « K7M4-X9PQ », « K7M4X9PQ » sont le même). Les codes de fiche
+ * n'ont ni espace ni tiret dans leur forme enregistrée.
  */
-function verifier_code(string $saisi, ?array $enseignant): bool
+function normaliser_mot_de_passe(string $saisi): string
 {
-    $hash = $enseignant['code_hash'] ?? HASH_FACTICE;
-    $ok = password_verify($saisi, $hash);
-    if (!$ok && ($enseignant === null || (int) $enseignant['code_provisoire'] === 1)) {
-        $ok = password_verify(normaliser_code_provisoire($saisi), $hash);
-    }
-    return $ok && $enseignant !== null;
+    return strtoupper(preg_replace('/[\s\-]+/u', '', $saisi) ?? '');
 }
 
 /**
- * Règle du mot de passe personnel : assez long, des lettres ET des chiffres,
- * différent du code provisoire et de l'identifiant. Renvoie le message à
- * montrer à l'enseignant, ou null si le mot de passe convient.
+ * Clé d'accès d'un mot de passe (déjà normalisé) : 64 caractères
+ * hexadécimaux. C'est ce que la base enregistre — jamais le mot de passe —
+ * et ce qu'elle cherche à la connexion. Même fonction pour l'API et pour
+ * l'outil qui prépare les comptes (outils/hacher-codes.php) : un code imprimé
+ * sur une fiche qui n'ouvrirait pas le compte serait découvert avant la remise.
  */
-function probleme_mot_de_passe(string $nouveau, string $identifiant, string $ancien): ?string
+function cle_d_acces(string $motDePasseNormalise): string
 {
-    $longueur = mb_strlen($nouveau, 'UTF-8');
-    if ($longueur < MOT_DE_PASSE_MIN) {
-        return 'Le mot de passe doit comporter au moins ' . MOT_DE_PASSE_MIN . ' caractères.';
-    }
-    if ($longueur > MOT_DE_PASSE_MAX) {
-        return 'Le mot de passe doit comporter ' . MOT_DE_PASSE_MAX . ' caractères au plus.';
-    }
-    if (!preg_match('/\p{L}/u', $nouveau) || !preg_match('/\d/', $nouveau)) {
-        return 'Le mot de passe doit contenir au moins une lettre et un chiffre.';
-    }
-    $sans_signes = static fn(string $s): string => strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $s) ?? '');
-    if (str_contains($sans_signes($nouveau), $sans_signes($identifiant))) {
-        return 'Le mot de passe ne doit pas contenir votre identifiant.';
-    }
-    if ($nouveau === $ancien || $sans_signes($nouveau) === normaliser_code_provisoire($ancien)) {
-        return 'Choisissez un mot de passe différent de l\'actuel.';
-    }
-    if (count(array_unique(mb_str_split($nouveau, 1, 'UTF-8'))) < 4) {
-        return 'Choisissez un mot de passe moins évident.';
-    }
-    return null;
+    return hash_pbkdf2('sha256', $motDePasseNormalise, SEL_ACCES, ITERATIONS_ACCES, 64);
 }
 
 function creer_session(PDO $db, int $enseignant_id, string $ip): string

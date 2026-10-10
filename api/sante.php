@@ -8,7 +8,7 @@
  * Sinon, « probleme » dit dans quelle étape ça bloque :
  *   configuration : isca-config.php introuvable ou incomplet
  *   connexion     : la base refuse le nom, l'utilisateur ou le mot de passe
- *   tables        : la base est vide (schema.sql pas encore importé)
+ *   tables        : la base est vide (installation-base-enseignants.sql pas encore importé)
  * Rien d'autre n'est révélé : ni chemins, ni noms, ni mots de passe.
  */
 define('ISCA_API', true);

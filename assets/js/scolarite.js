@@ -51,8 +51,9 @@
     // créneau de langue vivante 2 : espagnol et allemand ont lieu en même temps,
     // avec deux professeurs. Les abréviations des matières sont celles du site
     // (FRAN, MATH, HIST-GEO, PC…) ; les noms sont repris tels qu'imprimés dans
-    // les documents, « Epse » étant écrit « épouse » pour le professeur
-    // principal. Cette année il n'y a pas de 5ème 4, et les anciennes
+    // les documents (« Epse » reste abrégé), sauf trois prénoms saisis en
+    // capitales dans l'application (table CORRECTIONS_AFFICHAGE de l'outil).
+    // Cette année il n'y a pas de 5ème 4, et les anciennes
     // Terminales D1 et D2 ont été fusionnées en une seule Terminale D. Si une
     // classe du sélecteur n'avait pas de grille, la page l'annoncerait comme non
     // communiquée plutôt que d'en inventer une.
@@ -63,24 +64,24 @@
       "6ème 2": "M. ISSA Badine",
       "6ème 3": "M. KOUASSI N’Guessan Ezéchiel",
       "6ème 4": "M. KPA Maka Francis",
-      "5ème 1": "Mme YAO Amoin R., épouse ZOKOU",
+      "5ème 1": "Mme YAO Amoin R. Epse ZOKOU",
       "5ème 2": "M. GNAGO Parfait",
       "5ème 3": "M. ALLAH N. Cyrille",
       "4ème 1": "M. ATCHEBRO J. Dimitri",
       "4ème 2": "Mme GABO Gisèle",
       "4ème 3": "M. MONDOTE Abiola Serge",
       "4ème 4": "Mme MOBIO Adelaïde",
-      "3ème 1": "Mme YAO Adjoua, épouse ESSECOFY",
+      "3ème 1": "Mme YAO Adjoua Epse ESSECOFY",
       "3ème 2": "M. YAYA Soro Aimé",
       "3ème 3": "M. GUIHIE G. Jean Marc",
       "3ème 4": "M. KOUASSI Joël Brice",
       "2nde A": "M. BOCA Cocoa Nestor",
-      "2nde C1": "Mme SOM Toulo Odette, épouse HIEN",
+      "2nde C1": "Mme SOM Toulo Odette Epse HIEN",
       "2nde C2": "M. BALLO Pifouan",
       "1ère A": "M. N’GUESSAN Christian",
       "1ère C": "M. DIGBEU Roland Pascal A.",
       "1ère D": "M. MONNEY Arthur",
-      "Tle A1": "Mme ADOU Julie, épouse ATTA",
+      "Tle A1": "Mme ADOU Julie Epse ATTA",
       "Tle A2": "M. AGNIMEL Esmel B.",
       "Tle C": "M. GRAH Bogui Gelin",
       "Tle D": "M. YAPI Luther Jean Marc"
