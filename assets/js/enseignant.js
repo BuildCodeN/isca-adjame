@@ -201,8 +201,26 @@
         : 'Les cases indiquent la classe où vous intervenez.';
 
       remplirResume(p);
-      renderProfTable(p.edt, p.principalDe);
+      renderProfTable(p.edt, p.principalDe, p.matiere);
+      enteteImpression(p);
     }
+
+    /* --- En-tête de la feuille imprimée ------------------------------
+       L'année vient du serveur, comme à l'écran. La date de l'impression
+       est reposée juste avant chaque impression : une page laissée
+       ouverte plusieurs jours ne doit pas porter celle de la connexion. */
+    function enteteImpression(p){
+      var annee = document.getElementById('pe-annee');
+      var date  = document.getElementById('pe-date');
+      if(annee) annee.textContent = 'Année scolaire ' + (p && p.annee ? String(p.annee).replace('-', '–') : '2026–2027');
+      if(date){
+        date.textContent = 'Imprimé le ' +
+          new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+      }
+    }
+    window.addEventListener('beforeprint', function(){
+      if(profConnecte) enteteImpression(profConnecte);
+    });
 
     /* --- Bandeau de synthèse ------------------------------------------
        Ce qu'un enseignant veut savoir avant même de lire sa grille : sa
@@ -261,18 +279,58 @@
     }
 
     /* --- Lecture de la grille -----------------------------------------
-       Une grille de vingt-cinq cases identiques oblige à lire chaque
-       libellé. En séparant le collège du lycée par la couleur, et en
-       marquant la classe dont on est professeur principal, le regard
-       trie avant de lire. */
-    function familleDeCase(v, principale){
-      if(v === 'DEVOIR') return 'c-devoir';
-      if(v.indexOf('Act.') === 0) return 'c-perso';
-      if(principale && v.split(' / ').some(function(c){
-           return c.replace(/ - (FHR|EDHC)$/, '').trim() === principale; }))
-        return 'c-principal';
-      /* 6ème à 3ème : collège. 2nde, 1ère, Tle et TC : lycée. */
-      return /^[3-6]\s*ème/.test(v) ? 'c-college' : 'c-lycee';
+       Les cases sont celles des emplois du temps de classe (scolarite.js,
+       styles de 01-fondations.css) : un bloc par cours, teinté selon la
+       matière — sciences, langues et lettres, sciences humaines, sport,
+       arts et formation humaine —, un bloc marine pour les devoirs
+       surveillés, le même vocabulaire (« ACT. DU PERSONNEL »). Dans une
+       grille de classe le titre de la case est la matière et le professeur
+       vient dessous ; ici le titre est la classe où l'on intervient et la
+       matière qu'on y enseigne vient dessous. La classe dont on est
+       professeur principal porte un liseré or et la mention « PP ».
+
+       Code de matière et famille de couleur de chaque discipline, tels que
+       scolarite.js les nomme (FAMILLES) : les garder en phase. Une
+       discipline absente de la liste s'affiche sous son nom, en couleur de
+       sciences humaines, comme dans la grille des classes. */
+    var MATIERES_PROF = {
+      'Mathématiques':   ['MATH', 'sciences'],
+      'Physique-Chimie': ['PC', 'sciences'],
+      'SVT':             ['SVT', 'sciences'],
+      'TICE':            ['TICE', 'sciences'],
+      'Français':        ['FRAN', 'lettres'],
+      'Anglais':         ['ANG', 'lettres'],
+      'Espagnol':        ['ESP', 'lettres'],
+      'Allemand':        ['ALL', 'lettres'],
+      'Philosophie':     ['PHILO', 'lettres'],
+      'Histoire-Géo':    ['HIST-GEO', 'humaines'],
+      'EDHC':            ['EDHC', 'humaines'],
+      'EPS':             ['EPS', 'vie'],
+      'Musique':         ['MUSIQUE', 'vie'],
+      'FHR':             ['FHR', 'vie']
+    };
+
+    /* Ce que dit une case de la fiche : { titre, sous, fam, principale }.
+       « 6ème 1 - FHR » : la classe est 6ème 1, FHR dit ce qu'on y enseigne
+       quand ce n'est pas la matière de l'enseignant. */
+    function decrireCase(v, matiere, principale){
+      if(v === 'DEVOIR') return { titre: 'DEVOIR', fam: 'devoir' };
+      if(v.indexOf('Act.') === 0) return { titre: 'ACT. DU PERSONNEL', fam: 'vie' };
+      var m = /^(.*?)(?: - (FHR|EDHC))?$/.exec(v);
+      var classes = m[1].trim();
+      var enseigne = m[2] || matiere || '';
+      var info = MATIERES_PROF[enseigne];
+      var estPrincipale = !!principale && classes.split(' / ').some(function(c){
+        return c.trim() === principale;
+      });
+      var sous = [info ? info[0] : enseigne];
+      if(estPrincipale) sous.push('PP');
+      return {
+        titre: classes,
+        sous: sous.filter(Boolean).join(' · '),
+        fam: info ? info[1] : 'humaines',
+        principale: estPrincipale
+      };
     }
 
     /* Index de la colonne du jour : lundi = 0 … vendredi = 4.
@@ -282,13 +340,13 @@
       return (j >= 1 && j <= 5) ? j - 1 : -1;
     }
 
-    /* --- Grille de l'enseignant, dans le style des emplois du temps de classe --- */
-    function renderProfTable(edt, classePrincipale){
+    /* --- Grille de l'enseignant : mêmes cases que celles des emplois du temps de classe --- */
+    function renderProfTable(edt, classePrincipale, matiere){
       var body = document.getElementById('profBody');
       body.innerHTML = '';
       var ja = jourAujourdhui();
       document.querySelectorAll('#profTable thead th').forEach(function(th, k){
-        th.classList.toggle('jour-actuel', k - 1 === ja);
+        th.classList.toggle('jour-actuel', k >= 1 && k - 1 === ja);   /* k = 0 est la colonne « Horaire » : jamais un jour */
       });
       if(!edt){
         var tr = document.createElement('tr');
@@ -317,11 +375,23 @@
             td.setAttribute('data-c', i + 1);
             if(i === jourAujourdhui()) td.classList.add('jour-actuel');
             if(v){
-              td.className += ' edt-slot ' + familleDeCase(v, classePrincipale);
-              var sp = document.createElement('span');
-              sp.className = 'cl';
-              sp.textContent = v;
-              td.appendChild(sp);
+              var c = decrireCase(v, matiere, classePrincipale);
+              td.classList.add('edt-slot');
+              if(c.principale) td.classList.add('c-principal');
+              td.setAttribute('data-fam', c.fam);
+              var subj = document.createElement('span');
+              subj.className = 'subj';
+              var mat = document.createElement('b');
+              mat.className = 'mat';
+              mat.textContent = c.titre;
+              subj.appendChild(mat);
+              if(c.sous){
+                var sous = document.createElement('small');
+                sous.className = 'prof';          /* même élément que le professeur d'une case de classe */
+                sous.textContent = c.sous;
+                subj.appendChild(sous);
+              }
+              td.appendChild(subj);
             } else {
               td.className += ' edt-empty c-vide';
             }

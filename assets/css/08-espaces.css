@@ -92,52 +92,19 @@
   .th-resume .tr-case.est-principal .tr-val{color:var(--wine);}
 
   /* ---------- 2. La grille ---------- */
-  /* Distinguer les deux cycles : au collège le marine, au lycée le
-     bordeaux. Une grille où toutes les cases se ressemblent oblige à
-     lire chaque libellé ; ici le regard trie avant de lire. */
-  .edt-table td.c-college .cl{
-    background:rgba(21,34,56,.055);
-    border-left:2px solid rgba(21,34,56,.34);
-    color:var(--navy);
+  /* Les cases sont celles de la grille d'une classe : bloc .subj teinté
+     selon la matière (data-fam), devoirs surveillés en marine — voir
+     01-fondations.css, et assets/js/enseignant.js pour ce qu'elles
+     contiennent. Une grille où toutes les cases se ressemblent oblige à
+     lire chaque libellé ; la couleur permet de trier avant de lire.
+     Ne s'ajoute ici que la classe dont on est professeur principal :
+     elle mérite d'être trouvée sans chercher, d'où un liseré or autour
+     de la case (en plus de la mention « PP » sous la classe). */
+  .edt-table td.c-principal .subj{
+    box-shadow:inset 0 0 0 2px var(--gold);
   }
-  .edt-table td.c-lycee .cl{
-    background:rgba(122,34,49,.06);
-    border-left:2px solid rgba(122,34,49,.42);
-    color:var(--wine);
-  }
-  .edt-table td .cl{
-    display:block;padding:7px 9px;
-    font-size:12.5px;font-weight:600;line-height:1.25;
-    border-radius:1px;
-    transition:background var(--t-survol) var(--e-pose),
-               box-shadow var(--t-survol) var(--e-pose);
-  }
-  /* La classe dont on est professeur principal : elle mérite d'être
-     trouvée sans chercher. */
-  .edt-table td.c-principal .cl{
-    background:rgba(201,162,75,.18);
-    border-left:2px solid var(--gold);
-    color:var(--navy);font-weight:700;
-    box-shadow:inset 0 0 0 1px rgba(201,162,75,.3);
-  }
-  .edt-table td.c-principal .cl::after{
-    content:"PP";
-    float:right;font-size:8.5px;letter-spacing:.08em;
-    color:var(--gold);font-weight:700;margin-left:6px;
-    line-height:1.6;
-  }
-  /* Devoirs et activités : ce ne sont pas des cours, ils s'effacent. */
-  .edt-table td.c-devoir .cl{
-    background:repeating-linear-gradient(45deg,
-      rgba(21,34,56,.045) 0 4px, transparent 4px 8px);
-    border-left:2px solid var(--line);
-    color:var(--ink-soft);font-weight:600;
-    font-size:11px;letter-spacing:.06em;
-  }
-  .edt-table td.c-perso .cl{
-    background:transparent;border-left:2px solid var(--line);
-    color:var(--ink-soft);font-style:italic;font-weight:500;font-size:11.5px;
-  }
+  /* Le professeur principal s'affiche en gras, comme la classe */
+  .edt-table td.c-principal .subj .prof{font-weight:700;opacity:1;}
   /* Case libre : un tiret discret vaut mieux que du vide, qui laisse
      douter d'un défaut d'affichage. */
   .edt-table td.c-vide::before{
@@ -152,7 +119,6 @@
   }
   .edt-table td.jour-actuel{background:rgba(201,162,75,.05);}
 
-  .edt-table tbody tr:hover td .cl{box-shadow:0 2px 10px -6px rgba(21,34,56,.45);}
 
   /* ---------- 3. En-tête de l'espace ---------- */
   .teacher-head{padding-bottom:22px;border-bottom:1px solid var(--line);}
@@ -203,7 +169,6 @@
   }
   @media print{
     .th-resume{break-inside:avoid;}
-    .edt-table td.c-principal .cl{box-shadow:none;}
   }
 
   /* ==================================================================
@@ -448,12 +413,12 @@
     .navlinks a, .subnav a, .pill, .filter-chip, .page-btn,
     .lc-link, .see-all, .hist-dl, .dl-link, .flink,
     label, .login-field label, .cf-row label, .pf-row label,
-    .edt-table td, .subj, .cl{
+    .edt-table td, .subj{
       font-size:15px !important;
     }
     /* Le tableau d'emploi du temps reste dense par nature : 13,5px y est
        un compromis assumé, le cadre défile pour compenser. */
-    .edt-table td, .edt-table .subj, .edt-table .cl{font-size:13.5px !important;}
+    .edt-table td, .edt-table .subj{font-size:13.5px !important;}
     /* Le nom du professeur principal est l'information de la ligne : il se
        lit à la taille des éléments de lecture continue. */
     .edt-pp b{font-size:15px !important;}
@@ -1405,4 +1370,149 @@
 }
 @media(max-width:620px){
   .eleves-liste{columns:1;}
+}
+
+
+/* ==================================================================
+   Espace Enseignant : l'emploi du temps imprime tient sur une page
+   ------------------------------------------------------------------
+   « Telecharger en PDF » ouvre l'impression du navigateur : ce que
+   l'enseignant garde est donc ce que cette feuille de style en fait.
+   Elle ne retirait que le menu. Le bandeau du site, la barre « Espace
+   connecte / Se deconnecter » et la grille — enfermee a l'ecran dans un
+   cadre de 13 cm qui defile — passaient telles quelles : le document
+   tenait sur deux pages, coupe apres la 6eme heure.
+
+   La feuille est ici recomposee : en-tete de l'etablissement, nom,
+   synthese sur une ligne, grille entiere, note. Une page A4 en paysage ;
+   le format est fixe par le @page de espace-enseignant.html (et non ici :
+   ce fichier sert toutes les pages, dont le recu de paiement qui doit
+   rester en portrait).
+
+   Deux precautions. Les reglages « mobile » (900px et moins) s'appliquent
+   aussi a une page imprimee etroite — A4 en portrait, telephone — et
+   imposent des tailles de texte en !important : celles d'impression le
+   sont aussi, sinon la grille regonflerait. Et un navigateur n'imprime
+   pas les fonds par defaut, alors que les cases sont des aplats de
+   couleur (teinte par matiere, devoirs en marine a texte or) :
+   print-color-adjust:exact, pose sur la feuille, les impose, case
+   « Graphiques d'arriere-plan » cochee ou non. L'en-tete de la grille,
+   lui, est clair avec un texte marine : il se lit meme sans fonds.
+   ================================================================== */
+.print-entete{display:none;}
+
+@media print{
+  html, body{background:#fff !important;}
+  .nav-tiroir, .nav-voile, .nav-toggle{display:none !important;}
+
+  #sec-enseignant{padding:0;margin:0;animation:none !important;}
+  /* Ce qui sert a l'ecran et pas sur le papier */
+  #sec-enseignant .page-hero,
+  #sec-enseignant .auth-strip,
+  #sec-enseignant .security-note,
+  #sec-enseignant .teacher-actions,
+  #sec-enseignant .print-hint,
+  #sec-enseignant .table-hint,
+  #sec-enseignant .th-avatar,
+  #sec-enseignant .th-meta{display:none !important;}
+
+  /* La feuille : une colonne, dans l'ordre de lecture du papier
+     (l'ecran met la synthese avant le nom) */
+  #sec-enseignant .teacher-section{
+    display:flex;flex-direction:column;
+    padding:0 !important;background:none !important;
+    break-inside:avoid;page-break-inside:avoid;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+  }
+
+  /* En-tete de l'etablissement */
+  .print-entete{
+    display:flex;order:0;align-items:center;gap:14px;
+    margin:0 0 8px;padding:0 0 8px;border-bottom:2px solid var(--gold);
+  }
+  .print-entete .pe-blason{display:block;width:15mm;height:auto;flex:none;}
+  .print-entete .pe-ecole{flex:1;min-width:0;}
+  .print-entete .pe-nom{
+    font-family:'Fraunces',serif;font-size:19px;font-weight:600;
+    line-height:1.15;color:var(--navy);
+  }
+  .print-entete .pe-sous{
+    margin-top:3px;font-size:9.5px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--ink-soft);
+  }
+  .print-entete .pe-titre{flex:none;text-align:right;}
+  .print-entete .pe-doc{
+    font-size:9.5px;font-weight:700;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--wine);
+  }
+  .print-entete .pe-annee{
+    margin-top:2px;font-family:'Fraunces',serif;font-size:16px;color:var(--navy);
+  }
+  .print-entete .pe-date{margin-top:2px;font-size:9.5px;color:var(--ink-soft);}
+
+  /* Le nom */
+  #sec-enseignant .teacher-head{
+    order:1;display:block;margin:0 0 7px;
+    padding:0 0 6px !important;border-bottom:1px solid var(--line);
+  }
+  #sec-enseignant .teacher-head .th-id{display:block;}
+  #sec-enseignant .teacher-head h2{
+    margin:0;font-size:24px;line-height:1.15;color:var(--navy);
+  }
+
+  /* La synthese : quatre cases sur une ligne, quelle que soit la largeur */
+  #sec-enseignant .th-resume{
+    order:2;grid-template-columns:repeat(4,1fr) !important;margin:0 0 9px;
+  }
+  #sec-enseignant .th-resume .tr-case{padding:5px 11px;gap:2px;}
+  #sec-enseignant .th-resume .tr-case::before{display:none;}
+  #sec-enseignant .th-resume .tr-lbl{font-size:9px !important;letter-spacing:.12em;}
+  #sec-enseignant .th-resume .tr-val{font-size:15px;}
+  #sec-enseignant .th-resume .tr-val small{font-size:10px !important;}
+
+  /* La grille, en entier : plus de cadre a hauteur fixe ni de defilement,
+     des lignes de 12,5 mm, un en-tete qui ne reste pas colle en haut */
+  #sec-enseignant .edt-frame{
+    order:3;height:auto !important;max-height:none !important;margin:0;
+    overflow:visible !important;box-shadow:none;background:#fff;
+    border:1px solid var(--line);
+    -webkit-mask-image:none !important;mask-image:none !important;
+  }
+  #sec-enseignant .edt-table{
+    width:100%;height:auto !important;min-width:0 !important;table-layout:fixed;
+  }
+  #sec-enseignant .edt-table th,
+  #sec-enseignant .edt-table th:first-child,
+  #sec-enseignant .edt-table th.jour-actuel{
+    position:static;padding:6px 8px !important;
+    background:var(--cream-deep);color:var(--navy);
+    font-size:10px !important;letter-spacing:.1em;
+    border-bottom:2px solid var(--gold);
+  }
+  #sec-enseignant .edt-table th:first-child{width:27mm;}
+  /* Le jour de l'impression ne doit pas se lire sur le document */
+  #sec-enseignant .edt-table th.jour-actuel::after{display:none;}
+  #sec-enseignant .edt-table td.jour-actuel{background:none;}
+  #sec-enseignant .edt-table td{padding:2px 4px !important;font-size:11px !important;}
+  #sec-enseignant .edt-table td.edt-time{
+    position:static;height:12.5mm;padding:2px 8px !important;font-size:10px !important;
+  }
+  #sec-enseignant .edt-table td.edt-time b{font-size:11px;}
+  /* Les cases : celles de l'ecran (teinte par matiere, devoirs en marine),
+     resserrees ; la classe sur une ligne, la matiere dessous */
+  #sec-enseignant .edt-table td.edt-slot{padding:3px 4px !important;}
+  #sec-enseignant .edt-table td.edt-slot .subj{
+    min-height:0;padding:5px 8px;gap:1px;
+    font-size:12.5px !important;line-height:1.2;
+  }
+  #sec-enseignant .edt-table td.edt-slot .subj .prof{
+    font-size:10px !important;line-height:1.2;
+  }
+  #sec-enseignant .edt-table td.edt-break{padding:4px 16px !important;}
+  #sec-enseignant .edt-break .brk-row span{font-size:9px !important;}
+  #sec-enseignant .edt-table tr{break-inside:avoid;page-break-inside:avoid;}
+
+  #sec-enseignant .edt-note{
+    order:4;margin:7px 0 0;font-size:10.5px !important;line-height:1.4;
+  }
 }
