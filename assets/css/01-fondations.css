@@ -1093,13 +1093,13 @@ background:var(--navy);color:var(--cream);
 .pill.active:hover{
 background:var(--navy);color:var(--cream);
 }
-#cycleGroup .pill.active, #eleCycleGroup .pill.active{
+#cycleGroup .pill.active{
 background:var(--wine);box-shadow:0 4px 12px -3px rgba(122,34,49,.55);
 }
-#cycleGroup .pill.active:hover, #eleCycleGroup .pill.active:hover{
+#cycleGroup .pill.active:hover{
 background:var(--wine);
 }
-#classeGroup .pill, #eleClasseGroup .pill{
+#classeGroup .pill{
 min-width:36px;text-align:center;padding:8px 12px;
 }
 @media(max-width:1200px){
@@ -1108,7 +1108,7 @@ min-width:36px;text-align:center;padding:8px 12px;
     .picker-row + .picker-row{padding-left:12px;}
     .picker-label{font-size:9px;letter-spacing:.1em;}
     .pill{font-size:11.5px;padding:7px 11px;}
-    #classeGroup .pill, #eleClasseGroup .pill{min-width:31px;padding:7px 9px;}
+    #classeGroup .pill{min-width:31px;padding:7px 9px;}
 }
 @media(max-width:940px){
 .edt-picker{flex-direction:column;align-items:center;gap:12px;}
