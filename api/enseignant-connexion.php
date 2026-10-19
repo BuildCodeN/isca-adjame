@@ -1,12 +1,12 @@
 <?php
 /*
  * POST /api/enseignant-connexion.php
- * Corps JSON : { "motDePasse": "K7M4-X9PQ" }
+ * Corps JSON : { "motDePasse": "K7M4" }
  * Réponse 200 : { "jeton": "…", "expireDans": 28800 }
  *
  * Pas d'identifiant : le mot de passe de la fiche remise par l'administration
- * suffit, le serveur retrouve le compte à partir de lui (voir _noyau.php).
- * On tolère les minuscules, les espaces et l'absence de tiret.
+ * (4 caractères) suffit, le serveur retrouve le compte à partir de lui (voir
+ * _noyau.php). On tolère les minuscules, les espaces et les tirets.
  *
  * Toute erreur de mot de passe reçoit la même réponse (401), qu'il soit trop
  * court, inconnu ou celui d'un compte fermé. Depuis une même adresse, 30
@@ -24,7 +24,7 @@ lancer(function () {
     $ip = ip_client();
     bloquer_si_necessaire($db, $ip);
 
-    // Un mot qui n'a pas la forme d'un code de fiche (lettres et chiffres, 6 à
+    // Un mot qui n'a pas la forme d'un code de fiche (lettres et chiffres, 4 à
     // 64) est refusé sans calcul : inutile de faire travailler le serveur pour
     // une saisie manifestement fausse. Ce filtre écarte aussi les caractères
     // de contrôle : un octet nul en fin de mot de passe ne changerait pas la

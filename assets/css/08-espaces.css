@@ -1535,3 +1535,124 @@
   .hero-slide.flyer-appel .appel-b:focus-visible{outline:3px solid var(--gold);outline-offset:3px;}
   .hero-slide.flyer-appel .appel-b:active img{filter:brightness(.96);}
 }
+
+
+/* ==================================================================
+   Accueil : appel a candidature FIXE (« A ne pas manquer »)
+   ------------------------------------------------------------------
+   Le carrousel du haut fait defiler ses annonces : l'appel y passe puis
+   s'efface. Ici, dans « Informations aux parents », il reste affiche en
+   permanence, en tete de la grille et sur toute sa largeur (index.html,
+   .appel-fixe), et il clignote pour attirer l'oeil.
+   Le clignotement est une BASCULE DE COULEURS de la pastille (or plein /
+   contour or) et un halo qui bat autour du cadre : le texte ne disparait
+   jamais, il reste lisible a chaque instant (un fondu a l'opacite le
+   rendrait presque invisible la moitie du temps). Un cycle dure 1,6 s :
+   0,6 clignotement par seconde, loin des 3 par seconde au-dela desquels
+   un clignotement devient dangereux ; et seule une petite surface bouge.
+   Il s'arrete sous la souris et au focus (lecture, appel) et pour qui a
+   demande moins d'animations. Les couleurs sont celles de la banniere.
+   Pour le retirer : supprimer le bloc de index.html.
+   ================================================================== */
+.appel-fixe{
+  grid-column:1 / -1;
+  display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:22px 44px;
+  padding:32px 38px;
+  background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);
+  color:var(--cream);
+  border:2px solid var(--gold);
+  animation:appelHalo 1.6s ease-in-out infinite;
+}
+.appel-fixe .af-kicker{
+  margin:0 0 10px;
+  font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-soft);
+}
+.appel-fixe .af-tag{
+  display:inline-flex;align-items:center;gap:10px;margin:0 0 16px;padding:7px 16px;
+  font-size:14px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;line-height:1.2;
+  color:var(--navy);background:var(--gold);border:2px solid var(--gold);
+  animation:appelBascule 1.6s linear infinite;
+}
+.appel-fixe .af-point{
+  flex:none;width:9px;height:9px;border-radius:50%;background:currentColor;
+}
+.appel-fixe h3{
+  margin:0 0 10px;
+  font-size:26px;line-height:1.22;color:#fff;
+}
+.appel-fixe .af-info{
+  margin:0;font-size:16px;line-height:1.55;color:rgba(250,246,239,.88);
+}
+.appel-fixe .af-contact{
+  display:flex;flex-direction:column;align-items:flex-start;gap:8px;
+  padding:4px 0 4px 40px;border-left:1px solid rgba(228,205,142,.4);
+  color:inherit;
+}
+.appel-fixe .af-lib{
+  font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-soft);
+}
+.appel-fixe .af-tel{
+  font-size:31px;font-weight:700;letter-spacing:.04em;line-height:1.1;color:#fff;
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.appel-fixe .af-appeler{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;margin-top:6px;
+  min-height:46px;padding:11px 24px;
+  background:var(--gold);color:var(--navy);
+  font-size:15px;font-weight:700;border-radius:2px;
+  transition:background .2s ease;
+}
+.appel-fixe .af-contact:hover .af-appeler{background:var(--gold-soft);}
+.appel-fixe .af-contact:active .af-appeler{transform:translateY(1px);}
+.appel-fixe .af-contact:focus-visible{outline:3px solid var(--gold-soft);outline-offset:6px;}
+
+@keyframes appelBascule{
+  0%,49.9%{color:var(--navy);background:var(--gold);}
+  50%,100%{color:var(--gold-soft);background:transparent;}
+}
+@keyframes appelHalo{
+  0%,100%{box-shadow:0 0 0 0 rgba(201,162,75,0);}
+  50%{box-shadow:0 0 0 7px rgba(201,162,75,.34);}
+}
+/* Sous la souris ou au clavier : le clignotement s'arrete, le cadre reste cerne d'or et la
+   pastille pleine — on peut lire et viser sans que la cible bouge. Le survol ne compte que
+   pour une vraie souris : au doigt, il reste « colle » apres le toucher et figerait l'encart. */
+.appel-fixe:focus-within{
+  animation:none;box-shadow:0 0 0 5px rgba(201,162,75,.34);
+}
+.appel-fixe:focus-within .af-tag{animation:none;}
+@media(hover:hover){
+  .appel-fixe:hover{animation:none;box-shadow:0 0 0 5px rgba(201,162,75,.34);}
+  .appel-fixe:hover .af-tag{animation:none;}
+}
+@media(prefers-reduced-motion:reduce){
+  .appel-fixe{animation:none;box-shadow:0 0 0 5px rgba(201,162,75,.34);}
+  .appel-fixe .af-tag{animation:none;}
+}
+
+@media(max-width:900px){
+  .appel-fixe{grid-template-columns:1fr;gap:20px;padding:26px 22px;}
+  .appel-fixe h3{font-size:22px;}
+  .appel-fixe .af-info{font-size:15.5px;}
+  .appel-fixe .af-contact{
+    align-items:stretch;padding:18px 0 0;border-left:0;border-top:1px solid rgba(228,205,142,.4);
+  }
+  .appel-fixe .af-tel{font-size:30px;}
+  .appel-fixe .af-appeler{min-height:52px;font-size:16px;}
+}
+@media(max-width:400px){
+  .appel-fixe{padding:22px 16px;}
+  .appel-fixe .af-tag{font-size:13px;letter-spacing:.1em;padding:6px 12px;}
+  .appel-fixe .af-tel{font-size:27px;}
+}
+@media print{
+  .appel-fixe{
+    background:#fff;color:#000;border-color:#000;animation:none;box-shadow:none;
+    break-inside:avoid;
+  }
+  .appel-fixe .af-tag{animation:none;background:none;color:#000;border-color:#000;}
+  .appel-fixe .af-kicker, .appel-fixe .af-lib, .appel-fixe h3,
+  .appel-fixe .af-info, .appel-fixe .af-tel{color:#000;}
+  .appel-fixe .af-appeler{display:none;}
+  .appel-fixe .af-contact{border-left-color:#000;}
+}

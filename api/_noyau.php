@@ -18,7 +18,7 @@
  * nom : seulement le mot de passe de sa fiche. Le serveur retrouve le compte
  * à partir du mot de passe, ce qui suppose que deux enseignants n'aient
  * JAMAIS le même : c'est pourquoi les mots de passe sont des codes de
- * 8 caractères tirés au hasard par l'administration (jamais choisis par
+ * 4 caractères tirés au hasard par l'administration (jamais choisis par
  * l'enseignant), uniques par construction et par la base (clé unique).
  */
 declare(strict_types=1);
@@ -37,9 +37,9 @@ error_reporting(E_ALL);
 const SESSION_DUREE     = 28800;   // une connexion dure 8 heures
 const ECHECS_PAR_IP     = 30;      // échecs tolérés depuis une même adresse…
 const FENETRE_ECHECS    = 900;     // …sur 15 minutes (très au-dessus des fautes de frappe
-                                   // de 43 enseignants derrière la même box, très en dessous
-                                   // de ce qu'il faut pour deviner un code)
-const MOT_DE_PASSE_MIN  = 6;       // en dessous, ce n'est pas un code de fiche : refus sans calcul
+                                   // de 43 enseignants derrière la même box ; cela borne les
+                                   // essais à environ 2 900 par jour et par adresse)
+const MOT_DE_PASSE_MIN  = 4;       // en dessous, ce n'est pas un code de fiche : refus sans calcul
 const MOT_DE_PASSE_MAX  = 64;
 const CORPS_MAX         = 4096;    // taille maximale d'une requête (octets)
 
@@ -48,11 +48,14 @@ const CORPS_MAX         = 4096;    // taille maximale d'une requête (octets)
 // ~0,1 s). Elle sert à la fois de brouillage (impossible à relire) et de
 // recherche (clé unique : le même mot de passe donne toujours la même clé, ce
 // qui permet de retrouver le compte sans identifiant). Le mot de passe est un
-// code de 8 caractères tirés au hasard parmi 31 : plus de 800 milliards de
-// possibilités, que ni la limite d'essais ni le coût du calcul ne laissent
-// parcourir. Le sel est public (ce fichier l'est) : il n'a pas à être secret,
-// il sert seulement à ce que cette base ne se devine pas avec une table
-// précalculée faite pour un autre site.
+// code de 4 caractères tirés au hasard parmi 31 : 923 521 possibilités, dont 43
+// seulement ouvrent un compte. C'est un code COURT, voulu ainsi pour être
+// facile à lire et à taper : ce qui le protège est la limite d'essais (voir
+// ECHECS_PAR_IP) et le peu qu'un compte montre (un emploi du temps, sans note
+// ni coordonnée) — pas le calcul de la clé, qu'un voleur de la base ferait
+// vite pour 923 521 codes. Le sel est public (ce fichier l'est) : il n'a pas à
+// être secret, il sert seulement à ce que cette base ne se devine pas avec une
+// table précalculée faite pour un autre site.
 const SEL_ACCES        = 'isca-adjame.com/espace-enseignant/acces/v1';
 const ITERATIONS_ACCES = 100000;
 
@@ -293,7 +296,7 @@ function noter_tentative(PDO $db, string $ip, bool $reussie): void
 // ------------------------------------------------- mots de passe, sessions
 /**
  * Un mot de passe se tape souvent de travers : minuscules, espaces, tiret
- * (« k7m4 x9pq », « K7M4-X9PQ », « K7M4X9PQ » sont le même). Les codes de fiche
+ * (« k7m4 », « K7 M4 », « K7-M4 », « K7M4 » sont le même). Les codes de fiche
  * n'ont ni espace ni tiret dans leur forme enregistrée.
  */
 function normaliser_mot_de_passe(string $saisi): string

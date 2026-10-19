@@ -9,8 +9,9 @@
        fichier : ils vivent dans la base MySQL de l'hébergement, jamais
        envoyés au navigateur d'un visiteur non connecté. Pour les mettre
        à jour : python outils/preparer-acces-enseignants.py --edt (nouveaux
-       emplois du temps, nouveaux enseignants) ou --reinitialiser ISCA-012
-       (mot de passe perdu ou divulgué) ; l'outil écrit un fichier SQL à
+       emplois du temps, nouveaux enseignants), --reinitialiser ISCA-012
+       (mot de passe perdu ou divulgué) ou --renouveler-tous (tous les mots
+       de passe, avec fiches à imprimer) ; l'outil écrit un fichier SQL à
        importer dans phpMyAdmin (hPanel > Bases de données). Le détail est
        dans backend/LISEZ-MOI-ESPACE-ENSEIGNANT.md.
        ------------------------------------------------------------------ */
@@ -41,7 +42,7 @@
        et de pause déjeuner du document ne sont pas reprises. Le matricule
        que porte l'en-tête de certains enseignants n'est pas repris non plus.
 
-       Connexion par mot de passe seul : l'enseignant tape le code de 8
+       Connexion par mot de passe seul : l'enseignant tape le code de 4
        caractères imprimé sur sa fiche, sans identifiant ; valable toute
        l'année, jamais deux fois le même (le serveur retrouve le compte à
        partir du mot de passe). « ISCA-001 » à « ISCA-043 » ne sont que des
@@ -69,10 +70,10 @@
          consultable par n'importe qui : seulement la consigne. */
       var hint = document.getElementById('demo-hint');
       if(hint){
-        hint.innerHTML = 'Votre mot de passe est <b>le code de la fiche personnelle</b> remise par l’administration. ' +
-          'Majuscules ou minuscules, avec ou sans tiret : peu importe.';
+        hint.innerHTML = 'Votre mot de passe est <b>le code de 4 caractères de la fiche personnelle</b> remise par l’administration. ' +
+          'Majuscules ou minuscules : peu importe.';
       }
-      /* Case « Afficher le mot de passe » : on tape un code de 8 caractères lu sur du papier, une faute est vite faite. */
+      /* Case « Afficher le mot de passe » : on tape un code lu sur du papier, une faute est vite faite. */
       var voir = document.getElementById('show-pw');
       var champ = document.getElementById('password');
       if(voir && champ){
@@ -111,12 +112,13 @@
     }
 
     /* --- Connexion --- */
-    /* Le mot de passe de la fiche (toléré en minuscules, avec ou sans tiret)
-       est tout ce que l'enseignant tape : le serveur retrouve son compte à
-       partir de lui, refuse après trente essais ratés depuis la même adresse
-       en quinze minutes, et répond toujours le même message à un mot de passe
-       faux. Le navigateur reçoit un jeton, puis la seule fiche de l'enseignant
-       connecté. */
+    /* Le mot de passe de la fiche (4 caractères, toléré en minuscules, avec
+       ou sans espace ni tiret) est tout ce que l'enseignant tape : le serveur
+       retrouve son compte à partir de lui, refuse après trente essais ratés
+       depuis la même adresse en quinze minutes, et répond toujours le même
+       message à un mot de passe faux. Le navigateur reçoit un jeton, puis la
+       seule fiche de l'enseignant connecté. */
+    var LONGUEUR_MINI_CODE = 4;
     async function teacherLogin(){
       var champ = document.getElementById('password');
       var motDePasse = (champ.value || '').trim();
@@ -125,6 +127,12 @@
       masquerErreur('login-error');
       if(!motDePasse){
         montrerErreur('login-error', 'Saisissez votre mot de passe.');
+        return;
+      }
+      /* Un code incomplet n'a aucune chance : on le dit tout de suite, sans interroger
+         le serveur (et sans compter un essai raté de plus sur l'adresse de l'école). */
+      if(motDePasse.replace(/[\s\-]+/g, '').length < LONGUEUR_MINI_CODE){
+        montrerErreur('login-error', 'Le mot de passe de la fiche comporte ' + LONGUEUR_MINI_CODE + ' caractères. Vérifiez votre saisie.');
         return;
       }
       if(btn) btn.disabled = true;
