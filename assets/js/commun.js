@@ -94,7 +94,7 @@ var API_BASE = (function(){
     '.cycle-card', '.pay-method', '.hist-row', '.ech-table', '.mentions-table',
     '.interclasses', '.prep-callout', '.tests-band', '.class-chips', '.contact-form',
     '.t-row', '.bar-row', '.cal-step', '.tc-step', '.infra-card', '.pay-objet',
-    '.an-ligne', '.an-priorite', '.appel-carte'
+    '.an-ligne', '.an-priorite', '.appel-affiche'
   ].join(',');
 
   /* Régime d'entrée par nature de contenu — voir §4 de la feuille de style.
