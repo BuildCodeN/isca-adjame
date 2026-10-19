@@ -1488,43 +1488,50 @@
 /* ==================================================================
    Accueil : appel a candidature (Bureau des parents d'eleves)
    ------------------------------------------------------------------
-   Une banniere fournie par l'utilisateur (assets/images/Annonces/),
-   posee sous le carrousel, avant « Informations aux parents ».
-   A partir de 701px elle s'affiche entiere, centree, plafonnee a
-   1240px (3 pour 1 : plus large, elle ferait plus de 400px de haut).
-   En dessous elle devient deux morceaux empiles — le texte, puis
-   l'infoline — recadres dans la meme image : reduite a 350px de large,
-   la banniere entiere ne se lit plus. Le second morceau est un lien
-   « tel: ». Sur tablette une zone invisible, posee sur l'infoline de
-   la banniere entiere, fait le meme office (ecrans tactiles seulement :
-   a la souris, un lien « tel: » ne sert a rien).
-   Pour retirer l'annonce : supprimer la section .appel de index.html.
+   Premiere diapositive du carrousel de l'accueil (index.html,
+   .flyer-appel) : une banniere fournie par l'utilisateur, de rapport
+   3 pour 1. Meme traitement que les affiches voisines — fond marine du
+   carrousel, image entiere, jamais rognee — mais un cadre a elle, pour
+   que la zone de l'infoline puisse etre un lien.
+   Au-dela de 900px la banniere tient dans la hauteur du carrousel,
+   centree. De 621 a 900px elle prend toute la largeur. En dessous, une
+   banniere de 3 pour 1 ramenee a 350px de large ne se lit plus : la
+   diapositive montre alors deux morceaux empiles, recadres dans la
+   meme image — le texte, puis l'infoline, qui est un lien « tel: ».
+   Sur tablette, une zone invisible posee sur l'infoline de la banniere
+   entiere fait le meme office (ecrans tactiles seulement : a la
+   souris, un lien « tel: » ne sert a rien).
+   Pour retirer l'annonce : supprimer la diapositive de index.html.
    ================================================================== */
-.appel{padding:48px 40px;}
-.appel-affiche{
-  position:relative;max-width:1240px;margin:0 auto;
-  border-radius:6px;overflow:hidden;background:#EEF3FA;
-  box-shadow:0 26px 54px -34px rgba(21,34,56,.55);
+.hero-slide.flyer-appel .appel-cadre{
+  position:relative;height:100%;max-width:100%;aspect-ratio:2000/667;
 }
-.appel-large{display:block;width:100%;height:auto;}
+.hero-slide.flyer-appel .appel-large{
+  display:block;width:100%;height:100%;object-fit:contain;cursor:zoom-in;
+}
 .appel-zone-tel{
   display:none;position:absolute;left:58.4%;top:66%;width:31.4%;height:28%;
   border-radius:6px;
 }
 .appel-zone-tel:focus-visible{outline:3px solid var(--gold);outline-offset:-3px;}
 @media(pointer:coarse){.appel-zone-tel{display:block;}}
-.appel-mobile{display:none;}
+.hero-slide.flyer-appel .appel-mobile{display:none;}
 
-@media(max-width:700px){
-  .appel{padding:28px 20px;}
-  .appel-affiche{overflow:visible;background:none;box-shadow:none;border-radius:0;}
-  .appel-large, .appel-zone-tel{display:none !important;}
-  .appel-mobile{display:flex;flex-direction:column;gap:12px;}
-  .appel-a, .appel-b img{
-    display:block;width:100%;height:auto;border-radius:10px;
-    box-shadow:0 18px 40px -28px rgba(21,34,56,.55);
+@media(max-width:900px){
+  /* le cadre prend toute la largeur ; sa hauteur vient du rapport 3:1 */
+  .hero-slide.flyer-appel .appel-cadre{width:100%;height:auto;}
+  .hero-slide.flyer-appel .appel-large{height:auto;object-fit:cover;}
+}
+@media(max-width:620px){
+  .hero-slide.flyer-appel .appel-cadre{display:none;}
+  .hero-slide.flyer-appel .appel-mobile{
+    display:flex;flex-direction:column;gap:10px;padding:14px 14px 6px;
   }
-  .appel-b{display:block;border-radius:10px;}
-  .appel-b:focus-visible{outline:3px solid var(--gold);outline-offset:3px;}
-  .appel-b:active img{filter:brightness(.97);}
+  .hero-slide.flyer-appel .appel-mobile img{
+    display:block;width:100%;height:auto;border-radius:10px;
+  }
+  .hero-slide.flyer-appel .appel-b{display:block;border-radius:10px;}
+  .hero-slide.flyer-appel .appel-b img{cursor:pointer;}
+  .hero-slide.flyer-appel .appel-b:focus-visible{outline:3px solid var(--gold);outline-offset:3px;}
+  .hero-slide.flyer-appel .appel-b:active img{filter:brightness(.96);}
 }

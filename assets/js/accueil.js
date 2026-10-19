@@ -9,6 +9,7 @@
     if(!slidesWrap) return;
 
     var slides   = Array.prototype.slice.call(slidesWrap.querySelectorAll('.hero-slide'));
+    var textes   = slides.filter(function(s){ return s.classList.contains('hero'); });
     var dotsWrap = document.getElementById('heroDots');
     var progress = document.getElementById('heroProgress');
     var DUREE    = 8000;   /* durée d'affichage d'un slide, en millisecondes */
@@ -16,6 +17,10 @@
     var reduit   = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if(slides.length === 0) return;
+
+    /* Le carrousel s'ouvre sur la premiere diapositive du HTML : on ne se
+       fie pas a la classe is-active posee a la main. */
+    slides.forEach(function(s, i){ s.classList.toggle('is-active', i === 0); });
 
     /* --- Puces de navigation, générées d'après le nombre de slides --- */
     slides.forEach(function(slide, i){
@@ -69,7 +74,10 @@
       }
       var base = hauteurReference();
       slidesWrap.style.height = base + 'px';
-      var contenu = slides[0] ? slides[0].offsetHeight : 0;
+      /* La plus haute des diapositives de texte : la premiere n'en est plus
+         forcement une (une banniere peut ouvrir le carrousel). */
+      var contenu = 0;
+      textes.forEach(function(s){ contenu = Math.max(contenu, s.offsetHeight); });
       if(contenu > base) slidesWrap.style.height = Math.round(contenu) + 'px';
     }
 
@@ -131,7 +139,7 @@
 
     /* --- Agrandissement des visuels --- */
     var lb = document.getElementById('lightbox'), lbImg = document.getElementById('lightboxImg');
-    slidesWrap.querySelectorAll('.media-slide img').forEach(function(img){
+    slidesWrap.querySelectorAll('.media-slide img:not(.sans-zoom)').forEach(function(img){
       img.addEventListener('click', function(){
         lbImg.src = img.src; lbImg.alt = img.alt; lb.classList.add('open');
       });
@@ -159,7 +167,8 @@
       if(!im.complete) im.addEventListener('load', ajusterHauteur);
     });
     if(window.ResizeObserver){
-      new ResizeObserver(ajusterHauteur).observe(slides[0]);
+      var obs = new ResizeObserver(ajusterHauteur);
+      textes.forEach(function(s){ obs.observe(s); });
     }
 
     ajusterHauteur();
