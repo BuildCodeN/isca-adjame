@@ -1656,3 +1656,22 @@
   .appel-fixe .af-appeler{display:none;}
   .appel-fixe .af-contact{border-left-color:#000;}
 }
+
+
+/* ==================================================================
+   Accueil : theme de l'annee 2026-2027 de l'Education catholique
+   ------------------------------------------------------------------
+   Diapositive du carrousel de l'accueil (index.html, .flyer-tec) :
+   une banniere panoramique de rapport 3 pour 1 pour les ecrans
+   larges (regles generiques de .media-slide : image entiere, jamais
+   rognee, sur le marine du carrousel), et, sur telephone, l'AFFICHE EN
+   PORTRAIT dont elle est tiree — un panoramique ramene a 350px de large
+   ne ferait que 117px de haut et son texte ne se lirait plus.
+   Meme principe que la banniere « Appel a candidature » (.flyer-appel).
+   Pour retirer l'annonce : supprimer la diapositive de index.html.
+   ================================================================== */
+.hero-slide.flyer-tec .tec-mobile{display:none;}
+@media(max-width:620px){
+  .hero-slide.flyer-tec .tec-large{display:none;}
+  .hero-slide.flyer-tec .tec-mobile{display:block;width:100%;height:auto;}
+}
