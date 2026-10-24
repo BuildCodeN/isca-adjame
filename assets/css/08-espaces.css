@@ -1675,3 +1675,20 @@
   .hero-slide.flyer-tec .tec-large{display:none;}
   .hero-slide.flyer-tec .tec-mobile{display:block;width:100%;height:auto;}
 }
+
+
+/* ==================================================================
+   Mesure d'audience : la mention de bas de page
+   ------------------------------------------------------------------
+   « Mesure d'audience anonyme, sans cookie · Ne pas me compter », au
+   bas de chaque page (assets/js/stat.js). Le bouton pose ou retire le
+   choix « ne pas me compter » dans le navigateur du visiteur.
+   ================================================================== */
+.footer-bottom{flex-wrap:wrap;gap:8px 28px;}
+.stat-note{color:#7D8290;}
+.stat-refus{
+  font:inherit;color:#9BA0AC;background:none;border:0;padding:0;cursor:pointer;
+  text-decoration:underline;text-underline-offset:3px;
+}
+.stat-refus:hover,.stat-refus:focus-visible{color:var(--gold-soft);}
+@media print{.stat-note{display:none;}}

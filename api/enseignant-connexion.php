@@ -48,6 +48,15 @@ lancer(function () {
     $db->prepare('UPDATE enseignants SET derniere_connexion = ? WHERE id = ?')
        ->execute([heure(), $enseignant['id']]);
 
+    // Mesure d'audience : une connexion de plus, sans aucune identité (voir _stat.php). Ne doit JAMAIS
+    // gêner la connexion : la moindre erreur (tables pas encore installées…) est avalée.
+    try {
+        require_once __DIR__ . '/_stat.php';
+        stat_noter_evenement($db, 'connexion_enseignant', 'Espace Enseignant');
+    } catch (Throwable $e) {
+        // rien : la connexion de l'enseignant a réussi
+    }
+
     repondre(200, [
         'jeton'      => $jeton,
         'expireDans' => SESSION_DUREE,

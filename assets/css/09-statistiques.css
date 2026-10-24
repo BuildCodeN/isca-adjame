@@ -1,0 +1,242 @@
+/* ==================================================================
+   TABLEAU DE BORD DE FRÉQUENTATION (statistiques.html)
+   ------------------------------------------------------------------
+   Une seule page charge cette feuille : l'administrateur seul la voit,
+   les visiteurs du site n'en paient donc pas le poids. Elle réutilise le
+   vocabulaire du site (marine, or, lie-de-vin, crème, Fraunces et Work
+   Sans) et prévoit trois situations : l'écran d'ordinateur, le téléphone
+   (l'administrateur consulte aussi depuis le sien) et la feuille A4
+   imprimée, qui est le « rapport périodique ».
+   ================================================================== */
+
+#st-appli{max-width:1240px;margin:0 auto;padding:0 40px 90px;}
+#st-appli[hidden],#st-connexion[hidden]{display:none;}
+
+/* ---------- barre d'outils : période, rapport, exports ---------- */
+.st-barre{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 26px;
+  padding:26px 0 18px;border-bottom:1px solid var(--line);
+}
+.st-periodes{flex-wrap:wrap;border-radius:20px;}
+.st-periodes .pill{flex:0 0 auto;white-space:nowrap;}   /* les pastilles passent à la ligne au lieu de se comprimer */
+.st-dates{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;font-size:13px;color:var(--ink-soft);}
+.st-dates label{display:flex;align-items:center;gap:7px;}
+.st-dates input[type=date],.st-champs input,.st-champs select{
+  font:inherit;font-size:13.5px;color:var(--ink);background:#fff;border:1px solid var(--line);padding:8px 10px;border-radius:2px;
+}
+.st-dates input:focus,.st-champs input:focus,.st-champs select:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--navy);}
+.st-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-left:auto;}
+.st-bouton{
+  font-family:'Work Sans',sans-serif;font-size:13px;font-weight:600;color:var(--navy);background:#fff;
+  border:1px solid var(--navy);border-radius:2px;padding:9px 16px;cursor:pointer;list-style:none;
+  transition:background .2s ease,color .2s ease,transform .15s ease;
+}
+.st-bouton:hover{background:var(--navy);color:var(--cream);}
+.st-bouton:active{transform:scale(.97);}
+.st-bouton:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+.st-principal{background:var(--navy);color:var(--cream);}
+.st-principal:hover{background:var(--navy-light);}
+.st-discret{border-color:transparent;color:var(--ink-soft);font-weight:500;text-decoration:underline;text-underline-offset:3px;}
+.st-discret:hover{background:none;color:var(--wine);}
+.st-export{position:relative;}
+.st-export summary::-webkit-details-marker{display:none;}
+.st-export-liste{
+  position:absolute;right:0;top:calc(100% + 6px);z-index:30;min-width:260px;background:#fff;border:1px solid var(--line);
+  box-shadow:0 18px 40px -20px rgba(21,34,56,.45);padding:6px;display:grid;
+}
+.st-export-liste button{
+  font:inherit;font-size:13px;text-align:left;color:var(--ink);background:none;border:0;padding:10px 12px;cursor:pointer;
+}
+.st-export-liste button:hover{background:var(--cream-deep);color:var(--navy);}
+.st-etat{margin:14px 0 0;font-size:12.5px;color:var(--ink-soft);min-height:1.4em;}
+
+/* ---------- sommaire ---------- */
+.st-sommaire{display:flex;flex-wrap:wrap;gap:6px 22px;margin:22px 0 0;font-size:13px;}
+.st-sommaire a{color:var(--navy);font-weight:600;border-bottom:1px solid var(--gold);padding-bottom:2px;}
+.st-sommaire a:hover{color:var(--wine);}
+
+/* ---------- blocs ---------- */
+.st-bloc{margin-top:46px;scroll-margin-top:90px;padding:0;}   /* le « section{padding} » global du site ne s'applique pas ici */
+.st-bloc>h2{
+  font-size:26px;color:var(--navy);margin:0 0 20px;padding-bottom:12px;position:relative;
+}
+.st-bloc>h2::after{content:"";position:absolute;left:0;bottom:0;width:46px;height:3px;background:var(--gold);}
+.st-intro{margin:-6px 0 18px;font-size:14px;color:var(--ink-soft);max-width:760px;line-height:1.6;}
+.st-sous{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--wine);margin:0 0 14px;font-family:'Work Sans',sans-serif;font-weight:700;}
+.st-mini{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin:14px 0 8px;font-family:'Work Sans',sans-serif;font-weight:600;}
+.st-mini:first-of-type{margin-top:0;}
+
+/* ---------- chiffres clés ---------- */
+.st-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px;margin-bottom:18px;}
+.st-kpi{background:#fff;border:1px solid var(--line);border-top:3px solid var(--gold);padding:18px 18px 16px;}
+.st-kpi-nom{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;}
+.st-kpi-val{font-family:'Fraunces',serif;font-size:34px;line-height:1.1;color:var(--navy);margin:8px 0 4px;font-variant-numeric:tabular-nums;}
+.st-kpi-var{font-size:12.5px;min-height:1.3em;}
+.st-kpi-aide{font-size:11.5px;color:var(--ink-soft);margin-top:8px;line-height:1.45;}
+.st-var{font-weight:700;font-variant-numeric:tabular-nums;}
+.st-var.bien{color:#2C7A4F;}
+.st-var.moins{color:var(--wine);}
+.st-var.stable{color:var(--ink-soft);font-weight:500;}
+
+/* ---------- cartes ---------- */
+.st-grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:18px;align-items:start;}
+.st-carte{background:#fff;border:1px solid var(--line);padding:22px 22px 20px;min-width:0;}
+.st-carte.st-large{grid-column:1/-1;}
+.st-carte>h3{
+  font-family:'Work Sans',sans-serif;font-size:12px;letter-spacing:.11em;text-transform:uppercase;font-weight:700;
+  color:var(--wine);margin:0 0 16px;
+}
+.st-note{font-size:12px;color:var(--ink-soft);line-height:1.55;margin:14px 0 0;}
+.st-vide{font-size:13px;color:var(--ink-soft);font-style:italic;margin:6px 0;}
+
+/* ---------- listes à barres ---------- */
+.st-barres{list-style:none;margin:0;padding:0;display:grid;gap:11px;}
+.st-barres li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 14px;align-items:baseline;}
+.st-b-lib{font-size:13.5px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;}
+.st-b-lib small{display:block;font-size:11.5px;color:var(--ink-soft);margin-top:1px;}
+.st-b-n{font-weight:700;color:var(--navy);font-variant-numeric:tabular-nums;white-space:nowrap;}
+.st-b-n small{font-weight:500;color:var(--ink-soft);font-size:11.5px;}
+.st-b-piste{grid-column:1/-1;height:6px;background:var(--cream-deep);border-radius:3px;overflow:hidden;}
+.st-b-piste span{display:block;height:100%;background:var(--navy-light);border-radius:3px;}
+.st-barres li.alerte .st-b-piste span{background:var(--wine);}
+.st-barres li.alerte .st-b-lib small{color:var(--wine);font-weight:600;}
+
+/* ---------- graphiques ---------- */
+.st-graphique svg,.st-carte>svg{display:block;width:100%;height:auto;}
+.st-carte>svg{max-width:560px;}
+.st-grille-h{stroke:#E4DCC9;stroke-width:1;}
+.st-axe{font-size:11px;fill:#5B6270;font-family:'Work Sans',sans-serif;}
+.st-axe.gros{font-size:12.5px;}
+.st-barre-v{fill:#22365A;}
+.st-barre-v.pic{fill:#C9A24B;}
+.st-courbe{fill:none;stroke:#C9A24B;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round;}
+.st-legende{display:flex;gap:18px;align-items:center;font-size:12px;color:var(--ink-soft);margin:6px 0 0;}
+.st-legende .l-barre{display:inline-block;width:12px;height:12px;background:#22365A;margin-right:-10px;}
+.st-legende .l-ligne{display:inline-block;width:18px;height:3px;background:#C9A24B;margin-right:-10px;}
+
+/* ---------- tableaux ---------- */
+.st-tableau-enveloppe{overflow-x:auto;}
+.st-tableau{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums;}
+.st-tableau th,.st-tableau td{padding:10px 12px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;}
+.st-tableau thead th{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;background:var(--cream);}
+.st-tableau th[scope=row],.st-tableau thead th:first-child{text-align:left;color:var(--navy);font-weight:600;}
+.st-tableau tbody tr:hover{background:var(--cream);}
+.st-tableau td.lent{color:var(--wine);font-weight:700;}
+.st-tableau.st-petit th,.st-tableau.st-petit td{font-size:12.5px;white-space:normal;}
+
+/* ---------- constats et pistes ---------- */
+.st-deux{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:34px;align-items:start;}
+.st-constat{display:flex;gap:14px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--navy-light);padding:14px 16px;margin-bottom:12px;}
+.st-constat.bon{border-left-color:#2C7A4F;}
+.st-constat.attention{border-left-color:var(--wine);}
+.st-ico{
+  flex:none;width:24px;height:24px;border-radius:50%;background:var(--navy-light);color:#fff;font-size:13px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;font-family:'Work Sans',sans-serif;
+}
+.st-constat.bon .st-ico{background:#2C7A4F;}
+.st-constat.attention .st-ico{background:var(--wine);}
+.st-constat h4{margin:0 0 4px;font-size:14.5px;color:var(--navy);}
+.st-constat p{margin:0;font-size:13.5px;line-height:1.6;color:var(--ink);}
+.st-piste{background:#fff;border:1px solid var(--line);border-left:4px solid var(--line);padding:16px 18px;margin-bottom:14px;}
+.st-piste.p1{border-left-color:var(--wine);}
+.st-piste.p2{border-left-color:var(--gold);}
+.st-piste.p3{border-left-color:#9BA0AC;}
+.st-piste-tete{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
+.st-piste-tete h4{margin:0;font-size:15.5px;color:var(--navy);flex:1 1 220px;}
+.st-num{
+  flex:none;width:26px;height:26px;border-radius:50%;background:var(--navy);color:var(--cream);font-size:13px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+}
+.st-urgence{font-size:11px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;color:var(--ink-soft);}
+.st-piste.p1 .st-urgence{color:var(--wine);}
+.st-piste.p2 .st-urgence{color:#8A6A1F;}
+.st-piste p{margin:0 0 8px;font-size:13.5px;line-height:1.6;}
+.st-piste p:last-child{margin-bottom:0;}
+
+/* ---------- Espace Enseignant ---------- */
+.st-ens-chiffres{display:flex;flex-wrap:wrap;gap:12px 46px;margin-bottom:18px;}
+.st-ens-chiffres div{display:flex;flex-direction:column;}
+.st-ens-chiffres b{font-family:'Fraunces',serif;font-size:32px;color:var(--navy);line-height:1.1;font-weight:600;}
+.st-ens-chiffres span{font-size:12px;color:var(--ink-soft);max-width:180px;line-height:1.4;}
+
+/* ---------- outils ---------- */
+.st-champs{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:14px 0 6px;}
+.st-champs label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.05em;}
+.st-lien-resultat{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px;}
+.st-lien-resultat code{flex:1 1 260px;font-size:12.5px;background:var(--cream-deep);border:1px dashed var(--line);padding:10px 12px;word-break:break-all;color:var(--navy);}
+.st-case{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--ink);cursor:pointer;margin-top:6px;}
+.st-case input{width:18px;height:18px;accent-color:var(--navy);}
+
+/* ---------- méthode ---------- */
+.st-methode p{font-size:13.5px;line-height:1.7;color:var(--ink);max-width:880px;margin:0 0 12px;}
+
+/* ---------- en-tête du rapport (feuille imprimée seulement) ---------- */
+.st-entete-rapport{display:none;}
+
+/* ---------- téléphone ---------- */
+@media(max-width:1100px){
+  .st-kpis{grid-template-columns:repeat(3,minmax(0,1fr));}
+}
+@media(max-width:900px){
+  #st-appli{padding:0 16px 70px;}
+  .st-deux{grid-template-columns:minmax(0,1fr);gap:8px;}
+  .st-barre{padding-top:20px;}
+  .st-actions{margin-left:0;}
+}
+@media(max-width:700px){
+  .st-kpis{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .st-kpi-val{font-size:30px;}
+  .st-grille{grid-template-columns:minmax(0,1fr);}
+  .st-bloc>h2{font-size:23px;}
+  .st-periodes{width:100%;justify-content:flex-start;}
+  .st-export-liste{left:0;right:auto;}
+  .st-carte{padding:18px 16px;}
+  /* la barre d'outils tient dans la largeur du téléphone : dates l'une sous l'autre, boutons qui se partagent la ligne */
+  .st-barre>*{max-width:100%;min-width:0;}
+  .st-periodes .pill{padding:8px 12px;}
+  .st-dates{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;}
+  .st-dates label{flex-direction:column;align-items:stretch;gap:4px;font-size:12px;}
+  .st-dates input[type=date]{width:100%;min-width:0;box-sizing:border-box;}
+  .st-dates .st-bouton{grid-column:1/-1;}
+  .st-actions{width:100%;}
+  .st-actions .st-bouton{flex:1 1 auto;text-align:center;}
+  .st-export{flex:1 1 auto;}
+  .st-export summary{text-align:center;}
+}
+
+/* ---------- la feuille imprimée : le rapport ---------- */
+@media print{
+  :root{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  body{background:#fff;}
+  .topbar,nav,footer,.page-hero,#st-connexion,.st-barre,.st-etat,.st-sommaire,.st-hors-rapport,.st-export,.st-note.st-ecran{display:none !important;}
+  #st-appli{max-width:none;padding:0;display:block !important;}
+  #st-appli[hidden]{display:none !important;}
+  .st-entete-rapport{
+    display:flex;align-items:center;gap:16px;padding:0 0 12px;margin-bottom:6px;border-bottom:3px solid var(--gold);
+  }
+  .st-entete-rapport img{width:54px;height:54px;object-fit:contain;}
+  .st-er-nom{font-family:'Fraunces',serif;font-size:19px;color:var(--navy);}
+  .st-er-titre{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--wine);font-weight:700;margin-top:2px;}
+  .st-er-periode{font-size:12.5px;color:var(--ink);margin-top:3px;}
+  .st-bloc{margin-top:22px;break-inside:auto;}
+  .st-bloc>h2{font-size:18px;margin-bottom:12px;break-after:avoid;}
+  .st-carte,.st-kpi,.st-constat,.st-piste{break-inside:avoid;box-shadow:none;}
+  .st-kpis{grid-template-columns:repeat(3,1fr);gap:8px;}
+  .st-kpi{padding:10px 12px;}
+  .st-kpi-val{font-size:24px;}
+  /* Sur le papier, les cartes coulent en deux colonnes, de page en page : une grille CSS laisserait de grands vides. */
+  .st-grille{display:block;column-count:2;column-gap:12px;}
+  .st-grille>.st-carte{display:block;break-inside:avoid;margin:0 0 10px;}
+  .st-grille>.st-carte.st-large{column-span:all;}
+  .st-carte{padding:12px 14px;}
+  .st-deux{grid-template-columns:1fr;gap:0;}
+  /* le tableau des pages tient en entier sur la largeur de la feuille */
+  .st-tableau-enveloppe{overflow:visible;}
+  .st-tableau th,.st-tableau td{padding:5px 4px;font-size:10px;white-space:normal;}
+  .st-tableau thead th{font-size:8.5px;letter-spacing:.02em;}
+  .st-barres li{gap:2px 10px;}
+  .st-b-lib{font-size:11.5px;}
+  .st-constat p,.st-piste p,.st-methode p{font-size:11.5px;line-height:1.5;}
+  .st-methode{break-before:auto;}
+  a{color:inherit;}
+}

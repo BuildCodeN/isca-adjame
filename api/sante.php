@@ -4,7 +4,8 @@
  *
  * Une fois la base créée et « isca-config.php » en place, ouvrir
  * https://isca-adjame.com/api/sante.php doit afficher
- *   {"ok":true,"enseignants":43,"annee":"2026-2027"}
+ *   {"ok":true,"enseignants":43,"annee":"2026-2027","statistiques":true}
+ * (« statistiques » : true quand la mesure d'audience est installée, false sinon ; sans gravité.)
  * Sinon, « probleme » dit dans quelle étape ça bloque :
  *   configuration : isca-config.php ne convient pas ; « detail » précise
  *                     introuvable : aucun fichier isca-config.php aux endroits prévus
@@ -40,4 +41,14 @@ try {
     repondre(503, ['ok' => false, 'probleme' => 'tables']);
 }
 
-repondre(200, ['ok' => true, 'enseignants' => $n, 'annee' => $annee ?: '']);
+// La mesure d'audience (tables « stat_* » et clé d'accès du tableau de bord) : true quand elle est installée.
+// Son absence n'est pas une panne du site : elle n'empêche rien d'autre.
+try {
+    $db->query('SELECT 1 FROM stat_vues LIMIT 1');
+    $cle = $db->query("SELECT COUNT(*) FROM parametres WHERE cle = 'stat_cle_acces'")->fetchColumn();
+    $statistiques = (int) $cle > 0;
+} catch (Throwable $e) {
+    $statistiques = false;
+}
+
+repondre(200, ['ok' => true, 'enseignants' => $n, 'annee' => $annee ?: '', 'statistiques' => $statistiques]);

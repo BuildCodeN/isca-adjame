@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Fréquentation du site — Institut Sacré Cœur d’Adjamé</title>
+<meta name="description" content="Tableau de bord réservé à l’administrateur : visiteurs, pages consultées, informations recherchées et pistes d’amélioration.">
+<link rel="icon" href="assets/images/Bandeau%20et%20logo/blason-isca.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/01-fondations.css?v=20261024">
+<link rel="stylesheet" href="assets/css/02-transport.css?v=20261024">
+<link rel="stylesheet" href="assets/css/03-cartes.css?v=20261024">
+<link rel="stylesheet" href="assets/css/04-charpente.css?v=20261024">
+<link rel="stylesheet" href="assets/css/05-bandeaux.css?v=20261024">
+<link rel="stylesheet" href="assets/css/06-interactions.css?v=20261024">
+<link rel="stylesheet" href="assets/css/07-matieres.css?v=20261024">
+<link rel="stylesheet" href="assets/css/08-espaces.css?v=20261024">
+<link rel="stylesheet" href="assets/css/09-statistiques.css?v=20261024">
+<!-- Le rapport imprimé est une feuille A4 en portrait. Le format est posé ici et non dans les
+     feuilles de style, que d'autres pages chargent : le reçu de paiement et l'emploi du temps ont
+     leur propre format. -->
+<style media="print">@page{size:A4 portrait;margin:12mm;}</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <span>Abidjan, Côte d'Ivoire — Enseignement catholique de la 6ème à la Terminale</span>
+    <span>27 20 37 10-20 &nbsp;|&nbsp; 07 08 99 54 04 &nbsp;|&nbsp; collegeisca@gmail.com</span>
+  </div>
+
+  <nav>
+    <a class="brand" href="index.html">
+      <img class="crest" src="assets/images/Bandeau%20et%20logo/blason-isca.png" alt="Emblème ISCA">
+      <div class="brand-text">
+        <div class="name">Institut Sacré Cœur d'Adjamé</div>
+        <div class="tag">ISCA — Fondé en 1961</div>
+      </div>
+    </a>
+    <div class="navlinks">
+      <a data-nav="accueil" href="index.html">Accueil</a>
+      <a data-nav="etablissement" href="etablissement.html">L'Établissement</a>
+      <a data-nav="scolarite" href="scolarite.html">Scolarité</a>
+      <a data-nav="vie-scolaire" href="vie-scolaire.html">Vie Scolaire</a>
+      <a data-nav="admissions" href="admissions.html">Admissions</a>
+      <a data-nav="paiement" href="paiement.html">Paiement</a>
+      <a data-nav="actualites" href="actualites.html">Actualités</a>
+      <a data-nav="contact" href="contact.html">Contact</a>
+    </div>
+    <a class="btn-connexion" data-nav="enseignant" href="espace-enseignant.html">Espace Enseignant</a>
+  </nav>
+
+<section class="page-section active" id="sec-statistiques" data-key="statistiques">
+
+  <!-- ================= EN-TÊTE ================= -->
+  <header class="page-hero st-hero" style="padding-bottom:28px;">
+    <div class="breadcrumb"><a href="index.html">Accueil</a><span class="sep">/</span><span class="current">Fréquentation du site</span></div>
+    <h1>Fréquentation du site</h1>
+    <p class="lead">Combien de visiteurs, quelles pages, quelles informations les familles recherchent le plus, et ce qu'on peut améliorer. Page réservée à l'administrateur.</p>
+  </header>
+
+  <!-- ================= ÉCRAN DE CONNEXION ================= -->
+  <div id="st-connexion" class="login-shell">
+    <form class="login-card" id="st-form" autocomplete="on">
+      <div class="seal"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="11" width="16" height="9" rx="1"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></div>
+      <div class="eyebrow">Accès réservé à l'administrateur</div>
+      <h2>Clé d'accès</h2>
+      <p class="lead2">Tapez la clé du fichier « acces-statistiques » qui vous a été remis. Majuscules, tirets et espaces n'ont pas d'importance.</p>
+
+      <div class="login-error" id="st-erreur" role="alert"></div>
+
+      <div class="login-field">
+        <label for="st-cle">Clé d'accès</label>
+        <input type="password" id="st-cle" name="cle" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="current-password" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="go" maxlength="40">
+      </div>
+      <label class="show-pw"><input type="checkbox" id="st-voir"> Afficher la clé</label>
+      <label class="show-pw"><input type="checkbox" id="st-longue"> Rester connecté sur cet appareil (30 jours)</label>
+      <button class="submit-login" type="submit" id="st-ouvrir">Ouvrir le tableau de bord</button>
+      <div class="login-foot">Clé perdue ? Elle se renouvelle avec l'outil <b>preparer-statistiques.py</b> (voir le fichier LISEZ-MOI-STATISTIQUES).</div>
+    </form>
+  </div>
+
+  <!-- ================= TABLEAU DE BORD ================= -->
+  <div id="st-appli" hidden>
+
+    <div class="st-barre" id="st-barre">
+      <div class="pill-group st-periodes" role="group" aria-label="Période affichée">
+        <button type="button" class="pill" data-p="7">7 jours</button>
+        <button type="button" class="pill active" data-p="30">30 jours</button>
+        <button type="button" class="pill" data-p="semaine">Semaine dernière</button>
+        <button type="button" class="pill" data-p="mois">Ce mois-ci</button>
+        <button type="button" class="pill" data-p="moisdernier">Mois dernier</button>
+        <button type="button" class="pill" data-p="tout">Depuis le début</button>
+      </div>
+      <form class="st-dates" id="st-dates">
+        <label>Du <input type="date" id="st-du" required></label>
+        <label>au <input type="date" id="st-au" required></label>
+        <button type="submit" class="st-bouton">Afficher</button>
+      </form>
+      <div class="st-actions">
+        <button type="button" class="st-bouton st-principal" id="st-imprimer">Rapport (imprimer / PDF)</button>
+        <button type="button" class="st-bouton" id="st-copier">Copier le résumé</button>
+        <details class="st-export">
+          <summary class="st-bouton">Données (CSV)</summary>
+          <div class="st-export-liste">
+            <button type="button" data-export="jours">Jour par jour</button>
+            <button type="button" data-export="pages">Pages</button>
+            <button type="button" data-export="gestes">Recherches, classes, documents…</button>
+            <button type="button" data-export="provenance">Provenance des visites</button>
+          </div>
+        </details>
+        <button type="button" class="st-bouton st-discret" id="st-sortir">Se déconnecter</button>
+      </div>
+    </div>
+    <p class="st-etat" id="st-etat" role="status" aria-live="polite"></p>
+
+    <div class="st-contenu" id="st-contenu">
+
+      <!-- En-tête du rapport : visible seulement sur la feuille imprimée -->
+      <div class="st-entete-rapport">
+        <img src="assets/images/Bandeau%20et%20logo/blason-isca.png" alt="">
+        <div>
+          <div class="st-er-nom">Institut Sacré Cœur d'Adjamé</div>
+          <div class="st-er-titre">Rapport de fréquentation du site internet</div>
+          <div class="st-er-periode" id="st-er-periode"></div>
+        </div>
+      </div>
+
+      <nav class="st-sommaire" aria-label="Sections du rapport">
+        <a href="#st-chiffres">Chiffres clés</a>
+        <a href="#st-pistes">Pistes d'amélioration</a>
+        <a href="#st-recherches">Ce que l'on cherche</a>
+        <a href="#st-pages">Pages</a>
+        <a href="#st-public">Public et moments</a>
+        <a href="#st-outils">Outils</a>
+      </nav>
+
+      <section class="st-bloc" id="st-chiffres" aria-labelledby="st-t-chiffres">
+        <h2 id="st-t-chiffres">Chiffres clés</h2>
+        <div class="st-kpis" id="st-kpis"></div>
+        <div class="st-carte st-large">
+          <h3>Évolution jour par jour</h3>
+          <div id="st-evolution" class="st-graphique"></div>
+        </div>
+      </section>
+
+      <section class="st-bloc" id="st-pistes" aria-labelledby="st-t-pistes">
+        <h2 id="st-t-pistes">Ce que disent les chiffres, et comment améliorer le site</h2>
+        <div class="st-deux">
+          <div>
+            <h3 class="st-sous">Pistes d'amélioration</h3>
+            <div id="st-propositions"></div>
+          </div>
+          <div>
+            <h3 class="st-sous">Ce que disent les chiffres</h3>
+            <div id="st-constats"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="st-bloc" id="st-recherches" aria-labelledby="st-t-recherches">
+        <h2 id="st-t-recherches">Ce que les visiteurs cherchent</h2>
+        <p class="st-intro">Les informations les plus demandées, d'après ce que les visiteurs ont tapé, ouvert, lu ou appelé.</p>
+        <div class="st-grille" id="st-gestes"></div>
+      </section>
+
+      <section class="st-bloc" id="st-pages" aria-labelledby="st-t-pages">
+        <h2 id="st-t-pages">Pages consultées</h2>
+        <div class="st-carte st-large">
+          <div class="st-tableau-enveloppe" id="st-tableau-pages"></div>
+          <p class="st-note">« Arrivées » : visites qui ont commencé par cette page. « Une seule page » : parmi elles, celles qui n'ont rien ouvert d'autre. « Lecture » : jusqu'où, en moyenne, on a fait défiler la page.</p>
+        </div>
+      </section>
+
+      <section class="st-bloc" id="st-public" aria-labelledby="st-t-public">
+        <h2 id="st-t-public">Public et moments</h2>
+        <div class="st-grille" id="st-public-grille"></div>
+      </section>
+
+      <section class="st-bloc" id="st-ens" aria-labelledby="st-t-ens">
+        <h2 id="st-t-ens">Espace Enseignant</h2>
+        <div class="st-carte st-large" id="st-enseignants"></div>
+      </section>
+
+      <section class="st-bloc st-hors-rapport" id="st-outils" aria-labelledby="st-t-outils">
+        <h2 id="st-t-outils">Outils</h2>
+        <div class="st-grille">
+          <div class="st-carte">
+            <h3>Créer un lien suivi</h3>
+            <p class="st-note">WhatsApp et les SMS ne disent pas d'où vient un clic. Ajoutez un nom à la fin du lien que vous diffusez : les visites apparaîtront ensuite sous ce nom dans « Provenance ».</p>
+            <div class="st-champs">
+              <label>Page
+                <select id="st-lien-page">
+                  <option value="">Accueil</option>
+                  <option value="scolarite.html">Scolarité</option>
+                  <option value="scolarite.html#emploi-du-temps">Scolarité : emploi du temps</option>
+                  <option value="admissions.html">Admissions</option>
+                  <option value="paiement.html">Paiement</option>
+                  <option value="actualites.html">Actualités</option>
+                  <option value="contact.html">Contact</option>
+                </select>
+              </label>
+              <label>Nom de la source
+                <input type="text" id="st-lien-src" value="whatsapp" maxlength="24" pattern="[a-z0-9_\-]{1,24}" aria-describedby="st-lien-aide">
+              </label>
+            </div>
+            <p class="st-note" id="st-lien-aide">Lettres minuscules, chiffres, tiret : par exemple « whatsapp », « affiche », « sms-parents ».</p>
+            <div class="st-lien-resultat"><code id="st-lien-url"></code><button type="button" class="st-bouton" id="st-lien-copier">Copier</button></div>
+          </div>
+          <div class="st-carte">
+            <h3>Mes propres visites</h3>
+            <p class="st-note">Pour que vos passages n'augmentent pas les chiffres, cochez cette case sur chaque appareil que vous utilisez pour consulter le site (ordinateur du bureau, téléphone).</p>
+            <label class="st-case"><input type="checkbox" id="st-exclure"> Ne pas compter mes visites sur cet appareil</label>
+          </div>
+        </div>
+      </section>
+
+      <section class="st-bloc st-methode" id="st-methode" aria-labelledby="st-t-methode">
+        <h2 id="st-t-methode">Comment la mesure est faite</h2>
+        <p>La mesure est <b>anonyme</b> : aucun cookie, aucune adresse IP conservée, aucun nom, aucun texte saisi dans un formulaire. Chaque visiteur reçoit pour la journée une « empreinte » qui ne permet pas de le reconnaître le lendemain : <b>un visiteur qui revient un autre jour est donc recompté</b>, et les chiffres de « visiteurs » sont des visiteurs <i>par jour</i> additionnés.</p>
+        <p>Ne sont pas comptés : les robots (moteurs de recherche, aperçus de liens), les personnes qui ont activé « Ne pas me suivre » dans leur navigateur ou choisi « Ne pas me compter » en bas des pages, et vos propres visites si vous l'avez demandé. Le temps passé et la lecture ne sont connus que lorsque le navigateur a pu l'annoncer en quittant la page : sur téléphone, c'est parfois impossible, ces moyennes reposent donc sur une partie des visites.</p>
+        <p>Les pistes d'amélioration sont calculées par des règles simples (seuils lisibles dans <i>api/_stat-analyse.php</i>) : ce sont des <b>pistes à examiner</b>, jamais des verdicts. Avec peu de visites, un pourcentage change beaucoup d'une semaine à l'autre.</p>
+        <p class="st-note" id="st-generation"></p>
+      </section>
+    </div>
+  </div>
+
+</section>
+
+<footer>
+    <div class="footer-bottom">
+      <span>© 2026 Institut Sacré Cœur d'Adjamé (ISCA). Page réservée à l'administration du site.</span>
+    </div>
+  </footer>
+
+<script src="assets/js/commun.js?v=20261024"></script>
+<script src="assets/js/statistiques.js?v=20261024"></script>
+</body>
+</html>
