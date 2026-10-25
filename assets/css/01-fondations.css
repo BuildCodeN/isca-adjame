@@ -599,10 +599,6 @@ margin-top:10px;color:var(--navy);
 }
 @media(max-width:620px){
 .hero-slide.media-slide .ms-hint{font-size:10.5px;justify-content:flex-start;padding-left:20px;}
-.class-chips{grid-template-columns:repeat(2,1fr);}
-}
-@media(max-width:1000px) and (min-width:621px){
-.class-chips{grid-template-columns:repeat(4,1fr);}
 }
 .flash .tag-blink{
 animation:tagBlink 1.6s ease-in-out infinite;
@@ -1018,6 +1014,21 @@ display:grid;grid-template-columns:repeat(6,1fr);gap:8px;
 font-size:12.5px;color:var(--navy);border:1px solid var(--line);
     padding:7px 13px;border-radius:2px;background:var(--cream);
     text-align:center;
+}
+/* Nombre de colonnes selon la largeur. Ces regles DOIVENT venir apres la
+   regle de base ci-dessus : posees plus haut dans le fichier (elles y ont
+   ete longtemps), elles perdaient - meme specificite, la derniere gagne - et
+   six colonnes restaient imposees partout : la page Scolarite debordait de 90 a
+   180 px sur telephone (et Vie scolaire aussi) et, entre 900 et 985 px, les
+   deux cartes cote a cote debordaient encore de 30 a 80 px. */
+@media(min-width:901px) and (max-width:1000px){
+.class-chips{grid-template-columns:repeat(4,1fr);}
+}
+@media(max-width:620px){
+.class-chips{grid-template-columns:repeat(3,1fr);}
+}
+@media(max-width:357px){
+.class-chips{grid-template-columns:repeat(2,1fr);}
 }
 .edt-section{
 background:var(--cream-deep);padding:80px 40px;
