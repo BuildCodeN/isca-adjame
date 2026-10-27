@@ -178,7 +178,8 @@
     if(el.closest('nav, .navlinks')) return 'menu';
     if(el.closest('footer')) return 'pied de page';
     if(el.closest('.hero-slide, #heroSlider')) return 'carrousel';
-    if(el.closest('.appel-fixe, .lucarne, .lucarnes-grid')) return 'informations aux parents';
+    if(el.closest('.avis-zone')) return 'avis du moment';
+    if(el.closest('.lucarne, .lucarnes-grid')) return 'informations aux parents';
     if(el.closest('.quick-card, .quick-grid')) return 'raccourcis';
     if(el.closest('.news-card')) return 'actualités';
     return 'contenu';
@@ -305,7 +306,8 @@
         }
       });
     }, { threshold: seuils });
-    [].slice.call(document.querySelectorAll('section[id]:not([id^="sec-"]), #devoirs-t1, #carte, .news-card[id]')).forEach(function(el){
+    /* chaque avis de la zone d'avis de l'accueil (.avis[id]) compte aussi : on saura combien de visites l'ont lu */
+    [].slice.call(document.querySelectorAll('section[id]:not([id^="sec-"]), #devoirs-t1, #carte, .news-card[id], .avis[id]')).forEach(function(el){
       if(el.id) obs.observe(el);
     });
   })();

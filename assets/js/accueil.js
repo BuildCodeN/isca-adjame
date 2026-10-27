@@ -310,3 +310,38 @@
   });
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(caler);
 })();
+
+
+/* ==================================================================
+   Zone d'avis du moment (index.html, #avis-zone)
+   ------------------------------------------------------------------
+   Chaque avis peut porter deux dates facultatives, au format AAAA-MM-JJ :
+     data-a-partir-du : l'avis n'apparait qu'a partir de ce jour (0 h 00) ;
+     data-jusqu-au    : l'avis s'efface apres ce jour (23 h 59 comprises).
+   L'heure est celle du navigateur du visiteur (Abidjan = heure universelle).
+   Quand plus aucun avis n'est affiche, la zone elle-meme disparait : pas de
+   cadre vide au-dessus du carrousel.
+
+   Le script ne fait que MASQUER : s'il ne s'execute pas, tous les avis restent
+   visibles — une information de la direction ne doit pas dependre d'un script,
+   et un avis perime est un moindre mal qu'un avis invisible. Meme principe que
+   l'ancien bandeau d'information (« bandeauRelais » ci-dessus).
+   ================================================================== */
+(function zoneAvis(){
+  var zone = document.getElementById('avis-zone');
+  if(!zone) return;
+
+  var maintenant = Date.now();
+  var affiches = 0;
+  [].slice.call(zone.querySelectorAll('.avis')).forEach(function(avis){
+    var du = avis.dataset.aPartirDu;
+    var au = avis.dataset.jusquAu;
+    var debut = du ? new Date(du + 'T00:00:00').getTime() : NaN;
+    var fin = au ? new Date(au + 'T23:59:59').getTime() : NaN;
+    var pasEncore = !isNaN(debut) && maintenant < debut;
+    var perime = !isNaN(fin) && maintenant > fin;
+    if(pasEncore || perime) avis.hidden = true;
+    else affiches++;
+  });
+  if(affiches === 0) zone.hidden = true;
+})();

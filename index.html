@@ -12,14 +12,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/01-fondations.css?v=20261025">
-<link rel="stylesheet" href="assets/css/02-transport.css?v=20261025">
-<link rel="stylesheet" href="assets/css/03-cartes.css?v=20261025">
-<link rel="stylesheet" href="assets/css/04-charpente.css?v=20261025">
-<link rel="stylesheet" href="assets/css/05-bandeaux.css?v=20261025">
-<link rel="stylesheet" href="assets/css/06-interactions.css?v=20261025">
-<link rel="stylesheet" href="assets/css/07-matieres.css?v=20261025">
-<link rel="stylesheet" href="assets/css/08-espaces.css?v=20261025">
+<link rel="stylesheet" href="assets/css/01-fondations.css?v=20261027">
+<link rel="stylesheet" href="assets/css/02-transport.css?v=20261027">
+<link rel="stylesheet" href="assets/css/03-cartes.css?v=20261027">
+<link rel="stylesheet" href="assets/css/04-charpente.css?v=20261027">
+<link rel="stylesheet" href="assets/css/05-bandeaux.css?v=20261027">
+<link rel="stylesheet" href="assets/css/06-interactions.css?v=20261027">
+<link rel="stylesheet" href="assets/css/07-matieres.css?v=20261027">
+<link rel="stylesheet" href="assets/css/08-espaces.css?v=20261027">
 </head>
 <body>
 
@@ -52,6 +52,58 @@
 
   
 <section class="page-section active" id="sec-accueil" data-key="accueil">
+
+  <!-- ================= AVIS DU MOMENT =================
+       LA zone des informations TEMPORAIRES de l'accueil, tout en haut, sous le menu : c'est la que
+       l'oeil tombe en arrivant sur le site (demande du 25 octobre 2026). Elle recueille aussi l'appel
+       a candidature, qui se trouvait dans « Informations aux parents », trop bas : au premier ecran
+       d'un portable ou d'un telephone, cet encart n'etait pas visible.
+
+       UN AVIS = un bloc <article class="avis"> ci-dessous. Deux ou trois peuvent se suivre. Pas de
+       nouveau conteneur a creer : on copie un bloc, on change le texte.
+         - av-tag    : 2 a 4 mots (« Conges de la Toussaint », « Rappel », « Appel a candidature »).
+         - h3        : la phrase a retenir, une ou deux lignes.
+         - av-info   : une ligne de precision (facultative).
+         - av-action : un numero a appeler ou un lien (facultatif ; modele dans l'avis de l'appel).
+       Donner a chaque avis un id propre : le compteur d'audience compte les visites qui l'ont lu.
+
+       DATES : data-jusqu-au="AAAA-MM-JJ" efface l'avis tout seul apres cette date (elle comprise) ;
+       data-a-partir-du="AAAA-MM-JJ" ne l'affiche qu'a partir de cette date. Les deux sont facultatifs.
+       Quand plus aucun avis n'est affiche, la zone disparait (pas de cadre vide). Le script ne fait que
+       MASQUER : sans JavaScript tous les avis restent affiches (une information ne doit pas dependre
+       d'un script) ; supprimer de temps en temps du fichier les avis perimes.
+
+       POUR RETIRER UN AVIS : supprimer son bloc. Dessin : « Accueil : la ZONE D'AVIS DU MOMENT » a la fin
+       de 08-espaces.css ; masquage par dates : « zoneAvis » dans assets/js/accueil.js. -->
+  <div class="avis-zone" id="avis-zone" role="region" aria-label="Avis du moment">
+
+    <!-- Conges de la Toussaint 2026 : depart des eleves le vendredi 23 octobre, reprise le lundi 2 novembre
+         (communique par la direction le 25 octobre 2026). Disparait seul apres le 2 novembre. -->
+    <article class="avis" id="avis-toussaint-2026" data-jusqu-au="2026-11-02" aria-labelledby="avis-toussaint-2026-titre">
+      <div class="av-texte">
+        <p class="av-tag"><span class="av-point" aria-hidden="true"></span>Congés de la Toussaint</p>
+        <h3 id="avis-toussaint-2026-titre">Reprise des cours le lundi 2 novembre 2026</h3>
+        <p class="av-info">Départ des élèves : vendredi 23 octobre 2026. Une semaine de congé.</p>
+      </div>
+    </article>
+
+    <!-- Appel a candidature du Bureau des parents d'eleves (19 octobre 2026). Les termes sont ceux de la
+         banniere : ni date limite, ni lieu de depot, ni criteres, qui ne sont pas connus. Pas de date de fin
+         connue : a retirer a la main quand l'appel est clos (et la diapositive 1 du carrousel). -->
+    <article class="avis" id="avis-appel-bureau-parents" aria-labelledby="avis-appel-bureau-parents-titre">
+      <div class="av-texte">
+        <p class="av-tag"><span class="av-point" aria-hidden="true"></span>Appel à candidature</p>
+        <h3 id="avis-appel-bureau-parents-titre">Présidence et membres du Bureau des parents d'élèves</h3>
+        <p class="av-info">Les critères d'éligibilité seront communiqués ultérieurement.</p>
+      </div>
+      <a class="av-action" href="tel:+2250797561321" aria-label="Appeler l'infoline au 07 97 56 13 21">
+        <span class="av-lib">Infoline</span>
+        <span class="av-tel">07 97 56 13 21</span>
+        <span class="av-appeler">Appeler <span aria-hidden="true">→</span></span>
+      </a>
+    </article>
+
+  </div>
 
 
   <!-- ================= HERO SLIDER — slide "Résultats" affiché ================= -->
@@ -251,7 +303,9 @@
 
        SANS JAVASCRIPT, les messages s'affichent tous, l'un sous
        l'autre : une annonce ne doit pas dependre d'un script. -->
-  <!-- RETIRÉ le 26 septembre 2026 : tous les messages étaient périmés (kits
+  <!-- REMPLACÉ le 25 octobre 2026 : les informations temporaires vont désormais dans la zone d'avis
+       (#avis-zone, tout en haut de la page) ; ne pas rouvrir ce bandeau, qui fait doublon.
+       RETIRÉ le 26 septembre 2026 : tous les messages étaient périmés (kits
        scolaires du 7 au 9 septembre, cars dès le 14, rentrée du 14). Le bloc
        est conservé pour servir de modèle à la prochaine annonce : supprimer
        la ligne d'ouverture de commentaire qui suit cette note et celle de
@@ -281,31 +335,6 @@
       </div>
     </div>
     <div class="lucarnes-grid">
-
-      <!-- ---------- APPEL À CANDIDATURE — version FIXE ----------
-           Le carrousel du haut fait défiler ses annonces (l'appel en est la première) : ici, dans
-           « À ne pas manquer », il reste affiché en permanence, en tête de la grille et sur toute sa
-           largeur, et il CLIGNOTE doucement (demande du 19 octobre 2026). Le clignotement n'affecte
-           que la pastille « Appel à candidature » (bascule de couleurs, le texte reste lisible à tout
-           instant) et le halo du cadre : un cycle de 1,6 s, très en dessous des 3 clignotements par
-           seconde à ne jamais dépasser. Il s'arrête sous la souris ou le doigt (lecture, appel) et pour
-           qui a demandé moins d'animations (prefers-reduced-motion). Les termes sont ceux de la
-           bannière : ni date limite, ni lieu de dépôt, ni critères, qui ne sont pas connus.
-           POUR LE RETIRER : supprimer ce bloc (et la diapositive 1 du carrousel). Styles : fin de
-           08-espaces.css, « Accueil : appel a candidature FIXE ». -->
-      <article class="appel-fixe" aria-labelledby="appel-fixe-titre">
-        <div class="af-texte">
-          <p class="af-kicker">Parents d'élèves</p>
-          <p class="af-tag"><span class="af-point" aria-hidden="true"></span>Appel à candidature</p>
-          <h3 id="appel-fixe-titre">Présidence et membres du Bureau des parents d'élèves</h3>
-          <p class="af-info">Les critères d'éligibilité seront communiqués ultérieurement.</p>
-        </div>
-        <a class="af-contact" href="tel:+2250797561321" aria-label="Appeler l'infoline au 07 97 56 13 21">
-          <span class="af-lib">Infoline</span>
-          <span class="af-tel">07 97 56 13 21</span>
-          <span class="af-appeler">Appeler maintenant <span aria-hidden="true">→</span></span>
-        </a>
-      </article>
 
       <div class="lucarne">
         <div class="lc-tag">Évaluations</div>
@@ -486,8 +515,8 @@
     </div>
   </footer>
 
-<script src="assets/js/commun.js?v=20261025"></script>
-<script src="assets/js/accueil.js?v=20261025"></script>
-<script src="assets/js/stat.js?v=20261025" defer></script>
+<script src="assets/js/commun.js?v=20261027"></script>
+<script src="assets/js/accueil.js?v=20261027"></script>
+<script src="assets/js/stat.js?v=20261027" defer></script>
 </body>
 </html>
