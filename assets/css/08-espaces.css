@@ -1540,14 +1540,16 @@
 /* ==================================================================
    Accueil : la ZONE D'AVIS DU MOMENT (index.html, #avis-zone)
    ------------------------------------------------------------------
-   Une seule zone, posee tout en haut de l'accueil, sous le menu : c'est
-   la que l'oeil tombe en arrivant sur le site. Elle recoit les
-   informations TEMPORAIRES (conges, rappels, appels, changements
+   Une seule zone, posee en tete de « A ne pas manquer / Informations aux
+   parents », au-dessus des trois cartes (placement demande le 27 octobre
+   2026 : un premier essai tout en haut de la page a ete refuse). Elle
+   recoit les informations TEMPORAIRES (conges, rappels, appels, changements
    d'horaire...) : chacune est un « avis » (.avis) de la meme famille, deux
    ou trois peuvent se suivre, et chacun s'efface tout seul a sa date
    (data-jusqu-au, assets/js/accueil.js). Sans avis visible, la zone
-   disparait : aucun cadre vide. Ajouter un avis = copier un bloc .avis,
-   pas de nouveau conteneur (modele et mode d'emploi dans index.html).
+   disparait : « Informations aux parents » commence alors par ses trois
+   cartes. Ajouter un avis = copier un bloc .avis, pas de nouveau conteneur
+   (modele et mode d'emploi dans index.html).
 
    Chaque avis clignote doucement pour attirer l'oeil, comme l'encart de
    l'appel a candidature d'octobre dont il reprend le dessin : une BASCULE
@@ -1556,20 +1558,30 @@
    chaque instant (un fondu a l'opacite le rendrait presque invisible la
    moitie du temps). Un cycle dure 1,6 s : 0,6 clignotement par seconde,
    loin des 3 par seconde au-dela desquels un clignotement devient
-   dangereux ; tous les avis battent en meme temps (un seul « coup » a
-   la fois, jamais plus) et seule une petite surface bouge. Le battement
-   s'arrete sous la souris et au focus (lecture, appel) et pour qui a
-   demande moins d'animations.
+   dangereux ; seule une petite surface bouge.
+
+   TOUS LES AVIS BATTENT EN PHASE : un seul « coup » a la fois, jamais
+   decale. Pour que cela dure, le battement s'arrete pour TOUS les avis a
+   la fois (souris sur la zone, focus dans la zone, ou mouvement reduit
+   demande par le visiteur) et ils repartent ensemble : un avis qui
+   repartirait seul battrait a contretemps des autres.
+
+   Deux avis ne se mettent cote a cote que si chacun mesure au moins 560 px (un avis qui porte un numero a
+   appeler a besoin de cette largeur pour garder son texte et son bloc d'appel sur une meme ligne) : en dessous,
+   ils s'empilent, pleine largeur.
+
+   Le contenu de chaque avis est aligne en HAUT : les pastilles, puis les
+   titres, sont sur la meme ligne d'un avis a l'autre, comme les trois
+   cartes qui suivent ; seul le bloc d'action (numero a appeler) est centre.
    ================================================================== */
 .avis-zone{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,430px),1fr));gap:14px 18px;
-  padding:16px 40px;
-  background:var(--cream-deep);border-bottom:1px solid var(--line);
+  grid-column:1 / -1;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,560px),1fr));gap:20px;
 }
 .avis-zone[hidden], .avis[hidden]{display:none !important;}
 .avis{
-  display:flex;align-items:center;justify-content:space-between;gap:14px 26px;flex-wrap:wrap;
-  padding:16px 22px;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:14px 26px;flex-wrap:wrap;
+  padding:22px 24px;
   background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);
   color:var(--cream);
   border:2px solid var(--gold);
@@ -1577,7 +1589,7 @@
 }
 .avis .av-texte{flex:1 1 250px;min-width:0;}
 .avis .av-tag{
-  display:inline-flex;align-items:center;gap:9px;margin:0 0 9px;padding:5px 13px;
+  display:inline-flex;align-items:center;gap:9px;margin:0 0 12px;padding:5px 13px;
   font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;line-height:1.2;
   color:var(--navy);background:var(--gold);border:2px solid var(--gold);
   animation:avisBascule 1.6s linear infinite;
@@ -1586,7 +1598,7 @@
   flex:none;width:8px;height:8px;border-radius:50%;background:currentColor;
 }
 .avis h3{
-  margin:0 0 5px;
+  margin:0 0 6px;
   font-size:20px;line-height:1.25;color:#fff;
 }
 .avis .av-info{
@@ -1594,6 +1606,7 @@
 }
 /* Un avis peut proposer une action (un numero a appeler, un lien) : bloc a droite sur grand ecran. */
 .avis .av-action{
+  align-self:center;
   display:flex;flex-direction:column;align-items:flex-start;gap:5px;
   padding:4px 0 4px 24px;border-left:1px solid rgba(228,205,142,.4);
   color:inherit;
@@ -1624,16 +1637,17 @@
   0%,100%{box-shadow:0 0 0 0 rgba(201,162,75,0);}
   50%{box-shadow:0 0 0 6px rgba(201,162,75,.34);}
 }
-/* Sous la souris ou au clavier : le battement s'arrete, le cadre reste cerne d'or et la pastille
-   pleine — on peut lire et viser sans que la cible bouge. Le survol ne compte que pour une vraie
-   souris : au doigt, il reste « colle » apres le toucher et figerait l'avis. */
-.avis:focus-within{
+/* Sous la souris ou au clavier : le battement s'arrete pour TOUS les avis a la fois (ils repartent
+   ensemble, donc toujours en phase), les cadres restent cernes d'or et les pastilles pleines — on
+   peut lire et viser sans que la cible bouge. Le survol ne compte que pour une vraie souris : au
+   doigt, il reste « colle » apres le toucher et figerait la zone. */
+.avis-zone:focus-within .avis{
   animation:none;box-shadow:0 0 0 5px rgba(201,162,75,.34);
 }
-.avis:focus-within .av-tag{animation:none;}
+.avis-zone:focus-within .av-tag{animation:none;}
 @media(hover:hover){
-  .avis:hover{animation:none;box-shadow:0 0 0 5px rgba(201,162,75,.34);}
-  .avis:hover .av-tag{animation:none;}
+  .avis-zone:hover .avis{animation:none;box-shadow:0 0 0 5px rgba(201,162,75,.34);}
+  .avis-zone:hover .av-tag{animation:none;}
 }
 @media(prefers-reduced-motion:reduce){
   .avis{animation:none;box-shadow:0 0 0 5px rgba(201,162,75,.34);}
@@ -1641,13 +1655,14 @@
 }
 
 @media(max-width:900px){
-  .avis-zone{grid-template-columns:1fr;gap:12px;padding:14px 20px;}
-  .avis{flex-direction:column;align-items:stretch;flex-wrap:nowrap;gap:12px;padding:15px 16px;}
+  .avis-zone{grid-template-columns:1fr;gap:14px;}
+  .avis{flex-direction:column;align-items:stretch;flex-wrap:nowrap;gap:12px;padding:18px 16px;}
   .avis .av-texte{flex:0 0 auto;}
-  .avis .av-tag{font-size:12px;margin-bottom:8px;}
+  .avis .av-tag{font-size:12px;margin-bottom:10px;}
   .avis h3{font-size:18px;}
   .avis .av-info{font-size:14px;}
   .avis .av-action{
+    align-self:stretch;
     flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;
     padding:12px 0 0;border-left:0;border-top:1px solid rgba(228,205,142,.4);
   }
@@ -1656,12 +1671,11 @@
   .avis .av-appeler{flex:1 1 150px;min-height:48px;margin-top:0;font-size:15px;}
 }
 @media(max-width:400px){
-  .avis-zone{padding:12px 14px;}
+  .avis{padding:16px 14px;}
   .avis .av-tag{font-size:11.5px;letter-spacing:.1em;padding:5px 11px;}
   .avis .av-tel{font-size:20px;}
 }
 @media print{
-  .avis-zone{background:#fff;padding:0 0 12px;border-bottom:0;}
   .avis{
     background:#fff;color:#000;border:1px solid #000;animation:none;box-shadow:none;
     break-inside:avoid;
