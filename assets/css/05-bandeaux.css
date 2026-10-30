@@ -591,7 +591,14 @@ background:linear-gradient(180deg,
 .slide-theme .st-suite a{
   color:var(--gold-soft);border-bottom:1px solid rgba(228,205,142,.4);padding-bottom:1px;
 }
+/* Sur ordinateur l'affiche grandit avec le cadre du carrousel (--cadre-h, posee par
+   accueil.js : plus haut quand l'ecran est plus large, pour que les bandeaux
+   tiennent a toute la largeur). 430 px dans un cadre de 513 px, jamais plus que le
+   fichier (849 px). Sans le script, ou avec un vieux navigateur : 430 px. */
 .slide-theme .st-affiche{justify-self:center;position:relative;display:block;height:430px;cursor:zoom-in;}
+@supports(height:max(1px,2px)){
+  .slide-theme .st-affiche{height:min(849px,max(430px,calc(var(--cadre-h,513px) - 83px)));}
+}
 .slide-theme .st-affiche img{
   height:100%;width:auto;max-width:none;border-radius:3px;
   box-shadow:0 22px 50px -12px rgba(0,0,0,.65),0 0 0 1px rgba(250,246,239,.16);
@@ -613,12 +620,21 @@ background:linear-gradient(180deg,
 /* La grille d'accueil passe en une colonne des 1000 px (01-fondations.css) :
    l'affiche se place alors sous le texte, plus petite. Le titre, lui,
    change de taille des 900 px, comme celui de la diapositive « Accroche ».
-   Sur telephone, les trois mots tiennent sur une ligne et l'affiche reste
-   assez petite pour que la diapositive ne depasse pas trop l'ecran
-   (environ 860 px de haut, contre 780 pour « Accroche »). */
+   L'affiche suit la largeur de l'ecran (demande du 30 octobre 2026 : sur
+   telephone elle ne tenait que 53% de la largeur, 190 px sur 360) : 62% de
+   l'ecran, plafonnee a 400 px, pour les tablettes ; sur telephone (620 px
+   et moins), toute la largeur du texte, alignee sur les boutons « Voir
+   l'affiche » et « Telecharger le PDF » (320 px sur un ecran de 360, soit
+   453 px de haut). */
 @media(max-width:1000px){
-  .slide-theme .st-affiche{height:auto;width:clamp(190px,46vw,250px);margin:6px auto 4px;}
+  .slide-theme .st-affiche{height:auto;width:clamp(260px,62vw,400px);margin:6px auto 4px;}
   .slide-theme .st-affiche img{width:100%;height:auto;}
+}
+@media(max-width:620px){
+  .slide-theme .st-affiche{width:100%;}
+  /* Pleine largeur, l'affiche ne laisse plus de coin ou la pastille « Agrandir » puisse deborder sans
+     masquer sa derniere ligne (la citation du bas) : elle se pose sous le coin droit, a l'aplomb de la colonne. */
+  .slide-theme .st-affiche .st-agrandir{right:0;top:calc(100% + 8px);bottom:auto;}
 }
 @media(max-width:900px){
   .slide-theme .st-titre{font-size:25px;line-height:1.18;margin-bottom:14px;}

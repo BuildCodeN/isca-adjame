@@ -50,35 +50,59 @@
       slidesWrap.removeChild(probe);
       return px || 491;
     }
+    /* Hauteur qu'il faut à la plus haute des bannières pour tenir à TOUTE la
+       largeur de la piste, bande des contrôles comprise. Le rapport vient des
+       attributs width et height de l'image (connus avant son chargement). */
+    function hauteurBannieres(){
+      var largeur = slidesWrap.clientWidth, haut = 0;
+      slides.forEach(function(s){
+        if(!s.classList.contains('media-slide')) return;
+        var im = Array.prototype.slice.call(s.querySelectorAll('img')).filter(function(i){ return i.getClientRects().length > 0; })[0];
+        if(!im) return;
+        var w = parseFloat(im.getAttribute('width')) || im.naturalWidth;
+        var h = parseFloat(im.getAttribute('height')) || im.naturalHeight;
+        if(!w || !h) return;
+        haut = Math.max(haut, largeur * h / w + (parseFloat(getComputedStyle(s).paddingBottom) || 0));
+      });
+      return haut;
+    }
     function ajusterHauteur(){
-      /* Sur grand écran toutes les diapositives ont des proportions
-         voisines : une hauteur commune, calée sur la diapositive de
-         texte, convient.
-
-         Sur téléphone non. Les affiches sont au format 3160 x 800 —
-         un bandeau de rapport 4:1 — soit 95px de haut sur une largeur
-         de 375. La piste restant figée à la hauteur du texte, il en
-         résultait plus de six cents pixels de marine vide autour d'une
-         mince bande d'image. La piste suit donc la diapositive
-         réellement affichée. */
-      /* Sur téléphone, la piste ne reçoit plus de hauteur calculée.
-         Mesurer une diapositive pendant son fondu s'est révélé
-         structurellement fragile : la valeur lue retardait d'un cran,
-         et la différer d'une image ne corrigeait qu'une partie des cas.
-         La feuille de style masque désormais les diapositives inactives,
-         si bien que la piste épouse naturellement celle qui s'affiche.
-         Aucune mesure, aucun décalage possible. */
+      /* Sur téléphone et tablette, la piste ne reçoit plus de hauteur
+         calculée. Les affiches sont au format 3160 x 800 — un bandeau de
+         rapport 4:1 — soit 95px de haut sur une largeur de 375 : la piste
+         restant figée à la hauteur du texte, il en résultait plus de six
+         cents pixels de marine vide autour d'une mince bande d'image.
+         Mesurer une diapositive pendant son fondu s'est en outre révélé
+         structurellement fragile : la valeur lue retardait d'un cran, et la
+         différer d'une image ne corrigeait qu'une partie des cas. La
+         feuille de style masque donc les diapositives inactives, si bien
+         que la piste épouse naturellement celle qui s'affiche. Aucune
+         mesure, aucun décalage possible. */
       if(window.matchMedia('(max-width:900px)').matches){
         slidesWrap.style.height = '';
+        slidesWrap.style.removeProperty('--cadre-h');
         return;
       }
+      /* Sur ordinateur, une hauteur COMMUNE à toutes les diapositives : la
+         page ne saute pas d'une diapositive à l'autre. Elle est calée sur la
+         plus haute des diapositives de texte (la première n'en est plus
+         forcément une : une bannière peut ouvrir le carrousel), puis
+         ELARGIE pour que chaque bannière tienne à toute la largeur de
+         l'écran — un bandeau de 3 pour 1 en demande le tiers — au lieu de
+         flotter entre deux bandes marine, comme sur téléphone (demande du
+         30 octobre 2026). Elle ne dépasse pas 80 % de la hauteur de la
+         fenêtre, sauf si le texte l'exige. La variable --cadre-h donne la
+         hauteur du cadre à l'affiche du thème, qui grandit avec lui. */
+      slidesWrap.style.removeProperty('--cadre-h');   /* le texte se mesure avec l'affiche à sa taille de base */
       var base = hauteurReference();
       slidesWrap.style.height = base + 'px';
-      /* La plus haute des diapositives de texte : la premiere n'en est plus
-         forcement une (une banniere peut ouvrir le carrousel). */
       var contenu = 0;
       textes.forEach(function(s){ contenu = Math.max(contenu, s.offsetHeight); });
-      if(contenu > base) slidesWrap.style.height = Math.round(contenu) + 'px';
+      var cadre = Math.max(base, Math.round(contenu));
+      var bannieres = Math.round(hauteurBannieres());
+      if(bannieres > cadre) cadre = Math.min(bannieres, Math.max(cadre, Math.round(window.innerHeight * 0.8)));
+      slidesWrap.style.height = cadre + 'px';
+      slidesWrap.style.setProperty('--cadre-h', cadre + 'px');
     }
 
     /* --- Passage d'une diapositive à l'autre ---

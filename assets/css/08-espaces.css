@@ -513,28 +513,24 @@
   .hero-slide.media-slide img{
     width:100%;height:auto;display:block;object-fit:cover;
   }
-  /* "Places disponibles" porte une marge marine unie de chaque cote : en
-     ratio natif, le contenu utile resterait minuscule sur un ecran de
-     375px, quelle que soit la hauteur du cadre. Le recadrage a 2,3
-     grossit ce contenu en ne mordant que dans cette marge.
-     Verifie sur le fichier livre le 30 aout (1799x503, ratio 3,58) :
-     la marge unie fait 25% de chaque cote, et le recadrage n'en mange
-     que 18% — le texte et la photo restent intacts, avec 7 points de
-     securite. A remesurer si l'affiche est refaite dans un autre
-     format, faute de quoi ce cadrage entamerait le contenu.
-     L'affiche recrutement n'a pas cette marge : son visuel occupe toute
-     la largeur du fichier, donc aucun recadrage force pour elle. */
-  .hero-slide.flyer-inscriptions img{
-    aspect-ratio:23/10;
-  }
+  /* "Places disponibles" etait recadree ici a 2,3 (aspect-ratio:23/10) :
+     le fichier livre le 30 aout portait une marge marine unie de 25% de
+     chaque cote, que ce recadrage mangeait sans toucher au contenu.
+     L'affiche livree le 2 septembre, celle du site, occupe toute la
+     largeur du fichier : recadree, elle perdait le debut du titre
+     (« LACES », « PONIBLES ») et tout l'appel aux inscriptions. Plus de
+     recadrage : de 621 a 900px l'affiche s'affiche entiere, et jusqu'a
+     620px la diapositive montre sa version pour telephone (voir
+     « Places disponibles et Decoupage de l'annee sur telephone », plus
+     bas). Aucun des autres bandeaux n'est recadre non plus. */
 
   /* La légende texte disparaît : elle n'existe pas sur ordinateur. */
   .hero-slide.media-slide .ms-hint,
   .hero-slide.flyer-recrutement .ms-hint,
   .hero-slide.flyer-inscriptions .ms-hint{display:none !important;}
 
-  /* Sur l'affiche, plus jamais posés en surimpression : le recadrage
-     serré (cf. ci-dessus) ne laisse plus de zone morte pour les
+  /* Sur l'affiche, plus jamais posés en surimpression : l'affiche
+     occupe toute la largeur et ne laisse plus de zone morte pour les
      accueillir sans mordre sur le visuel. Ils passent donc dans le
      flux normal, sous l'image, comme une légende. */
   .hero-dots{
@@ -1703,6 +1699,37 @@
 @media(max-width:620px){
   .hero-slide.flyer-tec .tec-large{display:none;}
   .hero-slide.flyer-tec .tec-mobile{display:block;width:100%;height:auto;}
+}
+
+
+/* ==================================================================
+   Accueil : « Places disponibles » et « Decoupage de l'annee » sur telephone
+   ------------------------------------------------------------------
+   Deux bandeaux de 1799 x 503 px (rapport 3,6 pour 1). Ramenes a la
+   largeur d'un telephone, ils ne font plus que 100 px de haut : textes
+   de 4 a 6 px, illisibles. Meme principe que .flyer-appel et .flyer-tec
+   juste au-dessus : au-dela de 620px, le bandeau d'origine (regles
+   generiques de .media-slide et 05-bandeaux.css) ; en dessous, UNE
+   image portrait faite des memes blocs de l'affiche, decoupes et
+   empiles pleine largeur (outils/affiches-telephone.py) : le titre, les
+   classes et l'appel aux inscriptions pour « Places disponibles » ; l'en-tete
+   du Ministere, les trimestres, les conges et le pied de page pour le
+   « Decoupage ». La marge de 14px et les coins arrondis sont dans l'image,
+   sur le marine du carrousel : l'image occupe toute la largeur, comme
+   l'affiche de l'Education catholique.
+   Les regles de ces images portent trois classes : elles l'emportent sur
+   « height:100% ; object-fit:contain » de 05-bandeaux.css.
+   Pour retirer une annonce : supprimer sa diapositive de index.html.
+   ================================================================== */
+.hero-slide.flyer-inscriptions .places-mobile,
+.hero-slide.flyer-decoupage .decoupage-mobile{display:none;}
+@media(max-width:620px){
+  .hero-slide.flyer-inscriptions .places-large,
+  .hero-slide.flyer-decoupage .decoupage-large{display:none;}
+  .hero-slide.flyer-inscriptions .places-mobile,
+  .hero-slide.flyer-decoupage .decoupage-mobile{
+    display:block;width:100%;height:auto;object-fit:contain;
+  }
 }
 
 
