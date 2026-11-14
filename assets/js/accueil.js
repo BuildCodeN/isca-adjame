@@ -339,24 +339,41 @@
 /* ==================================================================
    Zone d'avis du moment (index.html, #avis-zone)
    ------------------------------------------------------------------
-   Chaque avis peut porter deux dates facultatives, au format AAAA-MM-JJ :
-     data-a-partir-du : l'avis n'apparait qu'a partir de ce jour (0 h 00) ;
-     data-jusqu-au    : l'avis s'efface apres ce jour (23 h 59 comprises).
+   DEUX EMPLACEMENTS FIXES (demande du 14 novembre 2026) : la zone montre toujours
+   deux blocs .avis. Chaque avis peut porter deux dates facultatives, au format
+   AAAA-MM-JJ :
+     data-a-partir-du : l'emplacement reste LIBRE jusqu'a ce jour (0 h 00) ;
+     data-jusqu-au    : l'information s'arrete apres ce jour (23 h 59 comprises).
    L'heure est celle du navigateur du visiteur (Abidjan = heure universelle).
-   Quand plus aucun avis n'est affiche, la zone elle-meme disparait : pas de
-   cadre vide au-dessus du carrousel.
+   Un avis pas encore commence ou echu n'est plus masque ni supprime : il est
+   REMPLACE par un emplacement libre (« A venir : prochaine information »), qui garde
+   sa place dans la grille. La zone ne disparait donc plus, et on n'a plus a
+   deplacer quoi que ce soit : on remplit l'emplacement quand une information arrive.
 
-   Le script ne fait que MASQUER : s'il ne s'execute pas, tous les avis restent
-   visibles — une information de la direction ne doit pas dependre d'un script,
-   et un avis perime est un moindre mal qu'un avis invisible. Meme principe que
-   l'ancien bandeau d'information (« bandeauRelais » ci-dessus).
+   Le script ne fait que CHANGER LE CONTENU des emplacements echus : s'il ne
+   s'execute pas, tous les avis restent visibles — une information de la direction
+   ne doit pas dependre d'un script, et un avis perime est un moindre mal qu'un
+   avis invisible. Meme principe que l'ancien bandeau d'information.
    ================================================================== */
 (function zoneAvis(){
   var zone = document.getElementById('avis-zone');
   if(!zone) return;
 
+  /* Le meme contenu que le modele d'emplacement libre de index.html. */
+  var LIBRE = '<div class="av-texte">' +
+    '<p class="av-tag"><span class="av-point" aria-hidden="true"></span>À venir</p>' +
+    '<h3>Prochaine information</h3>' +
+    '<p class="av-info">Les annonces de la Direction s\u2019afficheront ici.</p>' +
+    '</div>';
+
+  function liberer(avis){
+    avis.className = 'avis avis-libre';
+    ['id', 'data-a-partir-du', 'data-jusqu-au', 'aria-labelledby'].forEach(function(a){ avis.removeAttribute(a); });
+    avis.setAttribute('aria-label', 'Emplacement r\u00e9serv\u00e9 \u00e0 une prochaine information');
+    avis.innerHTML = LIBRE;
+  }
+
   var maintenant = Date.now();
-  var affiches = 0;
   [].slice.call(zone.querySelectorAll('.avis')).forEach(function(avis){
     var du = avis.dataset.aPartirDu;
     var au = avis.dataset.jusquAu;
@@ -364,10 +381,8 @@
     var fin = au ? new Date(au + 'T23:59:59').getTime() : NaN;
     var pasEncore = !isNaN(debut) && maintenant < debut;
     var perime = !isNaN(fin) && maintenant > fin;
-    if(pasEncore || perime) avis.hidden = true;
-    else affiches++;
+    if(pasEncore || perime) liberer(avis);
   });
-  if(affiches === 0) zone.hidden = true;
 })();
 
 
@@ -395,4 +410,8 @@
   }
   ouvrirSiDemande();
   window.addEventListener('hashchange', ouvrirSiDemande);
+  /* Panneau ouvert : l'autre emplacement garde sa hauteur au lieu de s'etirer avec lui (classe avis-etendu, 08-espaces.css). */
+  var zone = document.getElementById('avis-zone');
+  panneau.addEventListener('toggle', function(){ if(zone) zone.classList.toggle('avis-etendu', panneau.open); });
+  if(zone && panneau.open) zone.classList.add('avis-etendu');
 })();

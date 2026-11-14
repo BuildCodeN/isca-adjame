@@ -12,14 +12,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/01-fondations.css?v=20261114">
-<link rel="stylesheet" href="assets/css/02-transport.css?v=20261114">
-<link rel="stylesheet" href="assets/css/03-cartes.css?v=20261114">
-<link rel="stylesheet" href="assets/css/04-charpente.css?v=20261114">
-<link rel="stylesheet" href="assets/css/05-bandeaux.css?v=20261114">
-<link rel="stylesheet" href="assets/css/06-interactions.css?v=20261114">
-<link rel="stylesheet" href="assets/css/07-matieres.css?v=20261114">
-<link rel="stylesheet" href="assets/css/08-espaces.css?v=20261114">
+<link rel="stylesheet" href="assets/css/01-fondations.css?v=20261114b">
+<link rel="stylesheet" href="assets/css/02-transport.css?v=20261114b">
+<link rel="stylesheet" href="assets/css/03-cartes.css?v=20261114b">
+<link rel="stylesheet" href="assets/css/04-charpente.css?v=20261114b">
+<link rel="stylesheet" href="assets/css/05-bandeaux.css?v=20261114b">
+<link rel="stylesheet" href="assets/css/06-interactions.css?v=20261114b">
+<link rel="stylesheet" href="assets/css/07-matieres.css?v=20261114b">
+<link rel="stylesheet" href="assets/css/08-espaces.css?v=20261114b">
 </head>
 <body>
 
@@ -311,39 +311,43 @@
       <!-- ================= AVIS DU MOMENT =================
            LA zone des informations TEMPORAIRES de l'accueil : en tete de « A ne pas manquer /
            Informations aux parents », au-dessus des trois cartes (placement demande le 27 octobre 2026 ;
-           un premier essai tout en haut de la page a ete refuse). Elle recueille aussi l'appel a
-           candidature, qui y etait deja sous forme d'encart.
+           un premier essai tout en haut de la page a ete refuse). Elle recueille aussi l'appel a candidature.
 
-           UN AVIS = un bloc <article class="avis"> ci-dessous. Deux ou trois peuvent se suivre. Pas de
-           nouveau conteneur a creer : on copie un bloc, on change le texte.
-             - av-tag    : 2 a 4 mots (« Conges de la Toussaint », « Rappel », « Appel a candidature »).
+           DEUX EMPLACEMENTS FIXES (demande du 14 novembre 2026 : « laisse les deux emplacements, on ne va pas
+           toujours supprimer et repositionner ») : la zone montre TOUJOURS deux blocs <article class="avis">,
+           jamais moins, et ne disparait plus. Un emplacement OCCUPE affiche une information (il clignote
+           doucement) ; un emplacement LIBRE (classe avis-libre) affiche « A venir : prochaine information »,
+           sans clignoter. Quand une information arrive a sa date de fin (data-jusqu-au), le script la REMPLACE LUI-MEME
+           par un emplacement libre : le bloc reste a sa place, pret pour la suivante. Il ne sert donc plus a
+           rien de supprimer un avis perime ni de repositionner quoi que ce soit.
+
+           POUR METTRE UNE INFORMATION : prendre un bloc libre (modele plus bas), retirer la classe avis-libre,
+           y ecrire le contenu, regler les dates. Rien a deplacer, rien a creer.
+             - av-tag    : 2 a 4 mots (« Calendrier de l'annee », « Rappel », « Appel a candidature »).
              - h3        : la phrase a retenir, une ou deux lignes.
              - av-info   : une ligne de precision (facultative).
              - av-action : un numero a appeler ou un lien (facultatif ; modele dans l'avis de l'appel).
-           Donner a chaque avis un id propre : le compteur d'audience compte les visites qui l'ont lu.
+             - id propre a chaque information occupee (le compteur d'audience compte les visites qui l'ont lue) ;
+               pas d'id sur un emplacement libre.
+           DATES : data-jusqu-au="AAAA-MM-JJ" remplace l'avis par un emplacement libre apres cette date (elle
+           comprise) ; data-a-partir-du="AAAA-MM-JJ" garde l'emplacement libre jusqu'a ce jour. Les deux sont
+           facultatifs. Le script ne fait que CHANGER le contenu des emplacements echus : sans JavaScript les
+           avis restent tels quels (une information ne doit pas dependre d'un script) ; remettre de temps en temps
+           un emplacement libre a la place d'un avis perime pour que le fichier reste propre.
 
-           DATES : data-jusqu-au="AAAA-MM-JJ" efface l'avis tout seul apres cette date (elle comprise) ;
-           data-a-partir-du="AAAA-MM-JJ" ne l'affiche qu'a partir de cette date. Les deux sont facultatifs.
-           Quand plus aucun avis n'est affiche, la zone disparait (la section commence par ses trois
-           cartes). Le script ne fait que MASQUER : sans JavaScript tous les avis restent affiches (une
-           information ne doit pas dependre d'un script) ; supprimer de temps en temps du fichier les avis
-           perimes.
-
-           POUR RETIRER UN AVIS : supprimer son bloc. Dessin : « Accueil : la ZONE D'AVIS DU MOMENT » a la fin
-           de 08-espaces.css ; masquage par dates : « zoneAvis » dans assets/js/accueil.js. -->
+           MODELE D'EMPLACEMENT LIBRE :
+             <article class="avis avis-libre" aria-label="Emplacement reserve a une prochaine information">
+               <div class="av-texte">
+                 <p class="av-tag"><span class="av-point" aria-hidden="true"></span>A venir</p>
+                 <h3>Prochaine information</h3>
+                 <p class="av-info">Les annonces de la Direction s'afficheront ici.</p>
+               </div>
+             </article>
+           Dessin : « Accueil : la ZONE D'AVIS DU MOMENT » a la fin de 08-espaces.css ; dates et emplacements
+           libres : « zoneAvis » dans assets/js/accueil.js. -->
       <div class="avis-zone" id="avis-zone" role="region" aria-label="Avis du moment">
 
-        <!-- Conges de la Toussaint 2026 : depart des eleves le vendredi 23 octobre, reprise le lundi 2 novembre
-             (communique par la direction le 25 octobre 2026). Disparait seul apres le 2 novembre. -->
-        <article class="avis" id="avis-toussaint-2026" data-jusqu-au="2026-11-02" aria-labelledby="avis-toussaint-2026-titre">
-          <div class="av-texte">
-            <p class="av-tag"><span class="av-point" aria-hidden="true"></span>Congés de la Toussaint</p>
-            <h3 id="avis-toussaint-2026-titre">Reprise des cours le lundi 2 novembre 2026</h3>
-            <p class="av-info">Départ des élèves : vendredi 23 octobre 2026. Une semaine de congé.</p>
-          </div>
-        </article>
-
-        <!-- Appel a candidature du Bureau des parents d'eleves (19 octobre 2026). Les termes sont ceux de la
+        <!-- EMPLACEMENT 1 — Appel a candidature du Bureau des parents d'eleves (19 octobre 2026). Les termes sont ceux de la
              banniere : ni date limite, ni lieu de depot. LES CRITERES DE CANDIDATURE sont publies depuis le
              14 novembre 2026 : le texte du document de l'APE (recu en photographie) est reproduit MOT POUR MOT
              dans le panneau « Lire les criteres de candidature » (details.av-criteres, ouvert aussi par l'adresse
@@ -401,6 +405,19 @@
               </p>
             </div>
           </details>
+        </article>
+
+        <!-- EMPLACEMENT 2 — Calendrier de l'annee (14 novembre 2026). Chiffres du decoupage officiel du Ministere
+             deja affiche dans le carrousel (diapositive « Decoupage de l'annee ») : 1er trimestre du 14 septembre au
+             4 decembre 2026 ; conges de Noel du 18 decembre 2026 au 3 janvier 2027. S'efface seul apres le 4 decembre :
+             l'emplacement redevient libre. A remplacer par la prochaine information de la Direction quand elle arrive
+             (les conges de la Toussaint, qui occupaient cet emplacement, ont pris fin le 2 novembre). -->
+        <article class="avis" id="avis-calendrier-trimestre-1" data-jusqu-au="2026-12-04" aria-labelledby="avis-calendrier-trimestre-1-titre">
+          <div class="av-texte">
+            <p class="av-tag"><span class="av-point" aria-hidden="true"></span>Calendrier de l'année</p>
+            <h3 id="avis-calendrier-trimestre-1-titre">Le 1er trimestre s'achève le vendredi 4 décembre 2026</h3>
+            <p class="av-info">Congés de Noël : du 18 décembre 2026 au 3 janvier 2027 (découpage officiel de l'année scolaire).</p>
+          </div>
         </article>
 
       </div>
@@ -584,8 +601,8 @@
     </div>
   </footer>
 
-<script src="assets/js/commun.js?v=20261114"></script>
-<script src="assets/js/accueil.js?v=20261114"></script>
-<script src="assets/js/stat.js?v=20261114" defer></script>
+<script src="assets/js/commun.js?v=20261114b"></script>
+<script src="assets/js/accueil.js?v=20261114b"></script>
+<script src="assets/js/stat.js?v=20261114b" defer></script>
 </body>
 </html>
