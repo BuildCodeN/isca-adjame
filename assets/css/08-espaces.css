@@ -1682,6 +1682,75 @@
   .avis .av-action{border-left-color:#000;}
 }
 
+/* ------------------------------------------------------------------
+   Un avis peut deplier un DOCUMENT sous son texte : ici, les criteres de
+   candidature de l'appel du Bureau des parents d'eleves (14 novembre 2026).
+   C'est un <details class="av-criteres"> : il se deplie d'un clic ou au clavier,
+   sans script (accueil.js ne sert qu'a l'ouvrir quand l'adresse se termine par
+   son identifiant, pour un lien direct envoye par message). Le texte est celui
+   du document, pas un resume : ne rien y changer sans le document sous les yeux.
+   Titres de section en h4 (sous le h3 de l'avis : pas de saut de niveau).
+   ------------------------------------------------------------------ */
+.avis{scroll-margin-top:96px;}   /* un lien direct amene l'avis SOUS le menu fixe, pas derriere lui */
+.avis .av-criteres{
+  flex:1 1 100%;margin-top:4px;padding-top:16px;
+  border-top:1px solid rgba(228,205,142,.4);
+}
+.avis .av-criteres summary{
+  display:inline-flex;align-items:center;gap:12px;min-height:46px;padding:10px 20px;
+  background:var(--gold);color:var(--navy);
+  font-size:15px;font-weight:700;border-radius:2px;cursor:pointer;list-style:none;
+  transition:background .2s ease;
+}
+.avis .av-criteres summary::-webkit-details-marker{display:none;}
+.avis .av-criteres summary::after{
+  content:"";flex:none;width:8px;height:8px;margin-top:-4px;
+  border:solid currentColor;border-width:0 2.5px 2.5px 0;transform:rotate(45deg);transition:transform .2s ease;
+}
+.avis .av-criteres[open] summary::after{margin-top:4px;transform:rotate(-135deg);}
+.avis .av-criteres summary:hover{background:var(--gold-soft);}
+.avis .av-criteres summary:focus-visible{outline:3px solid var(--gold-soft);outline-offset:4px;}
+.avis .av-crit-corps{
+  margin-top:18px;padding:20px 22px 22px;max-width:80ch;
+  background:rgba(250,246,239,.07);border-left:3px solid var(--gold);
+  font-size:15px;line-height:1.6;color:rgba(250,246,239,.95);
+}
+.avis .av-crit-corps p{margin:0 0 12px;}
+.avis .av-crit-corps b{font-weight:700;color:#fff;}
+.avis .av-crit-origine{
+  padding-bottom:12px;border-bottom:1px solid rgba(228,205,142,.3);
+  font-size:14px;letter-spacing:.03em;color:var(--gold-soft);
+}
+.avis .av-crit-origine b{color:var(--gold-soft);}
+.avis .av-crit-corps h4{
+  margin:20px 0 8px;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-soft);
+}
+.avis .av-crit-corps ul{margin:0 0 4px;padding:0 0 0 20px;}
+.avis .av-crit-corps li{margin:0 0 8px;padding-left:2px;}
+.avis .av-crit-corps li::marker{color:var(--gold);}
+.avis .av-crit-pdf{display:flex;flex-wrap:wrap;gap:10px 14px;margin:22px 0 0;}
+.avis .av-crit-pdf a{
+  display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:10px 20px;
+  font-size:15px;font-weight:700;border-radius:2px;text-decoration:none;
+  transition:background .2s ease,color .2s ease;
+}
+.avis .av-crit-bouton{background:var(--gold);color:var(--navy);}
+.avis .av-crit-bouton:hover{background:var(--gold-soft);}
+.avis .av-crit-lien{color:var(--gold-soft);border:2px solid var(--gold);}
+.avis .av-crit-lien:hover{background:rgba(201,162,75,.18);color:#fff;}
+.avis .av-crit-pdf a:focus-visible{outline:3px solid var(--gold-soft);outline-offset:4px;}
+@media(max-width:900px){
+  .avis .av-criteres{flex:0 0 auto;padding-top:14px;}
+  .avis .av-criteres summary{display:flex;justify-content:space-between;width:100%;min-height:50px;}
+  .avis .av-crit-corps{margin-top:14px;padding:16px 14px 18px;font-size:14.5px;}
+  .avis .av-crit-pdf a{flex:1 1 100%;min-height:50px;}
+}
+@media print{
+  .avis .av-criteres summary,.avis .av-crit-pdf{display:none;}
+  .avis .av-crit-corps{background:none;border-left:2px solid #000;color:#000;}
+  .avis .av-crit-corps b,.avis .av-crit-corps h4,.avis .av-crit-origine,.avis .av-crit-origine b{color:#000;}
+}
+
 
 /* ==================================================================
    Accueil : theme de l'annee 2026-2027 de l'Education catholique

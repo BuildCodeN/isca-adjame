@@ -12,14 +12,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/01-fondations.css?v=20261030">
-<link rel="stylesheet" href="assets/css/02-transport.css?v=20261030">
-<link rel="stylesheet" href="assets/css/03-cartes.css?v=20261030">
-<link rel="stylesheet" href="assets/css/04-charpente.css?v=20261030">
-<link rel="stylesheet" href="assets/css/05-bandeaux.css?v=20261030">
-<link rel="stylesheet" href="assets/css/06-interactions.css?v=20261030">
-<link rel="stylesheet" href="assets/css/07-matieres.css?v=20261030">
-<link rel="stylesheet" href="assets/css/08-espaces.css?v=20261030">
+<link rel="stylesheet" href="assets/css/01-fondations.css?v=20261114">
+<link rel="stylesheet" href="assets/css/02-transport.css?v=20261114">
+<link rel="stylesheet" href="assets/css/03-cartes.css?v=20261114">
+<link rel="stylesheet" href="assets/css/04-charpente.css?v=20261114">
+<link rel="stylesheet" href="assets/css/05-bandeaux.css?v=20261114">
+<link rel="stylesheet" href="assets/css/06-interactions.css?v=20261114">
+<link rel="stylesheet" href="assets/css/07-matieres.css?v=20261114">
+<link rel="stylesheet" href="assets/css/08-espaces.css?v=20261114">
 </head>
 <body>
 
@@ -195,11 +195,19 @@
          l'affiche (le titre, les classes, l'appel aux inscriptions) découpés dans le bandeau et empilés pleine
          largeur dans une image portrait. Aucun texte n'est retapé : ce sont les pixels de l'affiche.
          Image produite par outils/affiches-telephone.py ; les alt des deux images sont identiques. -->
+    <!-- RETIRÉE le 14 novembre 2026, sur demande de l'utilisateur (« nous sommes en novembre, bientôt décembre ») : les places
+         disponibles étaient celles de la rentrée 2026-2027. Le bloc ci-dessous et ses images (affiche-inscriptions*.jpg dans
+         « Bandeau et logo », places-disponibles-2026-2027-telephone-*.webp dans « Annonces », fabriquées par
+         outils/affiches-telephone.py) sont CONSERVÉS pour l'an prochain : supprimer la ligne d'ouverture de commentaire qui suit
+         cette note et celle de fermeture placée juste après le bloc, puis ne changer que les informations (classes, dates).
+         Tant qu'il est en commentaire, preparer-publication.py ne publie plus ses images. -->
+    <!--
     <div class="hero-slide media-slide flyer-inscriptions" data-label="Places disponibles">
       <img class="places-large" width="1799" height="503" srcset="assets/images/Bandeau%20et%20logo/affiche-inscriptions-900.jpg 900w, assets/images/Bandeau%20et%20logo/affiche-inscriptions.jpg 1799w" sizes="(max-width:1000px) 100vw, 1200px" src="assets/images/Bandeau%20et%20logo/affiche-inscriptions.jpg" fetchpriority="low" alt="Places disponibles pour l'année scolaire 2026-2027 à l'Institut Sacré-Cœur d'Adjamé. Classes concernées : 4ème, 5ème, Seconde A, Seconde C, Première D, Première C, Terminale A1, Terminale A2. Les inscriptions ont déjà commencé et se poursuivent.">
       <img class="places-mobile" src="assets/images/Annonces/places-disponibles-2026-2027-telephone-1080.webp" srcset="assets/images/Annonces/places-disponibles-2026-2027-telephone-720.webp 720w, assets/images/Annonces/places-disponibles-2026-2027-telephone-1080.webp 1080w" sizes="100vw" width="1080" height="2111" loading="lazy" decoding="async" alt="Places disponibles pour l'année scolaire 2026-2027 à l'Institut Sacré-Cœur d'Adjamé. Classes concernées : 4ème, 5ème, Seconde A, Seconde C, Première D, Première C, Terminale A1, Terminale A2. Les inscriptions ont déjà commencé et se poursuivent.">
       <div class="ms-hint"><b>Places disponibles 2026-2027</b> — cliquez sur l'affiche pour l'agrandir</div>
     </div>
+    -->
 
     <!-- ---------- SLIDE 6 — Découpage de l'année scolaire ----------
          Affiche officielle du Ministère de l'Éducation nationale : les
@@ -336,19 +344,63 @@
         </article>
 
         <!-- Appel a candidature du Bureau des parents d'eleves (19 octobre 2026). Les termes sont ceux de la
-             banniere : ni date limite, ni lieu de depot, ni criteres, qui ne sont pas connus. Pas de date de fin
-             connue : a retirer a la main quand l'appel est clos (et la diapositive 1 du carrousel). -->
+             banniere : ni date limite, ni lieu de depot. LES CRITERES DE CANDIDATURE sont publies depuis le
+             14 novembre 2026 : le texte du document de l'APE (recu en photographie) est reproduit MOT POUR MOT
+             dans le panneau « Lire les criteres de candidature » (details.av-criteres, ouvert aussi par l'adresse
+             #criteres-candidature-ape : accueil.js) et en PDF A4 (Documents/Criteres_candidature_APE_2026-2027.pdf,
+             fabrique avec le meme texte). Le document recu ne porte ni date limite ni lieu de depot : rien n'est
+             invente. Pas de date de fin connue : a retirer a la main quand l'appel est clos (et la diapositive 1
+             du carrousel). La banniere, elle, dit encore « criteres communiques ulterieurement » (texte DANS
+             l'image) : la remplacer si l'APE en fournit une version a jour. -->
         <article class="avis" id="avis-appel-bureau-parents" aria-labelledby="avis-appel-bureau-parents-titre">
           <div class="av-texte">
             <p class="av-tag"><span class="av-point" aria-hidden="true"></span>Appel à candidature</p>
             <h3 id="avis-appel-bureau-parents-titre">Présidence et membres du Bureau des parents d'élèves</h3>
-            <p class="av-info">Les critères d'éligibilité seront communiqués ultérieurement.</p>
+            <p class="av-info">Les critères de candidature sont publiés : conditions, incompatibilités et critères propres à chaque poste.</p>
           </div>
           <a class="av-action" href="tel:+2250797561321" aria-label="Appeler l'infoline au 07 97 56 13 21">
             <span class="av-lib">Infoline</span>
             <span class="av-tel">07 97 56 13 21</span>
             <span class="av-appeler">Appeler <span aria-hidden="true">→</span></span>
           </a>
+          <details class="av-criteres" id="criteres-candidature-ape">
+            <summary>Lire les critères de candidature</summary>
+            <div class="av-crit-corps">
+              <p class="av-crit-origine"><b>Association des Parents d'Élèves (APE)</b> — critères de candidature au poste de Président(e) et de membre du Bureau</p>
+              <p>En vue du renouvellement du bureau de l'Association des Parents d'Élèves de l'Institut Sacré-Cœur d'Adjamé, les critères ci-après sont portés à la connaissance des parents désireux de se porter candidats. Ils s'appliquent dans le respect des statuts et du règlement intérieur de l'APE.</p>
+              <h4>I. Conditions communes à tout candidat</h4>
+              <ul>
+                <li><b>Qualité de parent :</b> être parent ou tuteur légal d'un élève régulièrement inscrit à l'ISCA pour l'année scolaire 2026-2027.</li>
+                <li><b>Adhésion au caractère propre :</b> respecter le projet éducatif de l'établissement catholique et le charisme des Frères du Sacré-Cœur.</li>
+                <li><b>Disponibilité :</b> pouvoir participer régulièrement aux réunions et aux activités de l'association.</li>
+                <li><b>Neutralité :</b> s'engager à ne pas utiliser l'association à des fins politiques, commerciales ou personnelles.</li>
+              </ul>
+              <h4>II. Incompatibilités</h4>
+              <ul>
+                <li>Être membre du personnel de l'ISCA (enseignant, personnel administratif, agent de service).</li>
+                <li>Être fournisseur ou prestataire de services de l'établissement ou de l'APE (conflit d'intérêts).</li>
+                <li>Cumuler deux postes au sein du bureau.</li>
+              </ul>
+              <h4>III. Critères propres au Président ou à la Présidente</h4>
+              <ul>
+                <li><b>Continuité :</b> avoir au moins un enfant appelé à demeurer dans l'établissement pendant toute la durée du mandat (un parent dont l'enfant est en classe de Terminale n'est donc pas éligible à ce poste).</li>
+                <li><b>Qualités de leadership :</b> aptitude au dialogue, à la médiation et à la représentation auprès de la Direction, de la Direction régionale Abidjan 1 et des partenaires de l'établissement.</li>
+                <li><b>Maîtrise de l'écrit :</b> savoir lire, rédiger et signer des documents administratifs.</li>
+              </ul>
+              <h4>IV. Critères propres aux autres postes clés</h4>
+              <ul>
+                <li><b>Secrétaire général(e) :</b> aisance rédactionnelle (procès-verbaux, convocations, correspondances).</li>
+                <li><b>Trésorier(ère) général(e) :</b> probité reconnue, rigueur et notions de gestion financière.</li>
+                <li><b>Commissaires aux comptes :</b> indépendance vis-à-vis du bureau et compétence en matière de contrôle des comptes.</li>
+                <li><b>Équilibre du bureau :</b> rechercher une représentation des deux cycles (1er et 2nd cycles) et des deux sexes.</li>
+                <li>Une lettre de motivation (obligatoire pour le poste de Président(e)).</li>
+              </ul>
+              <p class="av-crit-pdf">
+                <a class="av-crit-bouton" href="Documents/Criteres_candidature_APE_2026-2027.pdf" download>Télécharger le PDF</a>
+                <a class="av-crit-lien" href="Documents/Criteres_candidature_APE_2026-2027.pdf" target="_blank" rel="noopener">Ouvrir dans un nouvel onglet</a>
+              </p>
+            </div>
+          </details>
         </article>
 
       </div>
@@ -532,8 +584,8 @@
     </div>
   </footer>
 
-<script src="assets/js/commun.js?v=20261030"></script>
-<script src="assets/js/accueil.js?v=20261030"></script>
-<script src="assets/js/stat.js?v=20261030" defer></script>
+<script src="assets/js/commun.js?v=20261114"></script>
+<script src="assets/js/accueil.js?v=20261114"></script>
+<script src="assets/js/stat.js?v=20261114" defer></script>
 </body>
 </html>

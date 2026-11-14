@@ -369,3 +369,30 @@
   });
   if(affiches === 0) zone.hidden = true;
 })();
+
+
+/* ==================================================================
+   Criteres de candidature de l'appel du Bureau des parents d'eleves
+   (index.html, #criteres-candidature-ape, ajoute le 14 novembre 2026)
+   ------------------------------------------------------------------
+   Le panneau est un <details> : il se deplie a la main, sans script. Ce code
+   ne fait qu'une chose : quand l'adresse se termine par #criteres-candidature-ape
+   (lien direct envoye dans un message, par exemple par l'APE), il ouvre le
+   panneau et y amene le visiteur — le navigateur ne deplie pas, de lui-meme, un
+   <details> que l'adresse designe. Sans JavaScript, le lien amene au panneau,
+   ferme, et un clic sur « Lire les criteres de candidature » l'ouvre.
+   ================================================================== */
+(function criteresCandidature(){
+  var panneau = document.getElementById('criteres-candidature-ape');
+  if(!panneau) return;
+  function ouvrirSiDemande(){
+    if(location.hash !== '#criteres-candidature-ape') return;
+    panneau.open = true;
+    /* Le navigateur saute lui-meme sur l'adresse designee, un peu apres le chargement : on attend ce saut, puis on
+       ramene l'avis entier (pastille, titre, bouton) sous le menu fixe (scroll-margin-top, 08-espaces.css). */
+    var avis = panneau.closest ? panneau.closest('.avis') : null;
+    if(avis && avis.scrollIntoView) setTimeout(function(){ avis.scrollIntoView({block:'start'}); }, 180);
+  }
+  ouvrirSiDemande();
+  window.addEventListener('hashchange', ouvrirSiDemande);
+})();
