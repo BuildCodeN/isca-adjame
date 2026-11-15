@@ -1029,6 +1029,12 @@
 .lightbox .lb-nav:hover{background:rgba(21,34,56,.85);}
 .lightbox .lb-prec{left:20px;}
 .lightbox .lb-suiv{right:20px;}
+/* La legende ne recouvre plus le bas de la photographie : on lui reserve une bande
+   (celle de la legende fixee a 22px du bas) et l'agrandissement s'arrete au-dessus.
+   Avant, sur un ecran de 768px de haut, la legende mordait sur les 7 derniers pixels
+   de l'image. Sans :has() (vieux navigateurs), on garde l'ancien comportement. */
+.lightbox:has(.lb-legende){padding-bottom:64px;}
+.lightbox:has(.lb-legende) img{max-height:calc(100vh - 88px);}
 .lightbox .lb-legende{
   position:fixed;left:0;right:0;bottom:22px;
   text-align:center;color:#D9DCE4;font-size:13px;
@@ -1047,6 +1053,27 @@
    est opaque ; les autres attendent en dessous, sans bouger la mise en
    page — elles sont toutes en position absolue. */
 .news-card .thumb.diapo{overflow:hidden;}
+/* Photographies montrees EN ENTIER (classe « entiere » sur le cadre, 15 novembre 2026 :
+   « les photos ne doivent pas etre coupees, toute la surface doit apparaitre »).
+   Le cadre prend le format de la photographie, 3:2, au lieu d'une bande de 230px de haut
+   qui rognait le haut, le bas et les cotes ; « contain » garantit que meme un cadre a
+   peine different ne rogne jamais ; le leger agrandissement au survol, qui mange les
+   bords, est supprime. Les vignettes de la serie sont alors la photographie entiere
+   (option 'cadre_entier' de outils/preparer-photos.py). */
+.news-card .thumb.diapo.entiere{height:auto;aspect-ratio:3/2;}
+.news-card .thumb.diapo.entiere > img{object-fit:contain;}
+.news-card:hover .thumb.diapo.entiere > img,
+.news-card:active .thumb.diapo.entiere > img{transform:none;}
+/* Un texte de carte en plusieurs paragraphes (election du 5 novembre) : un blanc entre eux
+   (la remise a zero globale, « * {margin:0} », les collait). */
+.news-body p + p{margin-top:10px;}
+/* Sur l'accueil, la premiere carte est la plus large (1.3fr) : avec une photographie entiere, son
+   cadre devenait immense a cote des deux autres (463px de haut a 1920px). Tant qu'une carte porte
+   une photographie entiere, les trois colonnes sont egales. Au-dessous de 1000px la grille est deja
+   en une colonne (01-fondations.css) : on n'y touche pas. */
+@media(min-width:1001px){
+  .news-grid:has(.thumb.entiere){grid-template-columns:1fr 1fr 1fr;}
+}
 .news-card .thumb.diapo > img{
   position:absolute;inset:0;
   width:100%;height:100%;object-fit:cover;
