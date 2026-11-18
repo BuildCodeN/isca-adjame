@@ -95,7 +95,7 @@
   # 'unsafe-inline' reste nécessaire pour les quelques onclick="" et balises <style> existants
   # (aucun script tiers n'est chargé : le vrai gain est de bloquer tout code injecté qui tenterait
   # de charger une ressource depuis un autre domaine).
-  Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-src https://maps.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+  Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://tile.openstreetmap.org; connect-src 'self'; frame-src https://maps.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
   # Ne pas annoncer la version exacte de PHP (information inutile offerte à qui chercherait une
   # faille connue d'une version précise).
   Header unset X-Powered-By
