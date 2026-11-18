@@ -4,3 +4,13 @@
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Garde-fou (ajoute le 18/11/2026 apres un test d'intrusion) : ce depot est PUBLIC et c'est lui
+# qui est deploye en ligne. preparer-publication.py ne copie normalement jamais ces fichiers,
+# mais si quelqu'un les ajoutait ici a la main ou par un futur script, ce depot ne doit jamais
+# pouvoir les accepter — memes regles que le depot prive site/.gitignore.
+isca-config.php
+api/config*.php
+api/*.sql
+.env
+.env.*

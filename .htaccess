@@ -26,6 +26,12 @@
   RewriteCond %{HTTP:X-Forwarded-Proto} !https
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 </IfModule>
+# CONSTAT (test d'intrusion du 18/11/2026) : en ligne, http://isca-adjame.com répond 200 au lieu
+# d'une redirection 301 — la règle ci-dessus ne semble jamais atteinte, probablement parce que le
+# CDN de l'hébergeur (en-tête « server: hcdn ») sert certaines requêtes HTTP sans les faire passer
+# par Apache/LiteSpeed et ce .htaccess. Vérifier dans hPanel qu'une option « Forcer HTTPS » existe
+# au niveau du CDN/SSL et l'activer : c'est la correction qui compte vraiment. L'en-tête HSTS
+# ci-dessous (bloc 4) est un filet de secours qui, lui, est confirmé actif.
 
 # ------------------------------------------------------------------
 #  2. Compression
@@ -71,7 +77,7 @@
 
 # ------------------------------------------------------------------
 #  4. En-têtes de sécurité — les trois qui coûtent le moins et
-#  protègent le plus.
+#  protègent le plus, complétés le 18/11/2026 après un test d'intrusion.
 # ------------------------------------------------------------------
 <IfModule mod_headers.c>
   # Le navigateur respecte le type déclaré et n'essaie pas de deviner.
@@ -80,6 +86,19 @@
   Header set X-Frame-Options "SAMEORIGIN"
   # On ne transmet pas l'adresse complète de la page aux sites visités.
   Header set Referrer-Policy "strict-origin-when-cross-origin"
+  # Une fois le visiteur venu une fois en https, son navigateur n'essaiera plus jamais le http
+  # pour ce domaine (un an, sous-domaines compris) — même si la redirection 301 du bloc 1 ne
+  # s'applique pas (voir le constat plus haut), ceci protège dès la première visite en https.
+  Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  # Politique resserrée : scripts et appels uniquement vers le site lui-même, aucune page tierce
+  # ne peut nous encadrer, aucun <object>/<embed>, aucun formulaire qui soumettrait ailleurs.
+  # 'unsafe-inline' reste nécessaire pour les quelques onclick="" et balises <style> existants
+  # (aucun script tiers n'est chargé : le vrai gain est de bloquer tout code injecté qui tenterait
+  # de charger une ressource depuis un autre domaine).
+  Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-src https://maps.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+  # Ne pas annoncer la version exacte de PHP (information inutile offerte à qui chercherait une
+  # faille connue d'une version précise).
+  Header unset X-Powered-By
 </IfModule>
 
 # ------------------------------------------------------------------
