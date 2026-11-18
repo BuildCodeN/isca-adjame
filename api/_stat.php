@@ -454,8 +454,42 @@ function stat_admin_exiger(PDO $db): void
     }
     $secret = stat_parametre($db, 'stat_secret');
     if ($secret === null || (int) $m[1] < time()
-        || !hash_equals(hash_hmac('sha256', 'v1|stat|' . $m[1], $secret), $m[2])) {
+        || !hash_equals(hash_hmac('sha256', 'v1|stat|' . $m[1], $secret), $m[2])
+        || stat_jeton_est_revoque($db, $jeton)) {
         refuser(401, 'Session expirée. Reconnectez-vous.');
+    }
+}
+
+/**
+ * Révocation du jeton d'administration AVANT son expiration naturelle (déconnexion explicite,
+ * voir stat-deconnexion.php) : le jeton lui-même n'est jamais signé ni mémorisé côté serveur à sa
+ * création (voir stat_jeton_creer), donc on ne peut que retenir qu'IL a été révoqué — par son
+ * empreinte, jamais par sa valeur. Avale toute erreur : si la table de la migration du 18/11/2026
+ * (voir backend/mysql/migration-revocation-stats-20261118.sql) n'a pas encore été importée, la
+ * déconnexion continue de fonctionner comme avant (sans révocation), sans jamais tomber en panne.
+ */
+function stat_jeton_revoquer(PDO $db, string $jeton, int $expiration): void
+{
+    try {
+        $db->prepare('INSERT IGNORE INTO stat_jetons_revoques (empreinte, expire_le, revoque_le) VALUES (?, ?, ?)')
+           ->execute([hash('sha256', $jeton), gmdate('Y-m-d H:i:s', $expiration), heure()]);
+        if (random_int(1, 20) === 1) {
+            $db->prepare('DELETE FROM stat_jetons_revoques WHERE expire_le < ?')->execute([heure()]);
+        }
+    } catch (Throwable $e) {
+        // table pas encore installée, ou base indisponible : rien à faire de plus ici.
+    }
+}
+
+/** Même garde-fou que ci-dessus : sans la table, aucun jeton n'est jamais considéré révoqué. */
+function stat_jeton_est_revoque(PDO $db, string $jeton): bool
+{
+    try {
+        $q = $db->prepare('SELECT 1 FROM stat_jetons_revoques WHERE empreinte = ? LIMIT 1');
+        $q->execute([hash('sha256', $jeton)]);
+        return (bool) $q->fetchColumn();
+    } catch (Throwable $e) {
+        return false;
     }
 }
 

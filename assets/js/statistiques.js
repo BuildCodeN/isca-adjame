@@ -153,6 +153,10 @@
   });
 
   function deconnecter(message){
+    /* révoque le jeton côté serveur avant de l'oublier ici (voir stat-deconnexion.php,
+       ajouté le 18/11/2026) : sans cet appel, le jeton restait utilisable jusqu'à son
+       expiration naturelle malgré la déconnexion. */
+    if(jeton){ appeler('api/stat-deconnexion.php', { corps: {} })['catch'](function(){}); }
     oublierJeton();
     donnees = null;
     montrerConnexion(message || '');
